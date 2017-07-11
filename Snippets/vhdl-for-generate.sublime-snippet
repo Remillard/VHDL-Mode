@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+${1:<GENERATE_LABEL>} : for ${2:<loop_variable>} in ${3:<range>} generate
+	$0
+end generate $1;
+]]></content>
+	<tabTrigger>forgen</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

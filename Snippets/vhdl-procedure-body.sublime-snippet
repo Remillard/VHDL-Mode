@@ -1,0 +1,12 @@
+<snippet>
+	<content><![CDATA[
+procedure ${1:<identifier>} (
+
+) is
+begin
+	$0
+end procedure $1;
+]]></content>
+	<tabTrigger>procb</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

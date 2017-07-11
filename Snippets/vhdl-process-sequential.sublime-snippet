@@ -1,0 +1,14 @@
+<snippet>
+	<content><![CDATA[
+${1:<PROCESS_NAME>} : process (${2:clk}, ${3:reset})
+begin
+	if ($3 = '${4:1}') then
+		$0
+	elsif rising_edge($2) then
+
+	end if;
+end process $1;
+]]></content>
+	<tabTrigger>spro</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

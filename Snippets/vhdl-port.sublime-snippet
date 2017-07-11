@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+port (
+	$0
+);
+]]></content>
+	<tabTrigger>port</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

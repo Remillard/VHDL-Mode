@@ -1,0 +1,8 @@
+<snippet>
+	<content><![CDATA[
+${1:<signal>} <= ${2:<expression>} when (${3:<conditional>}) else
+	${4:<expression>} when others;
+]]></content>
+	<tabTrigger>assign</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

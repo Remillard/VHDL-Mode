@@ -1,0 +1,53 @@
+<snippet>
+	<!--
+		Current fields supported:
+			FILENAME : Will fill in the current buffer name if found, if not
+			           found, will fill in the file name, and if that's not
+			           found will fill in a default value.
+			AUTHOR   : This uses the vhdl-author setting in the settings file.
+			COMPANY  : This uses the vhdl-company setting in the settings file.
+			CDATE    : Automatically filled in when the header is created.
+			MDATE    : Automatically filled in when the header is created and
+			           updated when file is saved.
+			YEAR     : Automatically filled in when the header is created.
+
+		Numeric fields are tabbed between when snippet is inserted.
+
+		TODO: Take project name, platform, and standard from project
+		file.
+
+		Edit header to taste and need.
+	-->
+	<content><![CDATA[
+-------------------------------------------------------------------------------
+-- Title       : ${1:<Title Block>}
+-- Project     : ${2:<Project Name>}
+-------------------------------------------------------------------------------
+-- File        : ${FILENAME}
+-- Author      : ${AUTHOR}
+-- Company     : ${COMPANY}
+-- Created     : ${CDATE}
+-- Last update : ${MDATE}
+-- Platform    : Generic (No device specific behavior specified.)
+-- Standard    : VHDL'93, Math Packages
+-------------------------------------------------------------------------------
+-- Copyright (c) ${YEAR} ${COMPANY}
+--
+-- This document contains controlled technology or technical data under the
+-- jurisdiction of the Export Administration Regulations (EAR), 15 CFR 730-774.
+-- It cannot be transferred to any foreign third party without the specific
+-- prior approval of the U.S. Department of Commerce Bureau of Industry and
+-- Security (BIS). Violations of these regulations are punishable by fine,
+-- imprisonment, or both.
+-------------------------------------------------------------------------------
+-- Description: $4
+-------------------------------------------------------------------------------
+-- Revisions:  Revisions and commentary regarding such are controlled by
+-- the revision control system in use (Rational Team Concert / Jazz).  That
+-- tool should be consulted on revision history.
+-------------------------------------------------------------------------------
+$0
+]]></content>
+	<tabTrigger>header</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

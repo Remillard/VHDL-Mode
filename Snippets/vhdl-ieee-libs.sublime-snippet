@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;	
+${1:use std.textio.all;}
+${2:use ieee.std_logic_textio.all;}
+]]></content>
+	<tabTrigger>ieee</tabTrigger> 
+	<scope>source.vhdl</scope> 
+</snippet>

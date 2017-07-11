@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+if (${1:<condition>}) then
+	$0
+end if;
+]]></content>
+	<tabTrigger>if</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

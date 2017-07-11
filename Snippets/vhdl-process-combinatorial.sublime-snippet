@@ -1,0 +1,10 @@
+<snippet>
+	<content><![CDATA[
+${1:<PROCESS_NAME>} : process (${2:all})
+begin
+	$0
+end process $1;
+]]></content>
+	<tabTrigger>cpro</tabTrigger> 
+	<scope>source.vhdl</scope>
+</snippet>

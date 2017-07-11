@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+component ${1:<identifier>} is
+	port (
+		$0
+	);
+end component $1;
+]]></content>
+	<tabTrigger>component</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

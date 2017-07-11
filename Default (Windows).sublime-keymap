@@ -1,0 +1,23 @@
+[
+	// Method to the Madness
+	// Using Alt-K as an extended command initiator.  After that,
+	// using vhdl-mode similar (though not exact) patterns
+	// 'p' starts port commands for copy and pasting.
+	{"keys": ["alt+k", "p", "w"], "command": "vhdl_mode_copy_ports"},
+	{"keys": ["alt+k", "p", "s"], "command": "vhdl_mode_paste_as_signal"},
+	{"keys": ["alt+k", "p", "c"], "command": "vhdl_mode_paste_as_component"},
+	{"keys": ["alt+k", "p", "e"], "command": "vhdl_mode_paste_as_entity"},
+	{"keys": ["alt+k", "p", "i"], "command": "vhdl_mode_paste_as_instance"},
+	{"keys": ["alt+k", "p", "t"], "command": "vhdl_mode_paste_as_testbench"},
+
+	// Toggle comment command.  'c' starts code commands.
+	{"keys": ["alt+k", "c", "c"], "command": "vhdl_mode_toggle_comment_region"},
+	{"keys": ["alt+k", "c", "b"], "command": "vhdl_mode_beautify_buffer"},
+
+	// 't' starts template commands
+	{"keys": ["alt+k", "t", "h"], "command": "vhdl_mode_insert_header"},
+
+	// Version Command
+	{"keys": ["alt+k", "s"], "command": "vhdl_mode_scope_sniffer"},
+	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version"}
+]

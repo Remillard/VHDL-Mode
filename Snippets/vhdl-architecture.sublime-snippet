@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+architecture ${1:<identifier>} of ${2:<entity_name>} is
+
+begin
+	$0
+end architecture $1;
+]]></content>
+	<tabTrigger>architecture</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

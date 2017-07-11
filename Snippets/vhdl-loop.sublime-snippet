@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+${1:<LOOP_LABEL>} : loop
+	$0
+end loop $1;
+]]></content>
+	<tabTrigger>loop</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

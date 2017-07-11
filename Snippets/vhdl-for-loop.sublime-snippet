@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+${1:<LOOP_LABEL>} : for ${2:<loop_variable>} in ${3:<range>} loop
+	$0
+end loop $1;
+]]></content>
+	<tabTrigger>forloop</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

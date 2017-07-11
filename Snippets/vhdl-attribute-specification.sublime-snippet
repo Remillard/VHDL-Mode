@@ -1,0 +1,7 @@
+<snippet>
+	<content><![CDATA[
+attribute ${1:<identifier>} of ${2:<entity_name_list>} : ${3:<entity_class>} is ${4:<expression>};$0 
+]]></content>
+	<tabTrigger>atts</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

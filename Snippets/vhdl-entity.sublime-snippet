@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+entity ${1:<identifier>} is
+	$0
+end entity $1;
+]]></content>
+	<tabTrigger>entity</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+generic map (
+	$0
+);
+]]></content>
+	<tabTrigger>genmap</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>
