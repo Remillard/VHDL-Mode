@@ -9,6 +9,8 @@ This package may stand alone, however it was created to co-exist peacefully alon
 
 Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax file was dated, had some issues with certain syntactical structures, and did not conform well to scope naming best practices.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.  Some VHDL-2008 constructs are handled gracefully, some constructs are handled accidentally, and some are not handled at all and further work will be performed to try to get everything well defined.
 
+Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mode Issue Tracker") on the project in GitHub.  If that isn't possible, the plugin announcement on the Sublime Text forum is located [here](https://forum.sublimetext.com/t/vhdl-mode-for-sublime-text-3/29782 "VHDL Mode Announcement") and I can glean issues there as well and add them. 
+
 Feature Set
 -----------
 * Port copying from entity or component declarations.
@@ -40,13 +42,17 @@ Future Design Goals
 
 Usage
 -----
+
 **Key Mappings**
+
 As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment and the commonly used `C-c` prefix for code mode commands in Emacs is likely to conflict with non Sublemacs Pro users for the standard Windows copy command.  However Sublime Text 3 seems to use `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  I did a review of the default key mappings for ST3 and I don't believe I'm stepping on any toes here.
 
 Another note, these are sequence keystrokes.  For example to copy a port interface from an entity, move the point into the structure (anywhere should be fine) and hit `Alt-k` then `p` then `w`.  These should not be chorded.
 
 **Port Functions**
+
 It may help to remember 'p' for port, then 'w' for write/copy, and then the first letter of the desired outcome.
+
 * Copy Ports : `M-k p w`
 * Paste as Signals : `M-k p s`
 * Paste as Component: `M-k p c`
@@ -55,16 +61,22 @@ It may help to remember 'p' for port, then 'w' for write/copy, and then the firs
 * Paste as Testbench: `M-k p t` -- Opens a new view and fills out boilerplate material with the interface as the unit under test.
 
 **Commenting**
+
 It may help to remember 'c' for code, then 'c' for comment, 'b' for beautify, etc.
+
 * Toggle Comment Region : `M-k c c`
 * Beautify Entire Buffer : `M-k c b`
 
 **Template**
+
 Largely templating is handled by the snippet system, however the header is a special feature as it inserts various fields automatically.  Remember 't' for template and 'h' for header.
+
 * Insert Header : `M-k t h`
 
 **Snippets**
+
 Most snippets will execute from the keyword associated with them (i.e. 'entity' will fill out the beginning and ending structures and leave the cursor in the middle.)  However there are some that are created to mimic stutter typing in emacs.  This feature would let the author type one easy sequence and get replaced by a more complex typing sequence.  For example typing '..' would produce =>.  Another example, two dashes and a space '-- ' would be a normal non-stuttered comment.  However typing three dashes '---' would create a line out to the margin, and four dashes '----' would create a box.  I couldn't find a way to do this directly, however there are some close analogs in the Snippets.  Each of these snippet words require hitting Tab afterwards to execute.  This is just a list of the less obvious shortcuts.  ST3 will show snippets with completion off the Tools >> Snippets menu for further documentation.
+
 * `spro` : Synchronous Process
 * `cpro` : Combinatorial Process
 * `---` : A comment line
