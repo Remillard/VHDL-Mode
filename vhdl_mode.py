@@ -13,8 +13,8 @@ import textwrap
 import sublime
 import sublime_plugin
 
-import vhdl_mode.vhdl_lang as vhdl
-import vhdl_mode.vhdl_util as util
+from . import vhdl_lang as vhdl
+from . import vhdl_util as util
 
 _interface = vhdl.Interface()
 
@@ -24,7 +24,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("VHDL Mode Version 1.0.0")
+        print("VHDL Mode Version 1.0.1")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
