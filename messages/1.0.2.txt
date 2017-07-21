@@ -1,0 +1,5 @@
+Version 1.0.2
+-------------
+* Discovered that several commands depended on hardcoded path names that are different
+  once everything is converted to a *.sublime-package format.  These have been fixed.
+  Commands affected: Insert Header, Paste as Testbench.

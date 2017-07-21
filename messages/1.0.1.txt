@@ -1,0 +1,6 @@
+Version 1.0.1
+-------------
+* Fixed critical error in the module import that occurs once the package is formed into the .sublime-package format
+* Edited the README file to add links to the issue tracker
+* Edited the README file to fix a few Markdown errors that occur on Package Control but don't show on the
+  preview editor.
