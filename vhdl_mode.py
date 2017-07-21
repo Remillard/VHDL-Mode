@@ -392,7 +392,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
         template = "Packages/vhdl_mode/Snippets/vhdl-testbench.sublime-snippet"
 
         tb_view = self.window.new_file()
-        tb_view.assign_syntax('Packages/vhdl_mode/Syntaxes/VHDL.tmLanguage')
+        tb_view.assign_syntax('Packages/VHDL Mode/VHDL.sublime-syntax')
         tb_view.set_name('{}_tb.vhd'.format(_interface.name))
 
         signals_str = _interface.signals()
