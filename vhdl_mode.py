@@ -34,7 +34,7 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
     """
     def run(self, edit):
         # Assigning this to a string to keep command shorter later.
-        template = "Packages/vhdl_mode/Snippets/vhdl-header.sublime-snippet"
+        template = "Packages/VHDL Mode/Snippets/vhdl-header.sublime-snippet"
 
         # Getting a few fields from the settings file
         settings = sublime.load_settings('vhdl_mode.sublime-settings')
@@ -389,10 +389,10 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
     def run(self):
         """Sublime TextCommand run method"""
         # Assigning this to a string to keep command shorter later.
-        template = "Packages/vhdl_mode/Snippets/vhdl-testbench.sublime-snippet"
+        template = "Packages/VHDL Mode/Snippets/vhdl-testbench.sublime-snippet"
 
         tb_view = self.window.new_file()
-        tb_view.assign_syntax('Packages/vhdl_mode/Syntaxes/VHDL.tmLanguage')
+        tb_view.assign_syntax('Packages/VHDL Mode/VHDL.sublime-syntax')
         tb_view.set_name('{}_tb.vhd'.format(_interface.name))
 
         signals_str = _interface.signals()
