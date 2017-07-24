@@ -1,0 +1,19 @@
+[
+	//
+	// All VHDL Mode Commands for the Command Palette
+	//
+	{"caption": "VHDL Mode - Copy Ports",                            "command": "vhdl_mode_copy_ports"},
+	{"caption": "VHDL Mode - Paste Ports as Entity",                 "command": "vhdl_mode_paste_as_entity"},
+	{"caption": "VHDL Mode - Paste Ports as Component",              "command": "vhdl_mode_paste_as_component"},
+	{"caption": "VHDL Mode - Paste Ports as Direct Entity Instance", "command": "vhdl_mode_paste_as_instance"},
+	{"caption": "VHDL Mode - Paste Ports as Testbench",              "command": "vhdl_mode_paste_as_testbench"},
+	{"caption": "VHDL Mode - Paste Ports as Signals",                "command": "vhdl_mode_paste_as_signal"},
+
+	{"caption": "VHDL Mode - Toggle Comment (Region)", "command": "vhdl_mode_toggle_comment_region"},
+	{"caption": "VHDL Mode - Beautify (Buffer)",       "command": "vhdl_mode_beautify_buffer"},
+
+	{"caption": "VHDL Mode - Insert Header", "command": "vhdl_mode_insert_header"},
+
+	{"caption": "VHDL Mode - Version (Console)", "command": "vhdl_mode_version"},
+	{"caption": "VHDL Mode - Scope at Point (Console)", "command": "vhdl_mode_scope_sniffer"}
+]
