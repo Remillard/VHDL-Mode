@@ -1,0 +1,42 @@
+[
+    {
+        "caption": "Preferences",
+        "id": "preferences",
+        "mnemonic": "n",
+        "children":
+        [
+            {
+                "caption": "Package Settings",
+                "id": "package-settings",
+                "mnemonic": "P",
+                "children":
+                [
+                    {
+                        "caption": "VHDL Mode",
+                        "children":
+                        [
+                            {
+                                "caption": "Settings",
+                                "command": "edit_settings", "args":
+                                {
+                                    "base_file": "${packages}/VHDL Mode/vhdl_mode.sublime-settings",
+                                    "default": "{\n\t$0\n}\n"
+                                }
+                            },
+                            {
+                                "caption": "-"
+                            },
+                            {
+                                "caption": "Key Bindings - Default",
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/VHDL Mode/Default.sublime-keymap",
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]

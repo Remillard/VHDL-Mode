@@ -1,5 +1,5 @@
 /* Settings for VHDL Mode plugin */
 {
-	"vhdl-user"    : "Mark Norton <mark.norton@cobham.com>",
-	"vhdl-company" : "Cobham Avcomm"
+	"vhdl-user"    : "User Name <user.email@user.company.com>",
+	"vhdl-company" : "User Company Name"
 }

@@ -1,0 +1,6 @@
+Version 1.0.4
+-------------
+* Added *.sublime-commands file so commands show up in the Command Palette
+* Added Main.sublime-menu to aid editing preferences
+* Altered keymap name to "Default"
+* Added the MIT Licensing text to the README.md file
