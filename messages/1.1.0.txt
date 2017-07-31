@@ -1,0 +1,6 @@
+Version 1.1.0
+-------------
+* Implemented stutter typing for =>, <=, and :=
+* Implemented stutter typing for comment line.
+* Implmeneted stutter typing for comment box.
+* Rewrote bits of the README to update documentation.
