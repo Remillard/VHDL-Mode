@@ -17,6 +17,36 @@
 	// 't' starts template commands
 	{"keys": ["alt+k", "t", "h"], "command": "vhdl_mode_insert_header"},
 
+	// Stutter typing keybinds.
+	{
+		"keys": [".", "."],
+		"command": "insert",
+		"args": {"characters": "=>"},
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": [",", ","],
+		"command": "insert",
+		"args": {"characters": "<="},
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": [";", ";"],
+		"command": "insert",
+		"args": {"characters": ":="},
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": ["-", "-", "-"],
+		"command": "vhdl_mode_insert_comment_line",
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": ["-", "-", "="],
+		"command": "vhdl_mode_insert_comment_box",
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+
 	// Version Command
 	{"keys": ["alt+k", "s"], "command": "vhdl_mode_scope_sniffer"},
 	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version"}

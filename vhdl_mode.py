@@ -24,7 +24,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("VHDL Mode Version 1.0.4")
+        print("vhdl-mode: VHDL Mode Version 1.1.0")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -462,4 +462,60 @@ class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):
         region = self.view.sel()[0]
         sniff_point = region.begin()
         print('vhdl-mode: {}'.format(self.view.scope_name(sniff_point)))
+
+#----------------------------------------------------------------
+class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
+    """
+    This should insert a line out to the margine (80 characters)
+    starting where the point is.  This is intended to run after
+    the user types '---' (see keybindings)
+    """
+    def run(self, edit):
+        """Standard TextCommand Run method"""
+        # Get the current point.
+        region = self.view.sel()[0]
+        original_point = region.begin()
+        point_r, point_c = self.view.rowcol(original_point)
+        # Figure out if any tab characters were used.
+        line = self.view.substr(self.view.line(original_point))
+        numtabs = line.count('\t')
+        # Get the current tab size
+        settings = sublime.load_settings('Preferences.sublime-settings')
+        tabsize = settings.get("tab_size")
+        # Create string of correct amount of dashes.  A tab consumed
+        # one character but generates tabsize-1 space.
+        line = '-'*(80-point_c-(tabsize-1)*numtabs)
+        num_chars = self.view.insert(edit, original_point, line)
+        print('vhdl-mode: Inserted comment line.')
+
+#----------------------------------------------------------------
+class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
+    """
+    This should insert a box out to the margin (80 characters)
+    starting where the point is, and taking into account tabs.
+    This is intended to run after the user types '----' (see
+    keybindings)
+    """
+    def run(self, edge):
+        """Standard TextCommand Run method"""
+        # Get the current point.
+        region = self.view.sel()[0]
+        original_point = region.begin()
+        point_r, point_c = self.view.rowcol(original_point)
+        # Figure out if any tab characters were used.
+        line = self.view.substr(self.view.line(original_point))
+        numtabs = line.count('\t')
+        # Get the current tab size
+        settings = sublime.load_settings('Preferences.sublime-settings')
+        tabsize = settings.get("tab_size")
+        # Create string of correct amount of dashes.  A tab consumed
+        # one character but generates tabsize-1 space.
+        line = '-'*(80-point_c-(tabsize-1)*numtabs)
+        # Create snippet object.
+        snippet = line + '\n' + '-- $0' + '\n' + line + '\n'
+        # Inserting template/snippet
+        self.view.run_command("insert_snippet",
+            {
+                "contents" : snippet
+            })
 
