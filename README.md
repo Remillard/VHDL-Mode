@@ -61,7 +61,7 @@ It may help to remember `p` for port, then `w` for write (to copy).  The other m
 
 The following animated GIF demonstrates a portion of the port copying feature.
 
-![Port Copying Demonstration](/images/demo.gif)
+![Port Copying Demonstration](./images/demo.gif)
 
 **Commenting**
 
