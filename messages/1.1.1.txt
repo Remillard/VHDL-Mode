@@ -1,0 +1,3 @@
+* Fixed enumerated type on multiple lines bug.
+* Fixed paste as signal alignment issue.
+* Put in a little animated gif of the port copy/paste feature.
