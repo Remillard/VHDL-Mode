@@ -390,8 +390,8 @@ def indent_vhdl(lines, initial=0):
                 ('semicolon', None),
                 ('record', 'record')
             ),
-            'solo_flag': False,
-            'close_offset': 0
+            'solo_flag': True,
+            'close_offset': 1
         },
 
         'constant': {
