@@ -59,6 +59,10 @@ It may help to remember `p` for port, then `w` for write (to copy).  The other m
 * Paste as (Direct Entity) Instance: `M-k p i`
 * Paste as Testbench: `M-k p t` -- Opens a new view and fills out boilerplate material with the interface as the unit under test.
 
+The following animated GIF demonstrates a portion of the port copying feature.
+
+![Port Copying Demonstration](./images/demo.gif)
+
 **Commenting**
 
 It may help to remember 'c' for code, then 'c' for comment, 'b' for beautify, etc.
@@ -72,7 +76,7 @@ Largely templating is handled by the snippet system, however the header is a spe
 
 * Insert Header : `M-k t h`
 
-** Miscellaneous **
+**Miscellaneous**
 
 * Package Version : `M-k v`
 * Scope at Point : `M-k s`

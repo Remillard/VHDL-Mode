@@ -205,6 +205,14 @@ def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
             else:
                 scope_switch = False
 
+        # A special check for the last line to add to the group, otherwise
+        # we process before we can evaluate that line.
+        if s and (i == len(lines)-1) and not check_for_comment(lines[i]) and not banned:
+            if padside == 'post':
+                match_data.append((i, s.end()))
+            else:
+                match_data.append((i, s.start()))
+
         if not s or scope_switch or (i == len(lines)-1) or banned:
             if len(match_data) > 1:
                 # Scan for max value and check to see if extra space needed
@@ -390,8 +398,8 @@ def indent_vhdl(lines, initial=0):
                 ('semicolon', None),
                 ('record', 'record')
             ),
-            'solo_flag': False,
-            'close_offset': 0
+            'solo_flag': True,
+            'close_offset': 1
         },
 
         'constant': {
@@ -767,6 +775,9 @@ class Port():
             self.name = s.group('name')
             self.mode = s.group('mode')
             self.type = s.group('type')
+            # Sometimes the type has a trailing space.  Eliminating it.
+            if self.type[-1] == ' ':
+                self.type = self.type[:-1]
             self.success = True
         else:
             print('vhdl-mode: Could not parse port string.')
