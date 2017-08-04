@@ -1,0 +1,2 @@
+* Fixed port copying bug.  Regex did not account for a potential space between the keywords and the trailing semicolon.
+* Altered the stutter typing command to insert a space following the symbol because not having that there felt unnatural when using it.
