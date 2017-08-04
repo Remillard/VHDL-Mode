@@ -21,19 +21,19 @@
 	{
 		"keys": [".", "."],
 		"command": "insert",
-		"args": {"characters": "=>"},
+		"args": {"characters": "=> "},
 		"context": [{"key": "selector", "operand": "source.vhdl"}]
 	},
 	{
 		"keys": [",", ","],
 		"command": "insert",
-		"args": {"characters": "<="},
+		"args": {"characters": "<= "},
 		"context": [{"key": "selector", "operand": "source.vhdl"}]
 	},
 	{
 		"keys": [";", ";"],
 		"command": "insert",
-		"args": {"characters": ":="},
+		"args": {"characters": ":= "},
 		"context": [{"key": "selector", "operand": "source.vhdl"}]
 	},
 	{

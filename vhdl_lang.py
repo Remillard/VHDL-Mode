@@ -927,7 +927,7 @@ class Interface():
         # Stripping off the beginning portion of the block
         # as well as the end -- simplifies the chunk.
         head_pattern = '{} {} is'.format(self.type, self.name)
-        tail_pattern = 'end (?:{})? (?:{})?;'.format(self.type, self.name)
+        tail_pattern = 'end\s?(?:{})?\s?(?:{})?\s?;'.format(self.type, self.name)
         hp = re.compile(head_pattern, re.IGNORECASE)
         tp = re.compile(tail_pattern, re.IGNORECASE)
         hs = re.search(hp, self.if_string)
