@@ -1,5 +1,6 @@
 /* Settings for VHDL Mode plugin */
 {
+	/* These settings fill in fields in the header snippet */
 	"vhdl-user"    : "User Name <user.email@user.company.com>",
 	"vhdl-company" : "User Company Name"
 }
