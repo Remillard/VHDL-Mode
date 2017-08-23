@@ -1,6 +1,6 @@
 <snippet>
 	<content><![CDATA[
-// REMEMBER TO PUT A COMMA ON THE FOLDERS ENTRY ABOVE!!
+// REMEMBER TO PUT A COMMA ON THE FOLDERS ENTRY ABOVE!! $0
 "settings":
 {
 	"vhdl-company": "<Company Name>",
