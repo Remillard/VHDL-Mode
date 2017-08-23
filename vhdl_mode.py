@@ -36,8 +36,6 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
         # Assigning this to a string to keep command shorter later.
         template = "Packages/VHDL Mode/Snippets/vhdl-header.sublime-snippet"
 
-        # Getting a few fields from the settings file
-        settings = sublime.load_settings('vhdl_mode.sublime-settings')
         # Looking for a name, first the buffer name, then the file name,
         # then finally a default value.
         buffname = self.view.name()
@@ -51,8 +49,14 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
             filename = namechunks[len(namechunks)-1]
         else:
             filename = '<filename>'
-        author = settings.get("vhdl-user", "<user>")
-        company = settings.get("vhdl-company", "<company>")
+
+        # Get the other fields out of settings.
+        project = util.get_vhdl_setting(self, 'vhdl-project-name')
+        author = util.get_vhdl_setting(self, 'vhdl-user')
+        company = util.get_vhdl_setting(self, 'vhdl-company')
+        platform = util.get_vhdl_setting(self, 'vhdl-platform')
+        standard = util.get_vhdl_setting(self, 'vhdl-standard')
+
         date = time.ctime(time.time())
         year = time.strftime("%Y",time.localtime())
 
@@ -65,13 +69,16 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
         # Inserting template/snippet
         self.view.run_command("insert_snippet",
             {
-                "name"    : template,
-                "FILENAME": filename,
-                "AUTHOR"  : author,
-                "COMPANY" : company,
-                "CDATE"   : date,
-                "MDATE"   : date,
-                "YEAR"    : year
+                "name"     : template,
+                "PROJECT"  : project,
+                "FILENAME" : filename,
+                "AUTHOR"   : author,
+                "COMPANY"  : company,
+                "CDATE"    : date,
+                "MDATE"    : date,
+                "YEAR"     : year,
+                "PLATFORM" : platform,
+                "STANDARD" : standard
             })
         print('vhdl-mode: Inserted header template.')
 
@@ -480,8 +487,7 @@ class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
         line = self.view.substr(self.view.line(original_point))
         numtabs = line.count('\t')
         # Get the current tab size
-        settings = sublime.load_settings('Preferences.sublime-settings')
-        tabsize = settings.get("tab_size")
+        tabsize = util.get_vhdl_setting(self, 'tab_size')
         # Create string of correct amount of dashes.  A tab consumed
         # one character but generates tabsize-1 space.
         line = '-'*(80-point_c-(tabsize-1)*numtabs)
@@ -496,7 +502,7 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
     This is intended to run after the user types '----' (see
     keybindings)
     """
-    def run(self, edge):
+    def run(self, edit):
         """Standard TextCommand Run method"""
         # Get the current point.
         region = self.view.sel()[0]
@@ -506,8 +512,7 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
         line = self.view.substr(self.view.line(original_point))
         numtabs = line.count('\t')
         # Get the current tab size
-        settings = sublime.load_settings('Preferences.sublime-settings')
-        tabsize = settings.get("tab_size")
+        tabsize = util.get_vhdl_setting(self, 'tab_size')
         # Create string of correct amount of dashes.  A tab consumed
         # one character but generates tabsize-1 space.
         line = '-'*(80-point_c-(tabsize-1)*numtabs)
@@ -518,4 +523,32 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
             {
                 "contents" : snippet
             })
+
+#----------------------------------------------------------------
+class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
+    '''
+    Creating a command to check settings in various
+    contexts
+    '''
+    def run(self, edit):
+        '''
+        Standard TextCommand Run Method
+        '''
+        vhdl_settings = sublime.load_settings('vhdl_mode.sublime-settings')
+        keys = ['vhdl-user',
+                'vhdl-company',
+                'vhdl-project-name',
+                'vhdl-platform',
+                'vhdl-standard']
+        print('Package Settings')
+        for key in keys:
+            print('vhdl-mode: {}: {}'.format(key, vhdl_settings.get(key)))
+
+        print('View Settings')
+        for key in keys:
+            print('vhdl-mode: {}: {}'.format(key, util.get_vhdl_setting(self, key)))
+
+        print('Preference Settings')
+        print('vhdl-mode: {}: {}'.format('tab_size', util.get_vhdl_setting(self, 'tab_size')))
+
 

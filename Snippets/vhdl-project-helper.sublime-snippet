@@ -1,12 +1,15 @@
 <snippet>
 	<content><![CDATA[
 // REMEMBER TO PUT A COMMA ON THE FOLDERS ENTRY ABOVE!! $0
+// The settings will degrade to the package default values, and user
+// overridden default values.  Edit as needed.
 "settings":
 {
-	"vhdl-company": "<Company Name>",
-	"vhdl-project-name": "<Project Name>",
-	"vhdl-platform": "<Part Number>",
-	"vhdl-standard": "<VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>"
+	"vhdl-user"         : "<Name> <E-mail>"
+	"vhdl-company"      : "<Company Name>",
+	"vhdl-project-name" : "<Project Name>",
+	"vhdl-platform"     : "<Part Number>",
+	"vhdl-standard"     : "<VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>"
 },
 "build_systems":
 [

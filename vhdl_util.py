@@ -106,3 +106,21 @@ def extract_scopes(self):
     for i in range(len(scope_list)):
         print('{}: {}'.format(i, scope_list[i]))
     return scope_list
+
+#----------------------------------------------------------------------------
+def get_vhdl_setting(cmd_obj, key):
+    '''
+    Borrowing an idea from OdatNurd from ST forum, creating a method
+    that will return the value of a key and also check to see if
+    it's been overridden in project files.  Defaults are handled by
+    the supplied sublime-settings file.
+
+    This will actually work on the regular Preferences as well I think
+    though might do bad things if the key doesn't exist.
+    '''
+    # Load the defaults, or user overridden defaults.
+    vhdl_settings = sublime.load_settings('vhdl_mode.sublime-settings')
+    default = vhdl_settings.get(key, None)
+    # Load the view's settings
+    view_settings = cmd_obj.view.settings()
+    return view_settings.get(key, default)

@@ -1,15 +1,18 @@
 <snippet>
 	<!--
 		Current fields supported:
+			PROJECT  : 'vhdl-project-name' in settings.
 			FILENAME : Will fill in the current buffer name if found, if not
 			           found, will fill in the file name, and if that's not
 			           found will fill in a default value.
-			AUTHOR   : This uses the vhdl-author setting in the settings file.
-			COMPANY  : This uses the vhdl-company setting in the settings file.
+			AUTHOR   : 'vhdl-user' in settings.
+			COMPANY  : 'vhdl-company' in settings.
 			CDATE    : Automatically filled in when the header is created.
 			MDATE    : Automatically filled in when the header is created and
 			           updated when file is saved.
 			YEAR     : Automatically filled in when the header is created.
+			PLATFORM : 'vhdl-platform' in settings.
+			STANDARD : 'vhdl-standard' in settings.
 
 		Numeric fields are tabbed between when snippet is inserted.
 
@@ -21,15 +24,15 @@
 	<content><![CDATA[
 -------------------------------------------------------------------------------
 -- Title       : ${1:<Title Block>}
--- Project     : ${2:<Project Name>}
+-- Project     : ${PROJECT}
 -------------------------------------------------------------------------------
 -- File        : ${FILENAME}
 -- Author      : ${AUTHOR}
 -- Company     : ${COMPANY}
 -- Created     : ${CDATE}
 -- Last update : ${MDATE}
--- Platform    : Generic (No device specific behavior specified.)
--- Standard    : VHDL'93, Math Packages
+-- Platform    : ${PLATFORM}
+-- Standard    : ${STANDARD}
 -------------------------------------------------------------------------------
 -- Copyright (c) ${YEAR} ${COMPANY}
 --
@@ -40,7 +43,7 @@
 -- Security (BIS). Violations of these regulations are punishable by fine,
 -- imprisonment, or both.
 -------------------------------------------------------------------------------
--- Description: $4
+-- Description: $2
 -------------------------------------------------------------------------------
 -- Revisions:  Revisions and commentary regarding such are controlled by
 -- the revision control system in use (Rational Team Concert / Jazz).  That
