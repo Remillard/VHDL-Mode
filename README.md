@@ -20,18 +20,6 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 * Rewritten syntax file featuring greater granularity for lexical scope that should better support future functionality.
 * Region comment/uncommenting
 
-## Known Issues and Design Commentary
-
-* This is a work in progress however I've been eating my own dog food and it works fairly satisfactorily for me currently.  I've thrown several code styles and files from other authors at it and tried to iron out the stranger bugs.  However there are a lot of coding styles and I do not promise that the beautifier will work with every one of them.  If there is an issue with a particular structure, I'm happy to get a sample and see if I can make it work.
-* VHDL-2008 support is patchy currently.  All the reserved words are handled, however some lexical constructs will either beautify oddly or be scoped oddly.  Again, I'm happy to get some code samples to see it used in real life (largely not used at my place of work) and see if I can handle it.
-* The TextMate VHDL syntax supported non-matching identifiers in several locations.  In order to get greater scope granularity, I had to sacrifice that feature in a few constructs because match captures do not persist through syntax scope set commands.  More work can be done in identifying illegal identifiers in various locations however.
-* Designed to work with Sublime Text 3.  It is unlikely to work with Sublime Text 2 (that is to say, I would be delighted if it did, however I have never used ST2 nor tested against it so your mileage may vary.)
-* Interface instantiation is still somewhat 'dumb' in that it uses a dummy label for instantiation.  Once outlining is in place, it would be nice for the label to update to an unique identfier.
-* I wrote my own comment routine for the region.  This may not work the same way as ST3's own comment/uncommenter.  I tried to keep the vhdl-mode behavior where it will region indent everything at the same column.
-* I have not tested this on Linux or Mac so I cannot tell how well it may work, or not, as the case may be.  I would love to find out if there are any issues and happy to attempt to resolve them.
-* I did not create a snippet for everything under the sun.  In vhdl-mode, the templates were one of my least used features.  Generally I like the templates to cover large scale things that save a lot of typing.  That is to say, there's no real need in my mind for every single keyword to have its own snippet.  That being said, other packages have some of those things, and Sublime Text 3's snippet creation capability is simple, easy-to-use, and quite customizable.  If anyone creates one they believe flows naturally from regular coding I'd be happy to evaluate it and include it with attribution.
-* There's no particularly graceful way to handle vhdl-mode's prompting for fields, for example, when creating an entity.  Thus, some of these behaviors were broken up into several snippets.  Typing `entity <Tab>` will form the starting and stopping entity structure, then place the cursor in the middle.  Typing `port <Tab>` at this point will start a port interface list.  In this way the flavor of the templating is retained but within a ST3 model.  If I can find a way to handle a full prompt construction, I will try to implement it, but for now it's limited to snippet support.
-
 ## Future Design Goals
 
 * Proper project level outlining
@@ -39,6 +27,12 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 * Better settings and configuration (Getting there.  Now with Package Control menu shortcuts for preferences.)
 * Subprogram smart copy and paste seems like it could be a meaningful shortcut.
 * Leverage good scoping for better behaviors in all features.
+
+## Configuration
+
+The VHDL Mode `sublime-settings` file contains fields that are used to fill in certain fields in the header template upon insertion.  A base override may be created by selecting `Preferences` >> `Package Settings` >> `VHDL Mode` >> `Settings`.  This will bring up the default settings file and a User variation on the settings.  To customize the fields, simply copy and paste the defaults over to the User override file, and edit to taste.  The fields are self-explanatory.
+
+These fields can also be set in the `sublime-project` file under `"settings"` for project specific behavior.  To facilitate this, a project helper snippet was created to inject these settings when editing the project file.  Simply select `Project` >> `Edit Project` from the menu, move the cursor past the `"folders"` line and type `project`.  The project also creates a couple of sample build methods that can be used for the project.
 
 # Usage
 
@@ -106,6 +100,7 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 * `procb` : Produces a procedure with body.
 * `genmap` : Produces a generic map association list, differentiated from a generic interface list.
 * `portmap` : Produces a port map association list, differentiated from a port interface list.
+* `project` : Intended for use while editing a Sublime Text project file.  Fills in local copies of the setting keys and instantiates a couple of example build systems that may be customized to suit.
 * And others... see the Snippets directory or the Tools >> Snippets menu for complete list.
 
 ## Miscellaneous Features
@@ -114,6 +109,18 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 * The on-save event is trapped and will do a scan of the file and look for `-- Last update : `.  If it finds this structure it will update the time and date on that line automatically.  This pattern is hardcoded currently and I'm trying to decide on the best way to make it user configurable.  Perhaps I can leverage settings for this.
 * Most commands (save for snippets) will leave a trace in the ST3 console which may be useful for debugging.  Any package message specific to this package will start with 'vhdl-mode:'
 * If anyone cares, the syntax file was written with great reference and an attempt to conform to the _Designer's Guide to VHDL, 3rd Edition_ by Peter Ashenden.  The language definition reference is in Appendix B, and library reference taken from Appendix A.  Knowing how the language is structured may help understanding the syntax file and why it's done the way it is.
+
+## Known Issues and Design Commentary
+
+* This is a work in progress however I've been eating my own dog food and it works fairly satisfactorily for me currently.  I've thrown several code styles and files from other authors at it and tried to iron out the stranger bugs.  However there are a lot of coding styles and I do not promise that the beautifier will work with every one of them.  If there is an issue with a particular structure, I'm happy to get a sample and see if I can make it work.
+* VHDL-2008 support is patchy currently.  All the reserved words are handled, however some lexical constructs will either beautify oddly or be scoped oddly.  Again, I'm happy to get some code samples to see it used in real life (largely not used at my place of work) and see if I can handle it.
+* The TextMate VHDL syntax supported non-matching identifiers in several locations.  In order to get greater scope granularity, I had to sacrifice that feature in a few constructs because match captures do not persist through syntax scope set commands.  More work can be done in identifying illegal identifiers in various locations however.
+* Designed to work with Sublime Text 3.  It is unlikely to work with Sublime Text 2 (that is to say, I would be delighted if it did, however I have never used ST2 nor tested against it so your mileage may vary.)
+* Interface instantiation is still somewhat 'dumb' in that it uses a dummy label for instantiation.  Once outlining is in place, it would be nice for the label to update to an unique identfier.
+* I wrote my own comment routine for the region.  This may not work the same way as ST3's own comment/uncommenter.  I tried to keep the vhdl-mode behavior where it will region indent everything at the same column.
+* I have not tested this on Linux or Mac so I cannot tell how well it may work, or not, as the case may be.  I would love to find out if there are any issues and happy to attempt to resolve them.
+* I did not create a snippet for everything under the sun.  In vhdl-mode, the templates were one of my least used features.  Generally I like the templates to cover large scale things that save a lot of typing.  That is to say, there's no real need in my mind for every single keyword to have its own snippet.  That being said, other packages have some of those things, and Sublime Text 3's snippet creation capability is simple, easy-to-use, and quite customizable.  If anyone creates one they believe flows naturally from regular coding I'd be happy to evaluate it and include it with attribution.
+* There's no particularly graceful way to handle vhdl-mode's prompting for fields, for example, when creating an entity.  Thus, some of these behaviors were broken up into several snippets.  Typing `entity <Tab>` will form the starting and stopping entity structure, then place the cursor in the middle.  Typing `port <Tab>` at this point will start a port interface list.  In this way the flavor of the templating is retained but within a ST3 model.  If I can find a way to handle a full prompt construction, I will try to implement it, but for now it's limited to snippet support.
 
 # Conclusion
 

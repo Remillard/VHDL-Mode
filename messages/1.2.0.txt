@@ -1,0 +1,3 @@
+* Extended updates to the package settings.  I believe these should be backwards compatible, but users will want to review their VHDL Mode Settings.
+* Documentation updated to reflect enhancements to the settings files.
+* Implemented a project file snippet that aids implementing build systems and local project settings.
