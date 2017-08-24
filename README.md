@@ -36,6 +36,8 @@ These fields can also be set in the `sublime-project` file under `"settings"` fo
 
 One particular setting meshes with both the header template and the on-save time field.  The `vhdl-modified-time-string` setting is the string that the code looks for when catching the on-save event, and updating that field.  This should only be altered if the header snippet has been modified.  When the event triggers, the code searches for that string, and replaces that line with the string, plus the time information.
 
+Code beautification should pay attention to the `tab_size` and `translate_tabs_to_spaces` settings that are part of the standard Sublime Text preferences.  Please let me know if this causes any issues.
+
 * `vhdl-user` : Fills in the username portion of the header template.
 * `vhdl-company` : Fills in the company name portion of the header template.
 * `vhdl-project-name` : Fills in the project name portion of the header template.  This field would very commonly be customized in the `sublime-project` file.
