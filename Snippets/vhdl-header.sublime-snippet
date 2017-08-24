@@ -9,15 +9,14 @@
 			COMPANY  : 'vhdl-company' in settings.
 			CDATE    : Automatically filled in when the header is created.
 			MDATE    : Automatically filled in when the header is created and
-			           updated when file is saved.
+			           updated when file is saved.  NOTE: If this line is
+			           customized, edit the 'vhdl-modified-time-string'
+			           appropriately so the on-save event can find it.
 			YEAR     : Automatically filled in when the header is created.
 			PLATFORM : 'vhdl-platform' in settings.
 			STANDARD : 'vhdl-standard' in settings.
 
 		Numeric fields are tabbed between when snippet is inserted.
-
-		TODO: Take project name, platform, and standard from project
-		file.
 
 		Edit header to taste and need.
 	-->
