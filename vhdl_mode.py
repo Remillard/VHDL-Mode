@@ -368,9 +368,12 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         vhdl.align_block_on_re(lines=lines, regexp=r'<|:(?==)', scope_data=scope_list)
         vhdl.align_block_on_re(lines=lines, regexp=r'=>', scope_data=scope_list)
 
-        # Indent!
+        # Indent!  Get some settings first.
+        use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')
+        tab_size = util.get_vhdl_setting(self, 'tab_size')
         print('vhdl-mode: Indenting.')
-        vhdl.indent_vhdl(lines)
+        vhdl.indent_vhdl(lines=lines, initial=0, tab_size=tab_size,
+                         use_spaces=use_spaces)
 
         # Post indent alignment
         vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
@@ -551,5 +554,6 @@ class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
         print('Preference Settings')
         print('vhdl-mode: {}: {}'.format('tab_size', util.get_vhdl_setting(self, 'tab_size')))
         print('vhdl-mode: {}: {}'.format('vhdl-modified-time-string', util.get_vhdl_setting(self, 'vhdl-modified-time-string')))
+        print('vhdl-mode: {}: {}'.format('translate_tabs_to_spaces', util.get_vhdl_setting(self, 'translate_tabs_to_spaces')))
 
 
