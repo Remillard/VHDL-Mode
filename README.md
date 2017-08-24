@@ -8,7 +8,7 @@ This package may stand alone, however it was created to co-exist peacefully alon
 
 Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax file was dated, had some issues with certain syntactical structures, and did not conform well to scope naming best practices.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.  Some VHDL-2008 constructs are handled gracefully, some constructs are handled accidentally, and some are not handled at all and further work will be performed to try to get everything well defined.
 
-Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mode Issue Tracker") on the project in GitHub.  If that isn't possible, the plugin announcement on the Sublime Text forum is located [here](https://forum.sublimetext.com/t/vhdl-mode-for-sublime-text-3/29782 "VHDL Mode Announcement") and I can glean issues there as well and add them.
+Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mode Issue Tracker") on the project in GitHub.  If you find a particular bug or would like certain features, please feel free to add an issue for that behavior.  If that isn't possible, the plugin announcement on the Sublime Text forum is located [here](https://forum.sublimetext.com/t/vhdl-mode-for-sublime-text-3/29782 "VHDL Mode Announcement") and I can glean issues there as well and add them.
 
 ## Feature Set
 
@@ -77,7 +77,7 @@ Largely templating is handled by the snippet system, however the header is a spe
 
 ## Stutter Typing
 
-I found a way to create proper stutter typing that doesn't involve (largely) snippets!  The following shortcuts will automatically replace with the characters shown.  The box actually uses an internally generated snippet which is how it properly produces the cursor at the location in the middle of the box.
+I found a way to create proper stutter typing that doesn't involve snippet completion behavior.  The following shortcuts will automatically replace with the characters shown.  The box actually uses an internally generated snippet which is how it properly produces the cursor at the location in the middle of the box.
 
 * `..` : Produces `=>`
 * `,,` : Produces `<=`
@@ -130,20 +130,8 @@ MIT License
 
 Copyright (c) 2017 Mark Norton
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
