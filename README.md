@@ -24,7 +24,6 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 
 * Proper project level outlining
 * 'Smart' insertion of instantiation labels
-* Better settings and configuration (Getting there.  Now with Package Control menu shortcuts for preferences.)
 * Subprogram smart copy and paste seems like it could be a meaningful shortcut.
 * Leverage good scoping for better behaviors in all features.
 
