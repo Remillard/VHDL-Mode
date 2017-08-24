@@ -252,7 +252,7 @@ def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
 
 
 # ---------------------------------------------------------------
-def indent_vhdl(lines, initial=0):
+def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
     """
     This method takes a list of lines of source code, that have
     been left justified, and attempts impose indentation rules
@@ -621,9 +621,10 @@ def indent_vhdl(lines, initial=0):
     closing_stack = collections.deque()
     unbalance_flag = False
     # Set the indent to tabs or spaces here
-    # Safe to use \t in Sublime, but for stand-alone, 4 spaces works better.
-    indent_char = ' '*4
-    #indent_char = '\t'
+    if use_spaces:
+        indent_char = ' '*tab_size
+    else:
+        indent_char = '\t'
 
     # Scan the lines.
     for i in range(len(lines)):

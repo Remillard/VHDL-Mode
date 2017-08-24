@@ -1,5 +1,12 @@
 /* Settings for VHDL Mode plugin */
 {
-	"vhdl-user"    : "User Name <user.email@user.company.com>",
-	"vhdl-company" : "User Company Name"
+	/* These settings fill in fields in the header snippet */
+	"vhdl-user"         : "User Name <user.email@user.company.com>",
+	"vhdl-company"      : "User Company Name",
+	"vhdl-project-name" : "Default Project Name",
+	"vhdl-platform"     : "Default Part Number",
+	"vhdl-standard"     : "<VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>",
+	/* This setting is used to identify the modified update line */
+	/* Should only modify this if altering the header snippet */
+	"vhdl-modified-time-string" : "-- Last update : "
 }

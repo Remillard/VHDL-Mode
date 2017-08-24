@@ -1,0 +1,41 @@
+<snippet>
+	<content><![CDATA[
+// REMEMBER TO PUT A COMMA ON THE FOLDERS ENTRY ABOVE!! $0
+// The settings will degrade to the package default values, and user
+// overridden default values.  Edit as needed.
+"settings":
+{
+	"vhdl-user"         : "<Name> <E-mail>"
+	"vhdl-company"      : "<Company Name>",
+	"vhdl-project-name" : "<Project Name>",
+	"vhdl-platform"     : "<Part Number>",
+	"vhdl-standard"     : "<VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>"
+},
+"build_systems":
+[
+	{
+		// Modelsim evocation and pattern matching.
+		"name": "Modelsim/Questasim",
+		// Sample parameters for evocation.  Customize for project.
+		"shell_cmd": "vcom -93 -time -check_synthesis -pedanticerrors -work work \$file",
+		// Capture group MUST be in order: filename / line / column / message
+		// Column is a dummy capture.
+		"file_regex": "^\\\\*\\\\* .*?: (.*?)\\\\(([0-9]+)\\\\)(): (.*)",
+		"selector": "source.vhdl"
+	},
+	{
+		// Makefile evocation, Modelsim pattern matching.
+		"name": "Make",
+		"shell_cmd": "make",
+		// Capture group MUST be in order: filename / line / column / message
+		// Column is a dummy capture.
+		"file_regex": "^\\\\*\\\\* .*?: (.*?)\\\\(([0-9]+)\\\\)(): (.*)",
+		"selector": "source.vhdl"
+	}
+]
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>project</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.json</scope>
+</snippet>
