@@ -30,9 +30,18 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 
 ## Configuration
 
-The VHDL Mode `sublime-settings` file contains fields that are used to fill in certain fields in the header template upon insertion.  A base override may be created by selecting `Preferences` >> `Package Settings` >> `VHDL Mode` >> `Settings`.  This will bring up the default settings file and a User variation on the settings.  To customize the fields, simply copy and paste the defaults over to the User override file, and edit to taste.  The fields are self-explanatory.
+The VHDL Mode `sublime-settings` file contains fields that are used to fill in certain fields in the header template upon insertion.  A base override may be created by selecting `Preferences` >> `Package Settings` >> `VHDL Mode` >> `Settings`.  This will bring up the default settings file and a User variation on the settings.  To customize the fields, simply copy and paste the defaults over to the User override file, and edit to taste.
 
 These fields can also be set in the `sublime-project` file under `"settings"` for project specific behavior.  To facilitate this, a project helper snippet was created to inject these settings when editing the project file.  Simply select `Project` >> `Edit Project` from the menu, move the cursor past the `"folders"` line and type `project`.  The project also creates a couple of sample build methods that can be used for the project.
+
+One particular setting meshes with both the header template and the on-save time field.  The `vhdl-modified-time-string` setting is the string that the code looks for when catching the on-save event, and updating that field.  This should only be altered if the header snippet has been modified.  When the event triggers, the code searches for that string, and replaces that line with the string, plus the time information.
+
+* `vhdl-user` : Fills in the username portion of the header template.
+* `vhdl-company` : Fills in the company name portion of the header template.
+* `vhdl-project-name` : Fills in the project name portion of the header template.  This field would very commonly be customized in the `sublime-project` file.
+* `vhdl-platform` : Fills in the platform or part number portion of the header template.
+* `vhdl-standard` : Fills in the coding standard portion of the header template.
+* `vhdl-modified-time-string` : Represents the string that will be searched for when the file is saved.  If this is found, that line is replaced with a string comprising of this pattern, plus the current time.
 
 # Usage
 

@@ -425,7 +425,7 @@ class UpdateLastUpdatedCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         """Sublime Text plugin run method."""
         # Note, if one changes the header, this might need to change too.
-        pattern = '-- Last update :'
+        pattern = util.get_vhdl_setting(self, 'vhdl-modified-time-string')
         region = self.view.find(pattern, 0)
         #print('Region Diagnostics')
         #print('------------------')
@@ -435,7 +435,7 @@ class UpdateLastUpdatedCommand(sublime_plugin.TextCommand):
         if not region.empty():
             region = self.view.line(region)
             date = time.ctime(time.time())
-            new_mtime = '-- Last update : {}'.format(date)
+            new_mtime = pattern + '{}'.format(date)
             self.view.replace(edit, region, new_mtime)
             print('vhdl-mode: Updated last modified time.')
         else:
@@ -550,5 +550,6 @@ class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
 
         print('Preference Settings')
         print('vhdl-mode: {}: {}'.format('tab_size', util.get_vhdl_setting(self, 'tab_size')))
+        print('vhdl-mode: {}: {}'.format('vhdl-modified-time-string', util.get_vhdl_setting(self, 'vhdl-modified-time-string')))
 
 
