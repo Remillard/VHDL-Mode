@@ -4,11 +4,11 @@
 
 This package attempts to recreate the functionality found in the well-loved language mode in Emacs.  The extensibility of Sublime Text makes it an excellent platform upon which to attempt this.
 
-This package may stand alone, however it was created to co-exist peacefully alone with the Emacs Pro Essential (formerly Sublemacs Pro) package.  In that same vein, the keyboard shortcuts were designed around the vhdl-mode shortcuts in Emacs.
+This package may stand alone, however it was created to co-exist peacefully alone with the Emacs Pro Essential package.  In that same vein, the keyboard shortcuts were designed around the vhdl-mode shortcuts in Emacs.
 
-Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax file was dated, had some issues with certain syntactical structures, and did not conform well to scope naming best practices.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.  Some VHDL-2008 constructs are handled gracefully, some constructs are handled accidentally, and some are not handled at all and further work will be performed to try to get everything well defined.
+Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax file was dated, had some issues with certain syntactical structures, and did not conform well to scope naming best practices.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.  VHDL-2008 should be handled well.
 
-Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mode Issue Tracker") on the project in GitHub.  If you find a particular bug or would like certain features, please feel free to add an issue for that behavior.  If that isn't possible, the plugin announcement on the Sublime Text forum is located [here](https://forum.sublimetext.com/t/vhdl-mode-for-sublime-text-3/29782 "VHDL Mode Announcement") and I can glean issues there as well and add them.
+Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mode Issue Tracker") on the project in GitHub.  I will state up front that I cannot duplicate Emacs vhdl-mode completely (e.g. see the discussion on stutter typing) however if there is a particular omission or a feature that is desireable, please feel free to open an issue.  I'm happy to talk about it.  If that isn't possible, the plugin announcement on the Sublime Text forum is located [here](https://forum.sublimetext.com/t/vhdl-mode-for-sublime-text-3/29782 "VHDL Mode Announcement") and I can glean issues there as well and add them.
 
 ## Feature Set
 
@@ -31,7 +31,7 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 
 The VHDL Mode `sublime-settings` file contains fields that are used to fill in certain fields in the header template upon insertion.  A base override may be created by selecting `Preferences` >> `Package Settings` >> `VHDL Mode` >> `Settings`.  This will bring up the default settings file and a User variation on the settings.  To customize the fields, simply copy and paste the defaults over to the User override file, and edit to taste.
 
-These fields can also be set in the `sublime-project` file under `"settings"` for project specific behavior.  To facilitate this, a project helper snippet was created to inject these settings when editing the project file.  Simply select `Project` >> `Edit Project` from the menu, move the cursor past the `"folders"` line and type `project`.  The project also creates a couple of sample build methods that can be used for the project.
+These fields can also be set in the `sublime-project` file under `"settings"` for project specific behavior.  To facilitate this, a project helper snippet was created to inject these settings when editing the project file.  Simply select `Project` >> `Edit Project` from the menu, move the cursor past the `"folders"` line and type `project`.  The project snippet also creates a couple of sample build methods that can be used for the project.
 
 One particular setting meshes with both the header template and the on-save time field.  The `vhdl-modified-time-string` setting is the string that the code looks for when catching the on-save event, and updating that field.  This should only be altered if the header snippet has been modified.  When the event triggers, the code searches for that string, and replaces that line with the string, plus the time information.
 
@@ -48,7 +48,7 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 
 ## Key Mappings
 
-As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment and the commonly used `C-c` prefix for code mode commands in Emacs is likely to conflict with non Sublemacs Pro users for the standard Windows copy command.  However Sublime Text 3 seems to use `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  I did a review of the default key mappings for ST3 and I don't believe I'm stepping on any toes here.
+As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment, and the commonly used `C-c` prefix for code mode commands in Emacs will conflict with the standard Windows copy command.  Sublime Text 3 seems to use `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  I did a review of the default key mappings for ST3 and I don't believe I'm stepping on any toes here.
 
 Another note, these are sequence keystrokes.  For example to copy a port interface from an entity, move the point into the structure (anywhere should be fine) and hit `Alt-k` then `p` then `w`.  These should not be chorded.
 
@@ -87,15 +87,22 @@ Largely templating is handled by the snippet system, however the header is a spe
 
 ## Stutter Typing
 
-I found a way to create proper stutter typing that doesn't involve snippet completion behavior.  The following shortcuts will automatically replace with the characters shown.  The box actually uses an internally generated snippet which is how it properly produces the cursor at the location in the middle of the box.
+I cannot duplicate the entire Emacs vhdl-mode stutter typing repetoire.  I do not have access to the keystream directly, so what I have been able to do is use keybindings and in one case a keybinding and macro to replicate the behavior.  I'll list the implemented replacements and then a note on the ones I cannot and why I cannot replicate these.
 
-* `..` : Produces `=>`
-* `,,` : Produces `<=`
-* `;;` : Produces `:=`
+* `;;` : Produces ` : `
+* `;;;` : Produces ` := ` (See notes below)
+* `..` : Produces ` => `
+* `,,` : Produces ` <= `
 * `---` : Produces a comment line extending to column 80 starting where the cursor is, and accounting for tabs.  This one pays attention to the `tab_size` Preference if you use tabs.
-* `--=` : Produces a three-sided comment box extending to column 80 starting whree the cursor is, and accounting for tabs.  This is a departure from Emacs vhdl-mode.  In Emacs, the command used to be `----` (4 dashes).  Obviously this overlaps with the previous command.  Emacs would produce the first line after three dashes and then when the fourth dash was typed, would produce the rest.  I actually tried this with Sublime Text, but the way keybinds are handled, I opted to go with a different character rather than the fourth dash.  Sublime Text would wait for the fourth character before deciding which keybind to execute, so you had to type `---` and then any character for a single line, while `----` worked fine.  In order to preserve the single line case, I opted to use the `--=` pattern for the box.
+* `--=` : Produces a three-sided comment box extending to column 80 starting whree the cursor is, and accounting for tabs.  (See notes.)
 
-The Snippet files that previously were used to mimic this behavior have been renamed to `*.old` and moved to the `Deprecated` folder under `Snippets`.  This will be eliminated in a future release.
+The following are the stutter typing replacements I cannot do.
+
+* `[`, `[[`, `]`, `]]` : These cannot be duplicated properly.  The problem is that the Sublime API does not have direct access to the keystream.  The only way to replicate this (as I was able to with `;;;`) is to create a keybind that checks the preceding text and if it is the replaced text, execute a macro that deletes and replaces the text with the new text.  However if I replaced `[` with `(` and then looked for a preceding paren for `[[` then one would never be able to properly type nested parenthesis.
+* `''` : This interferes with the auto-completion feature in Sublime Text so I have opted to not implement it.
+* `;;;` : I'd like to give fair warning that this is not implemented exactly like Emacs does it.  How this works is that `;;` creates ` : `.  I have also keybound `;` to check for the preceding text and if it is ` : ` then it will execute a macro that deletes and replaces with ` := `.  The side effect of this is that if the cursor is placed at a point in the text where ` : ` is just behind the point, this macro will ALSO execute then.  I think this is likely a fairly rare event and I have no other way to create this behavior, so I opted for this workaround.
+* `----` : Again I cannot duplicate this by checking the prior text because that would create weird issues if someone was just trying to make a custom length comment dash line.  I created the `--=` as a replacement for the comment box.
+* `==` : Honestly I could create this one however it's kind of pointless.  The `==` is not a VHDL operator and I'm not honestly certain why it's in Emacs vhdl-mode.
 
 ## Snippets
 
@@ -110,7 +117,7 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 * `procb` : Produces a procedure with body.
 * `genmap` : Produces a generic map association list, differentiated from a generic interface list.
 * `portmap` : Produces a port map association list, differentiated from a port interface list.
-* `project` : Intended for use while editing a Sublime Text project file.  Fills in local copies of the setting keys and instantiates a couple of example build systems that may be customized to suit.
+* `project` : Active while editing a Sublime Text project file.  Fills in local copies of the setting keys and instantiates a couple of example build systems.
 * And others... see the Snippets directory or the Tools >> Snippets menu for complete list.
 
 ## Miscellaneous Features

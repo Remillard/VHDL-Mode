@@ -1,0 +1,5 @@
+* Created a modification to the stutter typing system to more closely duplicate Emacs vhdl-mode.
+* Documented the stutter typing shortcuts that I CANNOT duplicate.
+* Created a snippet for package and package body.
+* Fixed error in identification of attribute specification where there were no spaces between the signal name and the separating colon.
+* Fixed error in identification of component specification when the word optional word `is` is not included.
