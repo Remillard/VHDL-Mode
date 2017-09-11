@@ -1,0 +1,13 @@
+<snippet>
+	<content><![CDATA[
+package ${1:<identifier>} is
+	$0
+end package $1;
+
+package body ${1:<identifier>} is
+
+end package body $1;
+]]></content>
+	<tabTrigger>package</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>
