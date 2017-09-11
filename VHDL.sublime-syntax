@@ -731,7 +731,7 @@ contexts:
           pop: true
 
   attribute-spec:
-    - match: (?i)(attribute)\s+({{identifier}})\s+(of)\s+({{identifier}})\s+(:)
+    - match: (?i)(attribute)\s+({{identifier}})\s+(of)\s+({{identifier}})\s*(:)
       captures:
         1: storage.type.attribute.vhdl
         2: entity.name.attribute.vhdl
