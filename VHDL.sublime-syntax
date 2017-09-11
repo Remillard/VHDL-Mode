@@ -585,7 +585,7 @@ contexts:
 
   components:
     # Valid identifier variation
-    - match: (?i)^\s*(component)\s+({{identifier}})\s+(is)
+    - match: (?i)^\s*(component)\s+({{identifier}})\s+(is)?
       captures:
         1: storage.type.component.vhdl
         2: entity.name.component.vhdl
