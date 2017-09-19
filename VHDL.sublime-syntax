@@ -89,6 +89,7 @@ contexts:
             4: storage.type.entity.vhdl
             6: entity.name.entity.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         # Non-matching identifier variation
         - match: |-
@@ -103,6 +104,7 @@ contexts:
             6: invalid.illegal.non-matching-identifier.vhdl
             7: punctuation.terminator.vhdl
           pop: true
+          scope: meta.group.terminal.vhdl
         - include: generic-interface
         - include: port-interface
     # Invalid identifier variation
@@ -129,6 +131,7 @@ contexts:
             4: storage.type.entity.vhdl
             6: invalid.illegal.non-matching-identifier.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - include: generic-interface
         - include: port-interface
@@ -158,6 +161,7 @@ contexts:
             4: storage.type.package.vhdl
             6: entity.name.package.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         # Non-matching identifier variation
         - match: |-
@@ -171,6 +175,7 @@ contexts:
             4: storage.type.package.vhdl
             6: invalid.illegal.non-matching-identifier.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - include: block-declarative-items
         - include: generic-interface
@@ -197,6 +202,7 @@ contexts:
             4: storage.type.package.vhdl
             6: invalid.illegal.identifier.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - include: block-declarative-items
         - include: generic-interface
@@ -229,6 +235,7 @@ contexts:
             7: keyword.other.vhdl
             9: entity.name.package.vhdl
             10: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         # Non-matching identifier variation
         - match: |-
@@ -243,6 +250,7 @@ contexts:
             7: keyword.other.vhdl
             9: invalid.illegal.non-matching-identifier
             10: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - include: block-declarative-items
     # Non-valid identifier variation
@@ -271,6 +279,7 @@ contexts:
             7: keyword.other.vhdl
             9: invalid.illegal.non-matching-identifier
             10: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - include: block-declarative-items
 
@@ -372,6 +381,7 @@ contexts:
             4: storage.type.configuration.vhdl
             6: entity.name.configuration.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - match: |-
             (?xi)
@@ -384,6 +394,7 @@ contexts:
             4: storage.type.configuration.vhdl
             6: invalid.illegal.non-matching-identifier.vhdl
             7: punctuation.terminator.vhdl
+          scope: meta.group.terminal.vhdl
           pop: true
         - include: libraries
         - include: item-configurations
