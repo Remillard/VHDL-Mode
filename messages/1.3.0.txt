@@ -1,0 +1,2 @@
+* Added Goto Symbol and Goto Definition support
+* Modified syntax definition to add a meta group scope to the terminal line for some structures that cannot be identified easily by a declaration/body separation.  I may ultimately add meta.group.terminal.vhdl to all terminal lines in the language since it's a major VHDL lexical clause.
