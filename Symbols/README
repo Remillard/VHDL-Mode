@@ -1,0 +1,20 @@
+===================================================================
+Note about organization of the symbols files.  These are
+segregated by how Sublime Text uses them.
+
+LIST -- These are symbols that ST identifies for LOCAL usage and
+        will show up in the "Goto Symbol" list in the editor.
+        For VHDL purposes, I am primarily using this for navigation
+        and the items showing up should be the entity, architecture,
+        instantiations, and processes (if labeled).
+
+INDEX - These are symbols that ST identifies GLOBALLY and will
+        show up in "Goto Definition" and "Goto Anything" lists.
+        They will also show up in hover text over a token name.
+        For VHDL purposes, I am using this for anything that
+        would be used for "Goto Definition".  There might be
+        overlap in a global project but hoping that the default
+        would be local scope.
+
+All these constructs exist in separate files in case transformation
+rules need to be applied to them.
