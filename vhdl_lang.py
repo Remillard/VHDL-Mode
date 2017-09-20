@@ -1136,3 +1136,26 @@ class Interface():
         indent_vhdl(lines, 0)
 
         return '\n'.join(lines)
+
+# ---------------------------------------------------------------
+class Subprogram():
+    """
+    Class that contains information about a VHDL subprogram
+    declaration and methods to enable rewriting it in some
+    fashion.
+    """
+    def __init__(self):
+        self.name = ""
+        self.type = ""
+        self.if_string = ""
+        self.if_ports = []
+        self.if_generics = []
+        self.if_return = ""
+
+    def find_start(self, line):
+        """Attempts to identify the start of a subprogram specification."""
+        head_pattern = r"(?P<type>procedure|function)\s+(?P<name>\w*)"
+
+    def find_end(self, line):
+        """Attempts to identify the end of the subprogram specification."""
+
