@@ -68,6 +68,9 @@ class vhdlModeCopySubprogram(sublime_plugin.TextCommand):
         region = self.view.sel()[0]
         original_point = region.begin()
 
+        # Freshen up the variable
+        _subprogram.reset()
+
         # Attempt to find a subprogram beginning.
         startpoint = self.find_start(original_point, _subprogram)
         if startpoint is None:
@@ -81,5 +84,5 @@ class vhdlModeCopySubprogram(sublime_plugin.TextCommand):
             return
 
         block = sublime.Region(startpoint, endpoint)
-        print(self.view.substr(block))
         _subprogram.if_string = self.view.substr(block)
+        _subprogram.parse_block()

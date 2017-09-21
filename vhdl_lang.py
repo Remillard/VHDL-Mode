@@ -1154,6 +1154,19 @@ class Subprogram():
         self.if_return = ""
         self.paren_count = [0, 0]
 
+    def reset(self):
+        """Subprograms need a reset simply because there's a lot of
+        optional things that change from copy to copy.  In the
+        entity/component world, it's a lot more uniform."""
+        self.name = ""
+        self.type = ""
+        self.purity = ""
+        self.if_string = ""
+        self.if_ports = []
+        self.if_generics = []
+        self.if_return = ""
+        self.paren_count = [0, 0]
+
     def subprogram_start(self, line):
         """Attempts to identify the start of a subprogram specification."""
         # Resetting the paren count here in case we end up calling this
@@ -1181,7 +1194,7 @@ class Subprogram():
         a tail when all parens are balanced."""
         # Patterns to check.
         proc_tail_pattern = r";|is"
-        func_tail_pattern = r"return\s+((?P<rtype>\w+)\s*);|is"
+        func_tail_pattern = r"return\s+(?P<rtype>.*?)\s*(;|is)"
 
         # Find our parenthesis state.
         self.paren_count, open_pos, close_pos = analyze_parens(line, self.paren_count)
@@ -1199,6 +1212,7 @@ class Subprogram():
             if self.type.lower() == 'function':
                 s = re.search(func_tail_pattern, new_line, re.I)
                 if s:
+                    self.if_return = s.group('rtype')
                     return s.end() + offset
                 else:
                     return None
@@ -1215,7 +1229,25 @@ class Subprogram():
 
     def parse_block(self):
         """Chops up the string and extracts the internal declarations."""
-        pass
+        # Remove comments, newlines, and compress spaces.
+        self.if_string = re.sub(r'--.*?(\n|$)', r'\n', self.if_string)
+        self.if_string = re.sub(r'\n', r'', self.if_string)
+        self.if_string = re.sub(r'\s+', r' ', self.if_string)
+        # Strip return clause if a function.
+        if self.type == 'function':
+            func_tail_pattern = r"return\s+(?P<rtype>.*?)\s*(;|is)"
+            s = re.search(func_tail_pattern, self.if_string, re.I)
+            self.if_string = self.if_string[:s.start()]
+        # Extract parameter block.
+        start, stop = None, None
+        for i in range(len(self.if_string)):
+            if self.if_string[i] == '(' and not start:
+                start = i+1
+            if self.if_string[-i] == ')' and not stop:
+                stop = -i
+
+
+
 
 
 
