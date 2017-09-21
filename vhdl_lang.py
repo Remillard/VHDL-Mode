@@ -1147,15 +1147,77 @@ class Subprogram():
     def __init__(self):
         self.name = ""
         self.type = ""
+        self.purity = ""
         self.if_string = ""
         self.if_ports = []
         self.if_generics = []
         self.if_return = ""
+        self.paren_count = [0, 0]
 
-    def find_start(self, line):
+    def subprogram_start(self, line):
         """Attempts to identify the start of a subprogram specification."""
-        head_pattern = r"(?P<type>procedure|function)\s+(?P<name>\w*)"
+        # Resetting the paren count here in case we end up calling this
+        # entire command multiple times.  Finding the end depends on it.
+        self.paren_count = [0, 0]
+        head_pattern = r"((?P<purity>impure|pure)\s+)?(?P<type>procedure|function)\s+(?P<name>\w*)"
+        s = re.search(head_pattern, line, re.I)
+        if s:
+            self.purity = s.group('purity')
+            self.type = s.group('type')
+            self.name = s.group('name')
+            return s.start()
+        else:
+            return None
 
-    def find_end(self, line):
-        """Attempts to identify the end of the subprogram specification."""
+    def subprogram_end(self, line):
+        """Attempts to identify the end of the subprogram specification.
+        This is somewhat trickier than finding the end of an entity or
+        component simply because there's no end clause.  A procedure
+        specification block ends on a semicolon in the case of the
+        prototype, and ends on 'is' in the case of a declaration.
+        A function ends on return <type>; or return <type> is.  Due to
+        the procedure semicolon ending (which will get also used in the
+        parameters) we have to match and count parens and only validate
+        a tail when all parens are balanced."""
+        # Patterns to check.
+        proc_tail_pattern = r";|is"
+        func_tail_pattern = r"return\s+((?P<rtype>\w+)\s*);|is"
+
+        # Find our parenthesis state.
+        self.paren_count, open_pos, close_pos = analyze_parens(line, self.paren_count)
+
+        # If we are unbalanced, then there's nothing to do and return.  Otherwise
+        # use the last paren location to trim the line and perform the search.
+        if self.paren_count[0] == self.paren_count[1]:
+            if close_pos:
+                new_line = line[close_pos[-1]:]
+                offset = close_pos[-1]
+            else:
+                new_line = line
+                offset = 0
+
+            if self.type.lower() == 'function':
+                s = re.search(func_tail_pattern, new_line, re.I)
+                if s:
+                    return s.end() + offset
+                else:
+                    return None
+            elif self.type.lower() == 'procedure':
+                s = re.search(proc_tail_pattern, new_line, re.I)
+                if s:
+                    return s.end() + offset
+                else:
+                    return None
+            else:
+                return None
+        else:
+            return None
+
+    def parse_block(self):
+        """Chops up the string and extracts the internal declarations."""
+        pass
+
+
+
+
 

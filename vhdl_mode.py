@@ -20,7 +20,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.3.0")
+        print("vhdl-mode: VHDL Mode Version 1.4.0")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
