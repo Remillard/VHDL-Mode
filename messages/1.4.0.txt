@@ -1,0 +1,7 @@
+* ALERT: The files have been reorganized inside the package.  If the VHDL syntax disappears, simply reselect that language from either View >> Syntax or use the lower right corner selector box to reselect VHDL.  The syntax scoping (and coloring) should reappear.
+* Major refactoring to split up large python files
+* Added subprogram copying capability.  Please see README for documentation.
+* Corrected error in testbench creation where the entity name was not appended with *_tb even though the filename was correctly created.
+* Corrected error in indentation closing detection when there's no newline afterwards.
+* Corrected error in function indentation when pure|impure used.
+* As always, please use the issues page or Sublime announcement page to report issues.

@@ -1,10 +1,8 @@
 """
----------------------------------------------------------------
 VHDL Mode for Sublime Text 3
 
-This set of commands attempts to duplicate many of the features
-of the Emacs vhdl-mode for the Sublime Text editor.
----------------------------------------------------------------
+This package attempts to recreate to some level of fidelity the features
+in the vhdl-mode in Emacs.
 """
 import os
 import time
@@ -16,15 +14,13 @@ import sublime_plugin
 from . import vhdl_lang as vhdl
 from . import vhdl_util as util
 
-_interface = vhdl.Interface()
-
 #----------------------------------------------------------------
 class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     """
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.3.0")
+        print("vhdl-mode: VHDL Mode Version 1.4.0")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -81,171 +77,6 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
                 "STANDARD" : standard
             })
         print('vhdl-mode: Inserted header template.')
-
-#----------------------------------------------------------------
-class vhdlModeCopyPortsCommand(sublime_plugin.TextCommand):
-    """
-    The copy ports command requires the user to have placed the
-    point somewhere in the interface to be extracted.  The
-    routine then scans upwards to find a known interface beginning
-    and then down to find the end point.  If a good interface
-    can be determined, then it uses the VHDL language classes to
-    parse the text from the editor and store the structural
-    elements for later pasting in other forms.
-    """
-    def find_start(self, point, interface):
-        # Abstracting the loop for finding the beginning
-        # of the declaration.
-        # Moving point to beginning of line which avoids
-        # checking a line twice due to line lengths.
-        next_point = util.move_to_bol(self, point)
-        while True:
-            check = interface.interface_start(util.line_at_point(self, next_point))
-            if check is None:
-                if util.is_top_line(self, next_point):
-                    print('vhdl-mode: Interface not found.')
-                    return None
-                else:
-                    next_point = util.move_up(self, next_point)
-            else:
-                print('vhdl-mode: Interface beginning found.')
-                return self.view.text_point(self.view.rowcol(next_point)[0], check)
-
-    def find_end(self, point, interface):
-        # Stepping forward to find the end of the interface.
-        next_point = util.move_to_bol(self, point)
-        while True:
-            check = interface.interface_end(util.line_at_point(self, next_point))
-            if check is None:
-                if util.is_end_line(self, next_point):
-                    print('vhdl-mode: End of interface not found.')
-                    return None
-                else:
-                    next_point = util.move_down(self, next_point)
-            else:
-                print('vhdl-mode: Interface end found.')
-                return self.view.text_point(self.view.rowcol(next_point)[0], check)
-
-    def run(self, edit):
-        global _interface
-
-        # Save the starting point location.  In the case of a
-        # multi-selection, save point A of the first region.
-        # This command does not have any meaning for a multi-
-        # selection.
-        region = self.view.sel()[0]
-        original_point = region.begin()
-
-        # Search for the starting entity string.
-        startpoint = self.find_start(original_point, _interface)
-        if startpoint is None:
-            util.set_cursor(self, original_point)
-            return
-
-        # Search for the endpoint based on the start point.
-        endpoint = self.find_end(startpoint, _interface)
-        if endpoint is None:
-            util.set_cursor(self, original_point)
-            return
-
-        # At this point, we should have a start and end point.  Extract
-        # the string that contains the interface by creating a region
-        # with the points.  At this point, all the processing should be
-        # in the interface class.
-        block = sublime.Region(startpoint, endpoint)
-        _interface.if_string = self.view.substr(block)
-        _interface.parse_block()
-
-        # At the very end, move the point back to where we
-        # started
-        util.set_cursor(self, original_point)
-
-#----------------------------------------------------------------
-class vhdlModePasteAsSignalCommand(sublime_plugin.TextCommand):
-    """
-    Once we've copied an interface, we can paste the data back as
-    signals (ports only, not generics.)
-    """
-    def run(self, edit):
-        global _interface
-        # Get the current point location.
-        region = self.view.sel()[0]
-        original_point = region.begin()
-
-        # Move to the beginning of the line the point is on.
-        next_point = util.move_to_bol(self, original_point)
-
-        lines = []
-        # Construct structure and insert
-        block_str = _interface.signals()
-        if block_str is not None:
-            num_chars = self.view.insert(edit, next_point, block_str)
-            print('vhdl-mode: Inserted interface as signal(s).')
-            util.set_cursor(self, next_point+num_chars)
-        else:
-            print('vhdl-mode: No valid ports in interface for signal(s).')
-            # Set the point to original location
-            util.set_cursor(self, original_point)
-
-#----------------------------------------------------------------
-class vhdlModePasteAsComponentCommand(sublime_plugin.TextCommand):
-    """
-    Pasting the current written interface as a component
-    """
-    def run(self, edit):
-        # Get the current point location.
-        region = self.view.sel()[0]
-        original_point = region.begin()
-
-        # Move to the beginning of the line the point is on.
-        next_point = util.move_to_bol(self, original_point)
-
-        block_str = _interface.component()
-        num_chars = self.view.insert(edit, next_point, block_str)
-        print('vhdl-mode: Inserted interface as component.')
-
-        # Set point to the end of insertion.
-        util.set_cursor(self, next_point+num_chars)
-
-#----------------------------------------------------------------
-class vhdlModePasteAsEntityCommand(sublime_plugin.TextCommand):
-    """
-    Pasting the currently copied interface as an entity.
-    """
-    def run(self, edit):
-        # Get the current point location.
-        region = self.view.sel()[0]
-        original_point = region.begin()
-
-        # Move to the beginning of the line the point is on.
-        next_point = util.move_to_bol(self, original_point)
-
-        block_str = _interface.entity()
-        num_chars = self.view.insert(edit, next_point, block_str)
-        print('vhdl-mode: Inserted interface as entity.')
-
-        # Set the point to end of insertion
-        util.set_cursor(self, next_point+num_chars)
-
-#----------------------------------------------------------------
-class vhdlModePasteAsInstanceCommand(sublime_plugin.TextCommand):
-    """
-    Pastes the currently copied interface into the source as
-    an instantiation.  Currently does not keep track of other
-    instances of the same interface in the source.
-    """
-    def run(self, edit):
-        # Get the current point location.
-        region = self.view.sel()[0]
-        original_point = region.begin()
-
-        # Move to the beginning of the line the point is on.
-        next_point = util.move_to_bol(self, original_point)
-
-        # Construct structure
-        block_str = _interface.instance()
-        num_chars = self.view.insert(edit, next_point, block_str)
-        print('vhdl-mode: Inserted interface as instance.')
 
 #----------------------------------------------------------------
 class vhdlModeToggleCommentRegionCommand(sublime_plugin.TextCommand):
@@ -389,38 +220,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         util.set_cursor(self, original_point)
 
 #----------------------------------------------------------------
-class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
-    """
-    After copying a port, this will open a new window and
-    inject the skeleton of a testbench.  Note, this isn't a
-    TextCommand, but rather a WindowCommand so the run method
-    has slightly different parameters.
-    """
-    def run(self):
-        """Sublime TextCommand run method"""
-        # Assigning this to a string to keep command shorter later.
-        template = "Packages/VHDL Mode/Snippets/vhdl-testbench.sublime-snippet"
-
-        tb_view = self.window.new_file()
-        tb_view.assign_syntax('Packages/VHDL Mode/VHDL.sublime-syntax')
-        tb_view.set_name('{}_tb.vhd'.format(_interface.name))
-
-        signals_str = _interface.signals()
-        instance_str = _interface.instance("DUT")
-
-        # Inserting template/snippet
-        tb_view.run_command("insert_snippet",
-            {
-                "name"     : template,
-                "ENAME"    : _interface.name,
-                "SIGNALS"  : signals_str,
-                "INSTANCE" : instance_str
-            })
-        tb_view.run_command("vhdl_mode_insert_header")
-        print('vhdl-mode: Created testbench from interface.')
-
-#----------------------------------------------------------------
-class UpdateLastUpdatedCommand(sublime_plugin.TextCommand):
+class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):
     """
     Finds the last updated field in the header and updates the time
     in the field.
@@ -445,7 +245,7 @@ class UpdateLastUpdatedCommand(sublime_plugin.TextCommand):
             print('vhdl-mode: No last modified time field found.')
 
 #----------------------------------------------------------------
-class UpdateModifiedTimeOnSave(sublime_plugin.EventListener):
+class vhdlModeUpdateModifiedTimeOnSave(sublime_plugin.EventListener):
     """
     Watches for a save event and updates the Last update
     field in the header.
@@ -459,7 +259,7 @@ class UpdateModifiedTimeOnSave(sublime_plugin.EventListener):
         # starts executing on this very source file which
         # is problematic!)
         if util.is_vhdl_file(view.scope_name(0)):
-            view.run_command("update_last_updated")
+            view.run_command("vhdl_mode_update_last_updated")
 
 #----------------------------------------------------------------
 class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):

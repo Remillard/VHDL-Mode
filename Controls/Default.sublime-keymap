@@ -9,6 +9,12 @@
 	{"keys": ["alt+k", "p", "e"], "command": "vhdl_mode_paste_as_entity"},
 	{"keys": ["alt+k", "p", "i"], "command": "vhdl_mode_paste_as_instance"},
 	{"keys": ["alt+k", "p", "t"], "command": "vhdl_mode_paste_as_testbench"},
+	// 's' starts subprogram commands for copy and pasting.
+	{"keys": ["alt+k", "s", "w"], "command": "vhdl_mode_copy_subprogram"},
+	{"keys": ["alt+k", "s", "d"], "command": "vhdl_mode_paste_as_declaration"},
+	{"keys": ["alt+k", "s", "b"], "command": "vhdl_mode_paste_as_body"},
+	{"keys": ["alt+k", "s", "c"], "command": "vhdl_mode_paste_as_call"},
+
 
 	// Toggle comment command.  'c' starts code commands.
 	{"keys": ["alt+k", "c", "c"], "command": "vhdl_mode_toggle_comment_region"},
@@ -58,6 +64,6 @@
 
 
 	// Version Command
-	{"keys": ["alt+k", "s"], "command": "vhdl_mode_scope_sniffer"},
+	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"},
 	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version"}
 ]
