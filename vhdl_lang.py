@@ -603,7 +603,7 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
         'semicolon': r';',
         'close_paren': r'\)',
         'close_semi': r'\);',
-        'endclause': r'\bend\s?(\w+)?\s?(\w+)?\s?(\w+)?\s?;',
+        'endclause': r'\bend\s?(\w+)?\s?(\w+)?\s?(\w+)?\s?',
         'isclause': r'\bis\b',
         'record': r'\brecord\b',
         'function_is': r'\breturn\s+\w+\s+is',
