@@ -854,6 +854,61 @@ class Generic():
         line = '{} => {}'.format(self.name, self.name)
         return line
 
+# ---------------------------------------------------------------
+class Parameter():
+    """
+    This is the class of subprogram parameters.  Might ultimately
+    replace even Port and Generic as the pattern has improved
+    since starting the package.
+    """
+    def __init__(self, param_str):
+        self.storage = ""
+        self.identifier = ""
+        self.mode = ""
+        self.type = ""
+        self.expression = ""
+        self.success = False
+        self.parse_str(param_str)
+
+    def parse_str(self, param_str):
+        """Better regexp should be able to extract everything!"""
+        regex = r"^\s*((?P<storage>constant|signal|variable|file)\s*)?((?P<name>.*?)\s*)(?::\s*)((?P<mode>inout\b|in\b|out\b|buffer\b)\s*)?((?P<type>.*?)\s*)((?:\:\=)\s*(?P<expression>.*?)\s*)?$"
+        #print('Input: "{}"'.format(param_str))
+        s = re.search(regex, param_str)
+        if s:
+            #print('Storage: "{}", Name: "{}", Mode: "{}", Type: "{}", Expression: "{}"'.format(s.group('storage'), s.group('name'), s.group('mode'), s.group('type'), s.group('expression')))
+            if s.group('storage'):
+                self.storage = s.group('storage')
+            self.identifier = s.group('name')
+            if s.group('mode'):
+                self.mode = s.group('mode')
+            self.type = s.group('type')
+            if s.group('expression'):
+                self.expression = s.group('expression')
+            self.success = True
+        else:
+            print('vhdl-mode: Could not parse parameter string.')
+            self.success = False
+
+    def print_formal(self):
+        """Lots of optional parameters, needs to be build up gradually."""
+        string = ""
+        if self.storage:
+            string = string + '{} '.format(self.storage)
+        string = string + '{} : '.format(self.identifier)
+        if self.mode:
+            string = string + '{} '.format(self.mode)
+        string = string + '{}'.format(self.type)
+        if self.expression:
+            string = string + ' := {}'.format(self.expression)
+        #print(string)
+        return string
+
+    def print_call(self):
+        """Super easy transform."""
+        string = '{} => {}'.format(self.identifier, self.identifier)
+        return string
+
 
 # ---------------------------------------------------------------
 class Interface():
@@ -1137,6 +1192,7 @@ class Interface():
 
         return '\n'.join(lines)
 
+
 # ---------------------------------------------------------------
 class Subprogram():
     """
@@ -1149,7 +1205,7 @@ class Subprogram():
         self.type = ""
         self.purity = ""
         self.if_string = ""
-        self.if_ports = []
+        self.if_params = []
         self.if_generics = []
         self.if_return = ""
         self.paren_count = [0, 0]
@@ -1162,7 +1218,7 @@ class Subprogram():
         self.type = ""
         self.purity = ""
         self.if_string = ""
-        self.if_ports = []
+        self.if_params = []
         self.if_generics = []
         self.if_return = ""
         self.paren_count = [0, 0]
@@ -1175,7 +1231,8 @@ class Subprogram():
         head_pattern = r"((?P<purity>impure|pure)\s+)?(?P<type>procedure|function)\s+(?P<name>\w*)"
         s = re.search(head_pattern, line, re.I)
         if s:
-            self.purity = s.group('purity')
+            if s.group('purity'):
+                self.purity = s.group('purity')
             self.type = s.group('type')
             self.name = s.group('name')
             return s.start()
@@ -1245,6 +1302,142 @@ class Subprogram():
                 start = i+1
             if self.if_string[-i] == ')' and not stop:
                 stop = -i
+            if start and stop:
+                break
+        if start and stop:
+            self.if_string = self.if_string[start:stop]
+            #print(self.if_string)
+            param_list = self.if_string.split(';')
+            for param_str in param_list:
+                param = Parameter(param_str)
+                if param.success:
+                    self.if_params.append(param)
+                    #param.print()
+        else:
+            print('vhdl-mode: No subprogram parameters found.')
+
+    def print(self):
+        """For debug"""
+        print('Purity: {}'.format(self.purity))
+        print('SP Type: {}'.format(self.type))
+        print('SP Name: {}'.format(self.name))
+        print('Params: {}'.format(self.if_params))
+        print('Return: {}'.format(self.if_return))
+
+    def declaration(self):
+        """Constructs a subprogram declaration from the currently
+        copied subprogram.  Again there are many optional things
+        so construction is piece by piece.  Going to format in
+        K&R style. """
+        lines = []
+        if self.type == 'function':
+            if self.if_params:
+                if self.purity:
+                    lines.append('{} {} {} ('.format(self.purity, self.type, self.name))
+                else:
+                    lines.append('{} {} ('.format(self.type, self.name))
+                param_strings = []
+                for param in self.if_params:
+                    param_strings.append(param.print_formal())
+                param_strings = ';^'.join(param_strings).split('^')
+                for param_str in param_strings:
+                    lines.append(param_str)
+                lines.append(') return {};'.format(self.if_return))
+            else:
+                if self.purity:
+                    lines.append('{} {} {} return {};'.format(self.purity, self.type, self.name, self.rtype))
+                else:
+                    lines.append('{} {} return {};'.format(self.type, self.name, self.if_return))
+        else: # Procedure
+            if self.if_params:
+                lines.append('{} {} ('.format(self.type, self.name))
+                param_strings = []
+                for param in self.if_params:
+
+                    param_strings.append(param.print_formal())
+                param_strings = ';^'.join(param_strings).split('^')
+                for param_str in param_strings:
+                    lines.append(param_str)
+                lines.append(');')
+            else:
+                lines.append('{} {};'.format(self.type, self.name))
+
+        align_block_on_re(lines, ':')
+        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
+        align_block_on_re(lines, ':=')
+        indent_vhdl(lines, 1)
+
+        return '\n'.join(lines)
+
+    def body(self):
+        """Constructs a subprogram body from the currently
+        copied subprogram.  Again there are many optional things
+        so construction is piece by piece.  Going to format in
+        K&R style. """
+        lines = []
+        if self.type == 'function':
+            if self.if_params:
+                if self.purity:
+                    lines.append('{} {} {} ('.format(self.purity, self.type, self.name))
+                else:
+                    lines.append('{} {} ('.format(self.type, self.name))
+                param_strings = []
+                for param in self.if_params:
+                    param_strings.append(param.print_formal())
+                param_strings = ';^'.join(param_strings).split('^')
+                for param_str in param_strings:
+                    lines.append(param_str)
+                lines.append(') return {} is'.format(self.if_return))
+            else:
+                if self.purity:
+                    lines.append('{} {} {} return {} is'.format(self.purity, self.type, self.name, self.rtype))
+                else:
+                    lines.append('{} {} return {} is'.format(self.type, self.name, self.if_return))
+        else: # Procedure
+            if self.if_params:
+                lines.append('{} {} ('.format(self.type, self.name))
+                param_strings = []
+                for param in self.if_params:
+                    param_strings.append(param.print_formal())
+                param_strings = ';^'.join(param_strings).split('^')
+                for param_str in param_strings:
+                    lines.append(param_str)
+                lines.append(') is')
+            else:
+                lines.append('{} {} is'.format(self.type, self.name))
+        lines.append('begin')
+        lines.append(' ')
+        lines.append('end {} {};'.format(self.type, self.name))
+
+        align_block_on_re(lines, ':')
+        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
+        align_block_on_re(lines, ':=')
+        indent_vhdl(lines, 1)
+
+        return '\n'.join(lines)
+
+    def call(self):
+        """Constructs a subprogram call.  Much simpler than the
+        declaration."""
+        lines = []
+        param_strings = []
+        if self.if_params:
+            lines.append('{} ('.format(self.name))
+            for param in self.if_params:
+                param_strings.append(param.print_call())
+            param_strings = ',^'.join(param_strings).split('^')
+            for param_str in param_strings:
+                lines.append(param_str)
+            lines.append(');')
+        else:
+            lines.append('{};'.format(self.name))
+
+        align_block_on_re(lines, '=>')
+        indent_vhdl(lines, 1)
+
+        return '\n'.join(lines)
+
+
 
 
 

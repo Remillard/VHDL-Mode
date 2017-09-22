@@ -86,3 +86,64 @@ class vhdlModeCopySubprogram(sublime_plugin.TextCommand):
         block = sublime.Region(startpoint, endpoint)
         _subprogram.if_string = self.view.substr(block)
         _subprogram.parse_block()
+        #_subprogram.print()
+
+#----------------------------------------------------------------
+class vhdlModePasteAsDeclarationCommand(sublime_plugin.TextCommand):
+    """Pastes the currently copied subprogram as a declaration."""
+
+    def run(self, edit):
+        """Fundamental ST Command method."""
+        region = self.view.sel()[0]
+        original_point = region.begin()
+
+        # Move to the beginning of the line the point is on.
+        next_point = util.move_to_bol(self, original_point)
+
+        block_str = _subprogram.declaration()
+        #print(block_str)
+        num_chars = self.view.insert(edit, next_point, block_str)
+        print('vhdl-mode: Inserted interface as subprogram declaration.')
+
+        # Set point to the end of insertion.
+        util.set_cursor(self, next_point+num_chars)
+
+#----------------------------------------------------------------
+class vhdlModePasteAsBodyCommand(sublime_plugin.TextCommand):
+    """Pastes the currently copied subprogram as a declaration."""
+
+    def run(self, edit):
+        """Fundamental ST Command method."""
+        region = self.view.sel()[0]
+        original_point = region.begin()
+
+        # Move to the beginning of the line the point is on.
+        next_point = util.move_to_bol(self, original_point)
+
+        block_str = _subprogram.body()
+        #print(block_str)
+        num_chars = self.view.insert(edit, next_point, block_str)
+        print('vhdl-mode: Inserted interface as subprogram body.')
+
+        # Set point to the end of insertion.
+        util.set_cursor(self, next_point+num_chars)
+
+#----------------------------------------------------------------
+class vhdlModePasteAsCallCommand(sublime_plugin.TextCommand):
+    """Pastes the currently copied subprogram as a declaration."""
+
+    def run(self, edit):
+        """Fundamental ST Command method."""
+        region = self.view.sel()[0]
+        original_point = region.begin()
+
+        # Move to the beginning of the line the point is on.
+        next_point = util.move_to_bol(self, original_point)
+
+        block_str = _subprogram.call()
+        #print(block_str)
+        num_chars = self.view.insert(edit, next_point, block_str)
+        print('vhdl-mode: Inserted interface as subprogram call.')
+
+        # Set point to the end of insertion.
+        util.set_cursor(self, next_point+num_chars)
