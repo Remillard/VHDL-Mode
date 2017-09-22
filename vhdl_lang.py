@@ -424,7 +424,7 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
         },
 
         'function': {
-            'pattern': r'^(?<!end )\bfunction\b',
+            'pattern': r'^(?<!end )(?:(pure|impure) )?function\b',
             'indent_rule': (0, 1),
             'close_rule': (
                 ('function_semi', None),
