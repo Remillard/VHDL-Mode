@@ -1819,6 +1819,8 @@ contexts:
     - match: (?i)\b(math_cbase_1|math_cbase_j|math_czero)\b
       scope: support.constant.math-complex.vhdl
 
+  # In textio, the type 'width' is not marked.  Very minor and
+  # is a commonly used identifier name as well.
   types:
     - match: |-
         (?xi)\b(
@@ -1830,7 +1832,7 @@ contexts:
       scope: support.type.std.vhdl
     - match: |-
         (?xi)\b(
-          line|text|side|width
+          line|text|side
         )\b
       scope: support.type.textio.vhdl
     - match: (?i)\b(complex|positive_real|principal_value|complex_polar)\b
