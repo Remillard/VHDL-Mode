@@ -13,10 +13,11 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 ## Feature Set
 
 * Port copying from entity or component declarations.
-* Interface pasting as entity, component, signals, direct entity instantiation, and testbench.
+* Interface copy and pasting as entity, component, signals, direct entity instantiation, and testbench.
+* Subprogram copy and pasting as declaration, body, and call.
 * Proper stutter typing shortcuts for the assignment operators and commenting structures.
-* Natural language shortcuts through use of snippets for commonly used structures.
 * Code beautification supporting several parenthetical code styles natively (Kernigan & Ritchie, Allman, and Lisp)
+* Natural language shortcuts through use of snippets for commonly used structures.
 * Syntax file supporting highly granular scoping of lexical structures.
 * Sublime Text **Goto** symbol and definition support, both local and global.
 * Region comment/uncommenting
@@ -25,7 +26,6 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 
 * Proper project level outlining
 * 'Smart' insertion of instantiation labels
-* Subprogram smart copy and paste seems like it could be a meaningful shortcut.
 * Leverage good scoping for better behaviors in all features.
 
 ## Configuration
@@ -53,9 +53,9 @@ As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  Howe
 
 Another note, these are sequence keystrokes.  For example to copy a port interface from an entity, move the point into the structure (anywhere should be fine) and hit `Alt-k` then `p` then `w`.  These should not be chorded.
 
-**Port Functions**
+**Port Interface Copy/Paste Functions**
 
-It may help to remember `p` for port, then `w` for write (to copy).  The other mnemonics are fairly straightforward.
+It may help to remember `p` for port, then `w` for write (to buffer).  The other mnemonics are fairly straightforward.
 
 * Copy Ports : `M-k p w`
 * Paste as Signals : `M-k p s`
@@ -67,6 +67,15 @@ It may help to remember `p` for port, then `w` for write (to copy).  The other m
 The following animated GIF demonstrates a portion of the port copying feature.
 
 ![Port Copying Demonstration](./images/demo.gif)
+
+**Subprogram Interface Copy/Paste Functions**
+
+It may help to remember `s` for subprogram, then `w` for write (to buffer).  Much like the port version of this feature, the mnemonics are straightforward.
+
+* Copy Subprogram : `M-k s w`
+* Paste as Declaration : `M-k s d`
+* Paste as Body : `M-k s b`
+* Paste as Call : `M-k s c`
 
 **Commenting**
 
@@ -88,7 +97,7 @@ Largely templating is handled by the snippet system, however the header is a spe
 
 ## Stutter Typing
 
-I cannot duplicate the entire Emacs vhdl-mode stutter typing repetoire.  I do not have access to the keystream directly, so what I have been able to do is use keybindings and in one case a keybinding and macro to replicate the behavior.  I'll list the implemented replacements and then a note on the ones I cannot and why I cannot replicate these.
+In Emacs vhdl-mode, double striking some keys will insert some syntactical punctuation elements.  Unfortunately, I cannot duplicate the entire Emacs vhdl-mode stutter typing repetoire since I do not have access to the keystream directly.  What I have been able to do is use keybindings and in one case a keybinding and macro to replicate the behavior.  I'll list the implemented replacements and then a note on the ones I cannot and why I cannot replicate these.  The symbols below will have a space on either side of them which is difficult to see in this HTML documentation.
 
 * `;;` : Produces ` : `
 * `;;;` : Produces ` := ` (See notes below)
@@ -132,7 +141,7 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 * This is a work in progress however I've been eating my own dog food and it works fairly satisfactorily for me currently.  I've thrown several code styles and files from other authors at it and tried to iron out the stranger bugs.  However there are a lot of coding styles and I do not promise that the beautifier will work with every one of them.  If there is an issue with a particular structure, I'm happy to get a sample and see if I can make it work.
 * VHDL-2008 support is patchy currently.  All the reserved words are handled, however some lexical constructs will either beautify oddly or be scoped oddly.  Again, I'm happy to get some code samples to see it used in real life (largely not used at my place of work) and see if I can handle it.
 * The TextMate VHDL syntax supported non-matching identifiers in several locations.  In order to get greater scope granularity, I had to sacrifice that feature in a few constructs because match captures do not persist through syntax scope set commands.  More work can be done in identifying illegal identifiers in various locations however.
-* The syntax file was written with great reference and an attempt to conform to the _Designer's Guide to VHDL, 3rd Edition_ by Peter Ashenden.  The language definition reference is in Appendix B, and library reference taken from Appendix A.  Knowing how the language is structured may help understanding the syntax file and why it's done the way it is.
+* The syntax file was written with reference to the language definition in _Designer's Guide to VHDL, 3rd Edition_ by Peter Ashenden.  The language definition reference is in Appendix B, and library reference taken from Appendix A.  Knowing how the language is structured may help understanding the syntax file and why it's done the way it is.
 * Designed to work with Sublime Text 3.  It is unlikely to work with Sublime Text 2 (that is to say, I would be delighted if it did, however I have never used ST2 nor tested against it so your mileage may vary.)
 * Interface instantiation is still somewhat 'dumb' in that it uses a dummy label for instantiation.  Once outlining is in place, it would be nice for the label to update to an unique identfier.
 * I wrote my own comment routine for the region.  This may not work the same way as ST3's own comment/uncommenter.  I tried to keep the vhdl-mode behavior where it will region indent everything at the same column.
