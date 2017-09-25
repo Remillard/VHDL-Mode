@@ -3,25 +3,25 @@
 	// Using Alt-K as an extended command initiator.  After that,
 	// using vhdl-mode similar (though not exact) patterns
 	// 'p' starts port commands for copy and pasting.
-	{"keys": ["alt+k", "p", "w"], "command": "vhdl_mode_copy_ports"},
-	{"keys": ["alt+k", "p", "s"], "command": "vhdl_mode_paste_as_signal"},
-	{"keys": ["alt+k", "p", "c"], "command": "vhdl_mode_paste_as_component"},
-	{"keys": ["alt+k", "p", "e"], "command": "vhdl_mode_paste_as_entity"},
-	{"keys": ["alt+k", "p", "i"], "command": "vhdl_mode_paste_as_instance"},
-	{"keys": ["alt+k", "p", "t"], "command": "vhdl_mode_paste_as_testbench"},
+	{"keys": ["alt+k", "p", "w"], "command": "vhdl_mode_copy_ports",         "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "s"], "command": "vhdl_mode_paste_as_signal",    "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "c"], "command": "vhdl_mode_paste_as_component", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "e"], "command": "vhdl_mode_paste_as_entity",    "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "i"], "command": "vhdl_mode_paste_as_instance",  "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "t"], "command": "vhdl_mode_paste_as_testbench", "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	// 's' starts subprogram commands for copy and pasting.
-	{"keys": ["alt+k", "s", "w"], "command": "vhdl_mode_copy_subprogram"},
-	{"keys": ["alt+k", "s", "d"], "command": "vhdl_mode_paste_as_declaration"},
-	{"keys": ["alt+k", "s", "b"], "command": "vhdl_mode_paste_as_body"},
-	{"keys": ["alt+k", "s", "c"], "command": "vhdl_mode_paste_as_call"},
+	{"keys": ["alt+k", "s", "w"], "command": "vhdl_mode_copy_subprogram",      "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "d"], "command": "vhdl_mode_paste_as_declaration", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "b"], "command": "vhdl_mode_paste_as_body",        "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "c"], "command": "vhdl_mode_paste_as_call",        "context": [{"key": "selector", "operand": "source.vhdl"}] },
 
 
 	// Toggle comment command.  'c' starts code commands.
-	{"keys": ["alt+k", "c", "c"], "command": "vhdl_mode_toggle_comment_region"},
-	{"keys": ["alt+k", "c", "b"], "command": "vhdl_mode_beautify_buffer"},
+	{"keys": ["alt+k", "c", "c"], "command": "vhdl_mode_toggle_comment_region", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "c", "b"], "command": "vhdl_mode_beautify_buffer",       "context": [{"key": "selector", "operand": "source.vhdl"}] },
 
 	// 't' starts template commands
-	{"keys": ["alt+k", "t", "h"], "command": "vhdl_mode_insert_header"},
+	{"keys": ["alt+k", "t", "h"], "command": "vhdl_mode_insert_header", "context": [{"key": "selector", "operand": "source.vhdl"}] },
 
 	// Stutter typing keybinds.
 	{
@@ -64,6 +64,9 @@
 
 
 	// Version Command
-	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"},
-	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version"}
+	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+
+	// Miscellaneous
+	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"}
+
 ]
