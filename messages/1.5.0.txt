@@ -1,2 +1,3 @@
 * Added context selectors to keybinds to help prevent overlap with other packages to be a good package developer citizen.
 * Made header fields "Copyright Block" and "Revision Block" customizable via user or project settings.  See README documentation on these fields.
+* I apologize, for the 1.4.0 version, I wrote the change document, but forgot to edit the messages.json file that makes Package Control automatically display them when updating.
