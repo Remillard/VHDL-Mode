@@ -23,9 +23,12 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 * Sublime Text **Goto** symbol and definition support, both local and global.
 * Region comment/uncommenting
 
+## Related Packages
+
+* [HDLProject](https://packagecontrol.io/packages/HDLProject) by bootsiaz : It's the closest thing to Emacs vhdl-mode Speedbar that I know of.  This clever implementation leverages symbolic links to make use of Sublime Text's Sidebar for hierarchical project display.
+
 ## Future Design Goals
 
-* Proper project level outlining
 * 'Smart' insertion of instantiation labels
 * Leverage good scoping for better behaviors in all features.
 
