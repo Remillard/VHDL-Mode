@@ -20,7 +20,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.4.0")
+        print("vhdl-mode: VHDL Mode Version 1.5.0")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -52,9 +52,32 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
         company = util.get_vhdl_setting(self, 'vhdl-company')
         platform = util.get_vhdl_setting(self, 'vhdl-platform')
         standard = util.get_vhdl_setting(self, 'vhdl-standard')
+        mtime_prefix = util.get_vhdl_setting(self, 'vhdl-modified-time-string')
+        use_copyright = util.get_vhdl_setting(self, 'vhdl-use-copyright-block')
+        use_revision = util.get_vhdl_setting(self, 'vhdl-use-revision-block')
+        copyright_list = util.get_vhdl_setting(self, 'vhdl-copyright-block')
+        revision_list = util.get_vhdl_setting(self, 'vhdl-revision-block')
 
+        # Get the current time and create the modified time string.
         date = time.ctime(time.time())
         year = time.strftime("%Y",time.localtime())
+        mod_time = mtime_prefix + date
+
+        # Create the copyright block and revision block.  Both need
+        # prefixed newlines because they are optional and the
+        # snippet field is at the end of the preceding line.
+        if use_copyright:
+            copyright = '\n'.join(copyright_list)
+            copyright = re.sub(r'\${YEAR}', year, copyright)
+            copyright = re.sub(r'\${COMPANY}', company, copyright)
+            copyright = '\n' + copyright
+        else:
+            copyright = ''
+        if use_revision:
+            revision = '\n'.join(revision_list)
+            revision = '\n' + revision
+        else:
+            revision = ''
 
         # Moving insertion point to the beginning of the file.
         bof = self.view.text_point(0,0)
@@ -71,10 +94,13 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
                 "AUTHOR"   : author,
                 "COMPANY"  : company,
                 "CDATE"    : date,
+                "MODIFIED_TIME_STRING" : mod_time,
                 "MDATE"    : date,
                 "YEAR"     : year,
                 "PLATFORM" : platform,
-                "STANDARD" : standard
+                "STANDARD" : standard,
+                "COPYRIGHT_BLOCK" : copyright,
+                "REVISION_BLOCK" : revision
             })
         print('vhdl-mode: Inserted header template.')
 
@@ -337,23 +363,27 @@ class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
         '''
         Standard TextCommand Run Method
         '''
+        print('Preference Settings')
+        print('vhdl-mode: {}: {}'.format('tab_size', util.get_vhdl_setting(self, 'tab_size')))
+        print('vhdl-mode: {}: {}'.format('translate_tabs_to_spaces', util.get_vhdl_setting(self, 'translate_tabs_to_spaces')))
         vhdl_settings = sublime.load_settings('vhdl_mode.sublime-settings')
         keys = ['vhdl-user',
                 'vhdl-company',
                 'vhdl-project-name',
                 'vhdl-platform',
-                'vhdl-standard']
+                'vhdl-standard',
+                'vhdl-modified-time-string',
+                'vhdl-use-copyright-block',
+                'vhdl-use-revision-block',
+                'vhdl-copyright-block',
+                'vhdl-revision-block']
         print('Package Settings')
         for key in keys:
-            print('vhdl-mode: {}: {}'.format(key, vhdl_settings.get(key)))
+            print('vhdl-mode: {}: "{}"'.format(key, vhdl_settings.get(key)))
 
         print('View Settings')
         for key in keys:
             print('vhdl-mode: {}: {}'.format(key, util.get_vhdl_setting(self, key)))
 
-        print('Preference Settings')
-        print('vhdl-mode: {}: {}'.format('tab_size', util.get_vhdl_setting(self, 'tab_size')))
-        print('vhdl-mode: {}: {}'.format('vhdl-modified-time-string', util.get_vhdl_setting(self, 'vhdl-modified-time-string')))
-        print('vhdl-mode: {}: {}'.format('translate_tabs_to_spaces', util.get_vhdl_setting(self, 'translate_tabs_to_spaces')))
 
 

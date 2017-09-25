@@ -9,16 +9,23 @@
 			COMPANY  : 'vhdl-company' in settings.
 			CDATE    : Automatically filled in when the header is created.
 			MDATE    : Automatically filled in when the header is created and
-			           updated when file is saved.  NOTE: If this line is
-			           customized, edit the 'vhdl-modified-time-string'
-			           appropriately so the on-save event can find it.
+			           updated when file is saved.  Note that this field
+			           is created from beginning of line using the
+			           'vhdl-modified-time-string' settings in user or
+			           project settings.
 			YEAR     : Automatically filled in when the header is created.
 			PLATFORM : 'vhdl-platform' in settings.
 			STANDARD : 'vhdl-standard' in settings.
+			COPYRIGHT_BLOCK : (Optional).  Use of this block is selected by
+			           setting 'vhdl-use-copyright-block' to true in either
+			           user or project settings.  This field will be inserted
+			           at snippet instantiation.
+			REVISION_BLOCK: (Optional).  Use of this block is selected by
+			           setting 'vhdl-use-revision-block' to true in either
+			           user or project settings.  This field will be inserted
+			           at snippet instantiation.
 
 		Numeric fields are tabbed between when snippet is inserted.
-
-		Edit header to taste and need.
 	-->
 	<content><![CDATA[
 -------------------------------------------------------------------------------
@@ -29,25 +36,13 @@
 -- Author      : ${AUTHOR}
 -- Company     : ${COMPANY}
 -- Created     : ${CDATE}
--- Last update : ${MDATE}
+${MODIFIED_TIME_STRING}
 -- Platform    : ${PLATFORM}
 -- Standard    : ${STANDARD}
--------------------------------------------------------------------------------
--- Copyright (c) ${YEAR} ${COMPANY}
---
--- This document contains controlled technology or technical data under the
--- jurisdiction of the Export Administration Regulations (EAR), 15 CFR 730-774.
--- It cannot be transferred to any foreign third party without the specific
--- prior approval of the U.S. Department of Commerce Bureau of Industry and
--- Security (BIS). Violations of these regulations are punishable by fine,
--- imprisonment, or both.
--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------${COPYRIGHT_BLOCK}
 -- Description: $2
--------------------------------------------------------------------------------
--- Revisions:  Revisions and commentary regarding such are controlled by
--- the revision control system in use (Rational Team Concert / Jazz).  That
--- tool should be consulted on revision history.
--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------${REVISION_BLOCK}
+
 $0
 ]]></content>
 	<tabTrigger>header</tabTrigger>
