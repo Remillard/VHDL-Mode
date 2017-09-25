@@ -17,7 +17,7 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 * Subprogram copy and pasting as declaration, body, and call.
 * Proper stutter typing shortcuts for the assignment operators and commenting structures.
 * Code beautification supporting several parenthetical code styles natively (Kernigan & Ritchie, Allman, and Lisp)
-* Customizable header template
+* Customizeable header template
 * Natural language shortcuts through use of snippets for commonly used structures.
 * Syntax file supporting highly granular scoping of lexical structures.
 * Sublime Text **Goto** symbol and definition support, both local and global.
@@ -54,7 +54,7 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 
 ## Key Mappings
 
-As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment, and the commonly used `C-c` prefix for code mode commands in Emacs will conflict with the standard Windows copy command.  Sublime Text 3 seems to use `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  I did a review of the default key mappings for ST3 and I don't believe I'm stepping on any toes here.
+As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment, and the commonly used `C-c` prefix for code mode commands in Emacs will conflict with the standard Windows copy command.  Sublime Text 3 seems to use `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  The key mappings are also context selected, so should not trigger on anything that is not a `source.vhdl` file.
 
 Another note, these are sequence keystrokes.  For example to copy a port interface from an entity, move the point into the structure (anywhere should be fine) and hit `Alt-k` then `p` then `w`.  These should not be chorded.
 
