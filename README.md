@@ -17,7 +17,7 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 * Subprogram copy and pasting as declaration, body, and call.
 * Proper stutter typing shortcuts for the assignment operators and commenting structures.
 * Code beautification supporting several parenthetical code styles natively (Kernigan & Ritchie, Allman, and Lisp)
-* Customizeable header template
+* Customizable header template
 * Natural language shortcuts through use of snippets for commonly used structures.
 * Syntax file supporting highly granular scoping of lexical structures.
 * Sublime Text **Goto** symbol and definition support, both local and global.
