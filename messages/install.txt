@@ -1,14 +1,14 @@
 VHDL Mode for Sublime Text 3
 ----------------------------
-Thanks for trying this out.  This is an attempt to emulate the Emacs vhdl-mode commands
-and capabilities.  This is also my first Sublime Text 3 plugin so it's been an interesting
-ride so far.
+Thanks for trying this out.  This is an attempt to emulate the Emacs vhdl-mode
+commands and capabilities.  This is also my first Sublime Text 3 plugin so it's
+been an interesting ride so far.
 
-If any odd or buggy behavior is found, I would greatly appreciate it if you'd take
-a moment and drop me a line on the Github Issues page for the project.  If there's an
-additional capability that you'd like, please do the same.  If there's beautification
-or alignment or syntax issues, a sample of code that demonstrates it would be greatly
-appreciated though I understand it's not always possible to demonstrate proprietary
-design information.
+If any odd or buggy behavior is found, I would greatly appreciate it if you'd
+take a moment and drop me a line on the Github Issues page for the project.
+If there's an additional capability that you'd like, please do the same.
+If there's beautification or alignment or syntax issues, a sample of code that
+demonstrates it would be greatly appreciated though I understand it's not
+always possible to due to proprietary design information.
 
 Github Issues: https://github.com/Remillard/VHDL-Mode/issues

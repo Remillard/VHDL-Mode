@@ -1,4 +1,14 @@
 <snippet>
+	<!--
+		This snippet is meant for use while editing a project file and
+		will shorten some of the settings insertion for vhdl-mode support.
+
+		NOTE: In the vhdl-copyright-block, because this is a snippet the
+		fields require a escaped $ symbol.  This keeps the snippet system
+		from attempting to fill these fields.  This is slightly different than
+		the settings text where the escape is not required, so I thought
+		I'd mention it.
+	-->
 	<content><![CDATA[
 // REMEMBER TO PUT A COMMA ON THE FOLDERS ENTRY ABOVE!! $0
 // The settings will degrade to the package default values, and user
@@ -9,7 +19,20 @@
 	"vhdl-company"      : "<Company Name>",
 	"vhdl-project-name" : "<Project Name>",
 	"vhdl-platform"     : "<Part Number>",
-	"vhdl-standard"     : "<VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>"
+	"vhdl-standard"     : "<VHDL-2008 | VHDL-2002 | VHDL-1993 | VHDL-1987>",
+	"vhdl-use-copyright-block" : true,
+	"vhdl-use-revision-block" : true,
+	"vhdl-copyright-block" : [
+		"-- Copyright (c) \${YEAR} \${COMPANY}",
+		"-- ",
+		"-- Project Specific Copyright / Export Control Boilerplate",
+		"-------------------------------------------------------------------------------"
+	],
+	"vhdl-revision-block" : [
+		"-- Revisions: <project specific revision control notice or",
+		"-- individual revision entries if desired.>",
+		"-------------------------------------------------------------------------------"
+	]
 },
 "build_systems":
 [
