@@ -17,6 +17,7 @@ Issues are tracked [here](https://github.com/Remillard/VHDL-Mode/issues "VHDL Mo
 * Subprogram copy and pasting as declaration, body, and call.
 * Proper stutter typing shortcuts for the assignment operators and commenting structures.
 * Code beautification supporting several parenthetical code styles natively (Kernigan & Ritchie, Allman, and Lisp)
+* Customizeable header template
 * Natural language shortcuts through use of snippets for commonly used structures.
 * Syntax file supporting highly granular scoping of lexical structures.
 * Sublime Text **Goto** symbol and definition support, both local and global.
@@ -38,12 +39,16 @@ One particular setting meshes with both the header template and the on-save time
 
 Code beautification should pay attention to the `tab_size` and `translate_tabs_to_spaces` settings that are part of the standard Sublime Text preferences.  Please let me know if this causes any issues.
 
-* `vhdl-user` : Fills in the username portion of the header template.
-* `vhdl-company` : Fills in the company name portion of the header template.
-* `vhdl-project-name` : Fills in the project name portion of the header template.  This field would very commonly be customized in the `sublime-project` file.
-* `vhdl-platform` : Fills in the platform or part number portion of the header template.
-* `vhdl-standard` : Fills in the coding standard portion of the header template.
-* `vhdl-modified-time-string` : Represents the string that will be searched for when the file is saved.  If this is found, that line is replaced with a string comprising of this pattern, plus the current time.
+* `vhdl-user` : *String* : Fills in the username portion of the header template.
+* `vhdl-company` : *String* : Fills in the company name portion of the header template.
+* `vhdl-project-name` : *String* : Fills in the project name portion of the header template.
+* `vhdl-platform` : *String* : Fills in the platform or part number portion of the header template.
+* `vhdl-standard` : *String* : Fills in the coding standard portion of the header template.
+* `vhdl-modified-time-string` : *String* : Represents the string that will be searched for when the file is saved.  If this is found, that line is replaced with a string comprising of this pattern, plus the current time.  This is also used in the header creation to make sure that header template insertion injects the correct string.
+* `vhdl-use-copyright-block` : *Boolean* : Setting this to true will make the header template insertion inject the copyright block.  Setting this to false will make it such that this section is not used.
+* `vhdl-copyright-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline (required due to the optional nature of this block -- see the snippet field location) and is used when `vhdl-use-copyright-block` is set to true.  This string will be searched for ${YEAR} and ${COMPANY} and replaced by the current year, and the `vhdl-company` string respectively.  The string list is required since JSON does not allow multiline strings.
+* `vhdl-use-revision-block` : *Boolean* : Setting this to true will make the header template insertion inject the revision block.  Setting this to false will make it such that this section is not used.
+* `vhdl-revision-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline.  It is used when `vhdl-use-revision-block` is set to true.  This string does not have any field substitutions.
 
 # Usage
 
@@ -93,7 +98,7 @@ Largely templating is handled by the snippet system, however the header is a spe
 **Miscellaneous**
 
 * Package Version : `M-k v`
-* Scope at Point : `M-k s`
+* Scope at Point : `M-k S`
 
 ## Stutter Typing
 

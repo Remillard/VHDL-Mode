@@ -1,0 +1,2 @@
+* Added context selectors to keybinds to help prevent overlap with other packages to be a good package developer citizen.
+* Made header fields "Copyright Block" and "Revision Block" customizable via user or project settings.  See README documentation on these fields.
