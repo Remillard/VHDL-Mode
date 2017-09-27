@@ -1,0 +1,2 @@
+* Implemented the flatten ports command for a copied interface.
+* Implemented the reverse ports command for a copied interface.

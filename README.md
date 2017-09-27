@@ -71,6 +71,8 @@ It may help to remember `p` for port, then `w` for write (to buffer).  The other
 * Paste as Entity: `M-k p e`
 * Paste as (Direct Entity) Instance: `M-k p i`
 * Paste as Testbench: `M-k p t` -- Opens a new view and fills out boilerplate material with the interface as the unit under test.
+* Flatten ports: `M-k p f` -- An interface clause with multiple names on one line is flattened into one name per line.
+* Reverse ports: `M-k p r` -- The direction of ports is reversed in -> out, and out|buffer -> in.
 
 The following animated GIF demonstrates a portion of the port copying feature.
 
