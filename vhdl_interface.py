@@ -172,8 +172,9 @@ class vhdlModePasteAsInstanceCommand(sublime_plugin.TextCommand):
         # Move to the beginning of the line the point is on.
         next_point = util.move_to_bol(self, original_point)
 
-        # Construct structure
-        block_str = _interface.instance()
+        # Construct structure.  Get the file structure.
+        instances = util.scan_instantiations(self)
+        block_str = _interface.instance(instances=instances)
         num_chars = self.view.insert(edit, next_point, block_str)
         print('vhdl-mode: Inserted interface as instance.')
 
@@ -196,7 +197,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
 
         entity_name = '{}_tb'.format(_interface.name)
         signals_str = _interface.signals()
-        instance_str = _interface.instance("DUT")
+        instance_str = _interface.instance(name="DUT")
 
         # Inserting template/snippet
         tb_view.run_command("insert_snippet",
@@ -209,3 +210,27 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
         tb_view.run_command("vhdl_mode_insert_header")
         print('vhdl-mode: Created testbench from interface.')
 
+#----------------------------------------------------------------
+class vhdlModeFlattenPortsCommand(sublime_plugin.TextCommand):
+    """
+    This command scans over the internal data structure
+    for the interface and wherever there is a port or generic
+    that has multiple items on the same line, it'll separate them
+    onto their own lines.
+    """
+    def run(self, edit):
+        global _interface
+        _interface.flatten()
+        print('vhdl-mode: Flattening ports for next paste.')
+
+#----------------------------------------------------------------
+class vhdlModeReversePortsCommand(sublime_plugin.TextCommand):
+    """
+    This command scans over the internal data structure
+    for the interface and flips in and out/buffer modes on
+    the ports.
+    """
+    def run(self, edit):
+        global _interface
+        _interface.reverse()
+        print('vhdl-mode: Reversing ports for next paste.')
