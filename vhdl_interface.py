@@ -172,8 +172,9 @@ class vhdlModePasteAsInstanceCommand(sublime_plugin.TextCommand):
         # Move to the beginning of the line the point is on.
         next_point = util.move_to_bol(self, original_point)
 
-        # Construct structure
-        block_str = _interface.instance()
+        # Construct structure.  Get the file structure.
+        instances = util.scan_instantiations(self)
+        block_str = _interface.instance(instances=instances)
         num_chars = self.view.insert(edit, next_point, block_str)
         print('vhdl-mode: Inserted interface as instance.')
 
@@ -196,7 +197,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
 
         entity_name = '{}_tb'.format(_interface.name)
         signals_str = _interface.signals()
-        instance_str = _interface.instance("DUT")
+        instance_str = _interface.instance(name="DUT")
 
         # Inserting template/snippet
         tb_view.run_command("insert_snippet",

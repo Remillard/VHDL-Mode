@@ -124,3 +124,29 @@ def get_vhdl_setting(cmd_obj, key):
     # Load the view's settings
     view_settings = cmd_obj.view.settings()
     return view_settings.get(key, default)
+
+#----------------------------------------------------------------------------
+def scan_instantiations(cmd_obj):
+    '''
+    Obtaining a list of all regions that contain instantiation labels
+    and then creating a dictionary of instantiated components and their
+    associated labels.
+    '''
+    instances = {}
+    selector = 'meta.block.instantiation entity.name.label'
+    regions = cmd_obj.view.find_by_selector(selector)
+    for region in regions:
+        line = cmd_obj.view.substr(cmd_obj.view.full_line(region))
+        line = re.sub(r'\n', '', line)
+        row, col = cmd_obj.view.rowcol(region.begin())
+        pattern = r'^\s*(?P<label>\w+)\s*:\s*(?:entity)?\s*((?P<lib>\w+)\.)?(?P<entity>[\w\.]+)'
+        s = re.search(pattern, line, re.I)
+        if s:
+            if s.group('entity') in instances:
+                instances[s.group('entity')].append(s.group('label'))
+            else:
+                instances[s.group('entity')] = [s.group('label')]
+        else:
+            print('vhdl-mode: Could not match instantiation on line {}'.format(row+1))
+    return instances
+

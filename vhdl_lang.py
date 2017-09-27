@@ -1069,7 +1069,7 @@ class Interface():
         else:
             return None
 
-    def instance(self, name=""):
+    def instance(self, instances={}, name=""):
         """This method returns a string that consists of the
         interface listed as an instantiation
         """
@@ -1077,6 +1077,13 @@ class Interface():
         # regular instantiation.
         if name:
             inst_name = name
+        elif self.name in instances:
+            instance_count = len(instances[self.name])
+            inst_name = self.name+'_{}'.format(instance_count+1)
+            # Check for duplicate name and just increment index until clear.
+            while inst_name in instances[self.name]:
+                instance_count += 1
+                inst_name = self.name+'_{}'.format(instance_count+1)
         else:
             inst_name = self.name+'_1'
         lines = []
