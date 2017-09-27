@@ -9,6 +9,7 @@
 """
 import re
 import collections
+import copy
 
 _debug = False
 
@@ -775,10 +776,8 @@ class Port():
         if s:
             self.name = s.group('name')
             self.mode = s.group('mode')
-            self.type = s.group('type')
             # Sometimes the type has a trailing space.  Eliminating it.
-            if self.type[-1] == ' ':
-                self.type = self.type[:-1]
+            self.type = re.sub(r'\s*$', '', s.group('type'))
             self.success = True
         else:
             print('vhdl-mode: Could not parse port string.')
@@ -838,7 +837,8 @@ class Generic():
         s = re.search(gp, gen_str)
         if s:
             self.name = s.group('name')
-            self.type = s.group('type')
+            # Sometimes the type has a trailing space.  Eliminating it.
+            self.type = re.sub(r'\s*$', '', s.group('type'))
             self.success = True
         else:
             print('vhdl-mode: Could not parse generic string.')
@@ -1191,6 +1191,37 @@ class Interface():
         indent_vhdl(lines, 0)
 
         return '\n'.join(lines)
+
+    def flatten(self):
+        '''
+        Iterates over the generics and ports and if there
+        is a line with multiple token names on the same line, will
+        make copies of that port with the individual token names.
+        '''
+        if self.if_generics:
+            new_generics = []
+            for generic in self.if_generics:
+                if ',' in generic.name:
+                    name_list = re.sub(r'\s*,\s*', ',', generic.name).split(',')
+                    for name in name_list:
+                        new_generic = copy.copy(generic)
+                        new_generic.name = name
+                        new_generics.append(new_generic)
+                else:
+                    new_generics.append(generic)
+            self.if_generics = new_generics
+        if self.if_ports:
+            new_ports = []
+            for port in self.if_ports:
+                if ',' in port.name:
+                    name_list = re.sub(r'\s*,\s*', ',', port.name).split(',')
+                    for name in name_list:
+                        new_port = copy.copy(port)
+                        new_port.name = name
+                        new_ports.append(new_port)
+                else:
+                    new_ports.append(port)
+            self.if_ports = new_ports
 
 
 # ---------------------------------------------------------------

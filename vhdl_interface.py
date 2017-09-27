@@ -209,3 +209,16 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
         tb_view.run_command("vhdl_mode_insert_header")
         print('vhdl-mode: Created testbench from interface.')
 
+#----------------------------------------------------------------
+class vhdlModeFlattenPortsCommand(sublime_plugin.TextCommand):
+    """
+    This command scans over the internal data structure
+    for the interface and wherever there is a port or generic
+    that has multiple items on the same line, it'll separate them
+    onto their own lines.
+    """
+    def run(self, edit):
+        global _interface
+        _interface.flatten()
+        print('vhdl-mode: Flattening ports for next paste.')
+

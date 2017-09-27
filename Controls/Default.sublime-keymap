@@ -9,6 +9,7 @@
 	{"keys": ["alt+k", "p", "e"], "command": "vhdl_mode_paste_as_entity",    "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	{"keys": ["alt+k", "p", "i"], "command": "vhdl_mode_paste_as_instance",  "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	{"keys": ["alt+k", "p", "t"], "command": "vhdl_mode_paste_as_testbench", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "f"], "command": "vhdl_mode_flatten_ports",      "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	// 's' starts subprogram commands for copy and pasting.
 	{"keys": ["alt+k", "s", "w"], "command": "vhdl_mode_copy_subprogram",      "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	{"keys": ["alt+k", "s", "d"], "command": "vhdl_mode_paste_as_declaration", "context": [{"key": "selector", "operand": "source.vhdl"}] },
