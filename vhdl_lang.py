@@ -1223,6 +1223,20 @@ class Interface():
                     new_ports.append(port)
             self.if_ports = new_ports
 
+    def reverse(self):
+        '''
+        Iterates over the ports and flips the direction/mode.
+        in becomes out
+        out and buffer become in
+        inout is unchanged.
+        '''
+        if self.if_ports:
+            for port in self.if_ports:
+                if port.mode.lower() == 'in':
+                    port.mode = 'out'
+                elif port.mode.lower() == 'out' or port.mode.lower() == 'buffer':
+                    port.mode = 'in'
+
 
 # ---------------------------------------------------------------
 class Subprogram():

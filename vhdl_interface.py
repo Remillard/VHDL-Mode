@@ -222,3 +222,14 @@ class vhdlModeFlattenPortsCommand(sublime_plugin.TextCommand):
         _interface.flatten()
         print('vhdl-mode: Flattening ports for next paste.')
 
+#----------------------------------------------------------------
+class vhdlModeReversePortsCommand(sublime_plugin.TextCommand):
+    """
+    This command scans over the internal data structure
+    for the interface and flips in and out/buffer modes on
+    the ports.
+    """
+    def run(self, edit):
+        global _interface
+        _interface.reverse()
+        print('vhdl-mode: Reversing ports for next paste.')
