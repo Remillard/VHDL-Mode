@@ -40,6 +40,8 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 * Complete VHDL-2008 compliance.
 * Leverage good scoping for better behaviors in all features.
 
+# Usage
+
 ## Configuration
 
 The VHDL Mode `sublime-settings` file contains fields that are used to fill in certain fields in the header template upon insertion.  A user override may be created by selecting `Preferences` >> `Package Settings` >> `VHDL Mode` >> `Settings`.  This will bring up the default settings file and a User variation on the settings.  To customize the fields, simply copy and paste the defaults over to the User override file, and edit to taste.
@@ -60,8 +62,6 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 * `vhdl-copyright-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline (required due to the optional nature of this block -- see the snippet field location) and is used when `vhdl-use-copyright-block` is set to true.  This string will be searched for ${YEAR} and ${COMPANY} and replaced by the current year, and the `vhdl-company` string respectively.  The string list is required since JSON does not allow multiline strings.
 * `vhdl-use-revision-block` : *Boolean* : Setting this to true will make the header template insertion inject the revision block.  Setting this to false will make it such that this section is not used.
 * `vhdl-revision-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline.  It is used when `vhdl-use-revision-block` is set to true.  This string does not have any field substitutions.
-
-# Usage
 
 ## Key Mappings
 
