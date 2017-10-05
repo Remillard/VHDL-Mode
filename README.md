@@ -35,6 +35,10 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 
 * [HDLProject](https://packagecontrol.io/packages/HDLProject) by bootsiaz : It's the closest thing to Emacs vhdl-mode Speedbar that I know of.  This clever implementation leverages symbolic links to make use of Sublime Text's Sidebar for hierarchical project display.
 
+## Dependencies
+
+* ruamel.yaml : This will be installed by Package Control automatically as part of installing the package if it is not already present.
+
 ## Future Design Goals
 
 * Complete VHDL-2008 compliance.
@@ -94,6 +98,7 @@ It may help to remember `s` for subprogram, then `w` for write (to buffer).  Muc
 * Paste as Declaration : `M-k s d`
 * Paste as Body : `M-k s b`
 * Paste as Call : `M-k s c`
+* Flatten parameters: `M-k s f` -- An interface clause with multiple names on one line is flattened into one name per line.
 
 **Commenting**
 
