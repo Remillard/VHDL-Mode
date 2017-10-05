@@ -16,6 +16,7 @@
 	{"keys": ["alt+k", "s", "d"], "command": "vhdl_mode_paste_as_declaration", "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	{"keys": ["alt+k", "s", "b"], "command": "vhdl_mode_paste_as_body",        "context": [{"key": "selector", "operand": "source.vhdl"}] },
 	{"keys": ["alt+k", "s", "c"], "command": "vhdl_mode_paste_as_call",        "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "f"], "command": "vhdl_mode_flatten_params",       "context": [{"key": "selector", "operand": "source.vhdl"}] },
 
 
 	// Toggle comment command.  'c' starts code commands.

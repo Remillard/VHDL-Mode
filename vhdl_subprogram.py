@@ -147,3 +147,17 @@ class vhdlModePasteAsCallCommand(sublime_plugin.TextCommand):
 
         # Set point to the end of insertion.
         util.set_cursor(self, next_point+num_chars)
+
+
+#----------------------------------------------------------------
+class vhdlModeFlattenParamsCommand(sublime_plugin.TextCommand):
+    '''
+    This command scans over the internal data structure of a
+    subprogram interface and whenever there is an interface that
+    has multiple names on the same line, it'll separate these
+    into their own lines, one name per line.
+    '''
+    def run(self, edit):
+        global _subprogram
+        _subprogram.flatten()
+        print('vhdl-mode: Flattening parameters for next paste.')

@@ -1152,12 +1152,18 @@ class Subprogram():
 
         return '\n'.join(lines)
 
+    def flatten(self):
+        new_params = []
+        if self.if_params:
+            for param in self.if_params:
+                if ',' in param.identifier:
+                    name_list = re.sub(r'\s*,\s*', ',', param.identifier).split(',')
+                    for name in name_list:
+                        new_param = copy.copy(param)
+                        new_param.identifier = name
+                        new_params.append(new_param)
 
-
-
-
-
-
-
-
+                else:
+                    new_params.append(param)
+            self.if_params = new_params
 
