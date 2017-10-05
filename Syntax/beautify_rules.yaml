@@ -1,0 +1,280 @@
+%YAML 1.2
+---
+# The key_list entry is an a list (ordered) that lists the order
+# that entries from the open rules section will be evaluated.  This
+# works better than trying to use OrderedDict in some fashion.
+key_list:
+  - entity
+  - component
+  - package
+  - genmap
+  - portmap
+  - generic
+  - port
+  - config
+  - architecture
+  - type
+  - constant
+  - procedure
+  - function
+  - process
+  - ifthen
+  - solothen
+  - elseclause
+  - elsifclause
+  - loop
+  - generate
+  - case
+  - casewhen
+  - begin
+  - assertion
+  - assignment
+  - default
+
+# The open_rules dictionary has a rule entry that a line is evaluated
+# against to determine indentation with the following keys:
+#   pattern      - The regex pattern identifying the element
+#   indent_rule  - A pair comprising the indent for the current line
+#                  and the indent for the following line.
+#   close_rule   - A list of at least one, maybe multiple closing
+#                  methods for each opening structure.  Usually a single
+#                  element (like 'end') however some structures like
+#                  functions and procedures have multiple ways they
+#                  may end (a semicolon in the case of the prototype,
+#                  and 'is' in the case of the body.).  The first
+#                  value is the close_rule key to look for.  The
+#                  second value is the 'dummy' continuation rule.
+#   solo_flag    - A boolean value indicating whether we apply the
+#                  ending/solo rule or just de-indent immediately.
+#   close_offset - An integer value that applies an offset to the
+#                  closing current line, mainly used for the 'map'
+#                  elements.
+open_rules:
+  architecture:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: ^architecture\b
+    solo_flag: false
+  assertion:
+    close_offset: 0
+    close_rule:
+    - [semicolon, null]
+    indent_rule:  [0, 1]
+    pattern: ^assert\b
+    solo_flag: true
+  assignment:
+    close_offset: 0
+    close_rule:
+    - [semicolon, null]
+    indent_rule:  [0, 1]
+    pattern: ' <= '
+    solo_flag: true
+  begin:
+    close_offset: 0
+    close_rule: null
+    indent_rule:  [-1, 0]
+    pattern: \bbegin\b
+    solo_flag: false
+  case:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 2]
+    pattern: (?<!end )\bcase\b
+    solo_flag: false
+  casewhen:
+    close_offset: 0
+    close_rule: null
+    indent_rule:  [-1, 0]
+    pattern: ^when\b
+    solo_flag: false
+  component:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: ^\s*(?<!end )\bcomponent\b
+    solo_flag: false
+  config:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )configuration\b
+    solo_flag: false
+  constant:
+    close_offset: 1
+    close_rule:
+    - [semicolon, null]
+    indent_rule:  [0, 1]
+    pattern: ^\bconstant\b
+    solo_flag: true
+  default:
+    close_offset: 0
+    close_rule: null
+    indent_rule:  [0, 0]
+    pattern: .*
+    solo_flag: false
+  elseclause:
+    close_offset: 0
+    close_rule: null
+    indent_rule:  [-1, 0]
+    pattern: ^else\b
+    solo_flag: false
+  elsifclause:
+    close_offset: 0
+    close_rule: null
+    indent_rule:  [-1, 0]
+    pattern: ^elsif\b
+    solo_flag: false
+  entity:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: ^entity\b
+    solo_flag: false
+  function:
+    close_offset: 1
+    close_rule:
+    - [function_semi, null]
+    - [function_is, function_is]
+    indent_rule:  [0, 1]
+    pattern: ^(?<!end )(?:(pure|impure) )?function\b
+    solo_flag: true
+  generate:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )\bgenerate\b
+    solo_flag: false
+  generic:
+    close_offset: 0
+    close_rule:
+    - [close_semi, null]
+    indent_rule:  [0, 0]
+    pattern: \bgeneric\b
+    solo_flag: true
+  genmap:
+    close_offset: 1
+    close_rule:
+    - [close_paren, null]
+    indent_rule:  [1, 1]
+    pattern: \bgeneric map\b
+    solo_flag: true
+  ifthen:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )\bif\b
+    solo_flag: false
+  loop:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )\bloop\b
+    solo_flag: false
+  package:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )\bpackage\b
+    solo_flag: false
+  port:
+    close_offset: 0
+    close_rule:
+    - [close_semi, null]
+    indent_rule:  [0, 0]
+    pattern: \bport\b
+    solo_flag: true
+  portmap:
+    close_offset: 1
+    close_rule:
+    - [close_semi, null]
+    indent_rule:  [1, 1]
+    pattern: \bport map\b
+    solo_flag: true
+  procedure:
+    close_offset: 1
+    close_rule:
+    - [semicolon, null]
+    - [isclause, isclause]
+    indent_rule:  [0, 1]
+    pattern: ^(?<!end )\bprocedure\b
+    solo_flag: true
+  process:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )(?<!end postponed )\bprocess\b
+    solo_flag: false
+  # This is for a weird code style that uses the 'then' as the
+  # starting element of its own line.  Thanks for that, Leo, you
+  # butthead.
+  solothen:
+    close_offset: 0
+    close_rule: null
+    indent_rule:  [-1, 0]
+    pattern: ^then\b
+    solo_flag: false
+  type:
+    close_offset: 1
+    close_rule:
+    - [semicolon, null]
+    - [record, record]
+    indent_rule:  [0, 1]
+    pattern: ^\btype\b
+    solo_flag: true
+  # Keys past here are only dummies for continuing
+  # a statement whose lexical possibilities branch.
+  # They will not be scanned as a primary opener
+  # because default will catch everything not matched.
+  #
+  # They don't have a pattern for matching because the
+  # clause gets activated by the close_rule portion
+  # of the originating structure, and if the close
+  # rule matches, we branch to these to setup a new
+  # closing rule.
+  #
+  # All other fields are as described above.
+  #
+  # Maintaining these entries at the bottom of the list
+  # in case I can ever go back to OrderedDict.
+  # Excluding them from the key_list iteration does
+  # the same thing as the default matching everything.
+  isclause:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    solo_flag: true
+    start_offset: -1
+  function_is:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    solo_flag: true
+    start_offset: -1
+  record:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    solo_flag: false
+    start_offset: 0
+
+close_rules:
+  close_paren: \)
+  close_semi: \);
+  endclause: '\bend\s?(\w+)?\s?(\w+)?\s?(\w+)?\s?'
+  function_is: \breturn\s+\w+\s+is
+  function_semi: \breturn\s+\w+;
+  isclause: \bis\b
+  record: \brecord\b
+  semicolon: ;
+
