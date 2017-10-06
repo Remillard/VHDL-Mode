@@ -1,5 +1,6 @@
 * Added the subprogram parameter flattening command.
 * Abstracted the beautification rules into a YAML file for easier maintenance.
+* Corrected bug regarding beautification of `constant` items inside of subprogram parameters.
 * Added ruamel.yaml as a dependency to support the above behavior.  Restarting Sublime Text may be required.
 * Added in my test file into the project to keep track of it.
 * Updated documentation.

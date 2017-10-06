@@ -24,6 +24,7 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 	* Instantiation insertion is 'smart' in that it will not duplicate an already existing instantiation name.
 * Subprogram coping from a declaration or specification.
 	* May be pasted as a declaration, body, or call.
+	* Parameters may be flattened.
 * Stutter typing shortcuts for the assignment operators and commenting structures.
 * Templates in the form of snippets for commonly used structures.
 	* Header template is further customizable through settings and will update a time field on save.
