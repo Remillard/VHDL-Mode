@@ -980,7 +980,7 @@ contexts:
           ((postponed)\s*)?
           (process)
       captures:
-        2: entity.name.process.vhdl
+        2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
         5: keyword.other.vhdl
         6: keyword.other.vhdl
@@ -1014,7 +1014,7 @@ contexts:
         2: keyword.declaration.vhdl
         4: keyword.other.vhdl
         6: keyword.other.vhdl
-        8: entity.name.process.vhdl
+        8: entity.name.label.vhdl
         9: punctuation.terminator.vhdl
       pop: true
     - include: sequential-statements
