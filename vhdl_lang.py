@@ -10,6 +10,8 @@
 import re
 import collections
 import copy
+import sublime
+import ruamel.yaml
 
 _debug = False
 
@@ -115,35 +117,67 @@ def remove_extra_space(lines):
 
 
 # ---------------------------------------------------------------
-def analyze_parens(line, count=[0, 0]):
-    """
-    Method is passed a line, and a current count
-    (defaulting to 0) as a list of open and closed.
-    Returns a list structure containing the incremented
-    count as a list, and then a list of the offset
-    locations of the unmatched parens
-    """
-    open_paren = []
-    close_paren = []
-    for i in range(len(line)):
-        if line[i] == '(':
-            open_paren.append(i)
-        elif line[i] == ')':
-            if open_paren:
-                open_paren.pop()
-            else:
-                close_paren.append(i)
-    count = [count[0]+len(open_paren), count[1]+len(close_paren)]
-    return [count, open_paren, close_paren]
+class Parentheses():
+    '''
+    An object whose purpose is to keep track of parenthesis counts
+    and provide helper functions while traversing a text file.
 
+    May be initialized with a two element list indicating the starting
+    counts if needed.
 
-# ---------------------------------------------------------------
-def parens_balanced(count):
-    """
-    Short method to check the values in the parenthesis count
-    list.
-    """
-    return bool(count[0] == count[1])
+    open_cnt and close_cnt represent the current number of unmatched
+    open and closing parentheses.
+
+    open_pos and close_pos represent the character position of the UNMATCHED
+    open and closing parentheses in the last scanned string.
+    '''
+    def __init__(self, counts=[0, 0]):
+        self.open_cnt = counts[0]
+        self.close_cnt = counts[1]
+        self.open_pos = []
+        self.close_pos = []
+
+    @property
+    def delta(self):
+        return self.open_cnt - self.close_cnt
+
+    @property
+    def balanced(self):
+        return bool(self.open_cnt == self.close_cnt)
+
+    def reset(self):
+        self.__init__()
+
+    def scan(self, line):
+        # Reset the position lists.
+        self.open_pos = []
+        self.close_pos = []
+        for i in range(len(line)):
+            if line[i] == '(':
+                # If we find a ( then increment the count and append the
+                # position.
+                self.open_cnt += 1
+                self.open_pos.append(i)
+            elif line[i] == ')':
+                # If we find a ) there are several options.
+                # If open_pos has members, pop off the mate.  Also decrement
+                # the count.
+                # If open_cnt > 0 then decrement the count of the prior
+                # unmatched open.
+                # If open_cnt = 0 then increment the closing count and
+                # append the position.
+                if self.open_pos:
+                    self.open_cnt -= 1
+                    self.open_pos.pop()
+                elif self.open_cnt > 0:
+                    self.open_cnt -= 1
+                else:
+                    self.close_pos.append(i)
+                    self.close_cnt += 1
+
+    def stats(self):
+        return '#(={}, #)={}, OPos={}, CPos={}'.format(self.open_cnt,
+            self.close_cnt, self.open_pos, self.close_pos)
 
 
 # ---------------------------------------------------------------
@@ -259,366 +293,26 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
     been left justified, and attempts impose indentation rules
     upon it for beautification.
     """
-    # 3rd Iteration of how the ruleset is formatted.  Now it
-    # is comprised of two dictionaries.  The first is an
-    # collections.OrderedDict(ionary) because I scan through
-    # this item by item and I wish to preserve some sort of
-    # priority.  This dictionary is of lexical scope beginning
-    # items.  Each item is a dictionary (normal) with the
-    # following keys:
-    #   pattern - The regexp pattern identifying the element.
-    #   indent_rule - A tuple comprising the indent for the
-    #       current line and the next line.
-    #   close_rule - A tuple of tuples, possibly only one
-    #       comprising how to deal with internals.  Most of
-    #       the time it's a single element, however things
-    #       like procedures have a couple different ways
-    #       they can end.
-    #   solo_flag - A boolean value indicating whether we
-    #       apply the ending/solo rule or just deindent
-    #       immediately.
-    #   close_offset - An integer value that applies an
-    #       offset to the closing current line, used for
-    #       the 'map' elements.
-    #
-    # The second dictionary is shorter and is comprised of
-    # lexical scope ending items.
-    #
-    # Workaround for Python 3.3.6 inside of ST3.  Passing
-    # dictionary elements in during instantiation does not
-    # preserve order because at that point, method arguments
-    # are passed as a regular dictionary.  Python 3.6
-    # will pass arguments retaining order which is why it
-    # worked with the command line tool.  So, right now,
-    # using OrderedDict is not useful.  I will turn
-    # open_rules into a regular dictionary, and then create
-    # a list of keys that can be iterated over to create
-    # the order.
+    # 4th iteration of the ruleset.  Frankly I was getting tired of
+    # scrolling past it every time I worked on this file.  I abstracted the
+    # structures out into a YAML formatted file.  All the rules are there.
+    yaml = ruamel.yaml.YAML()
+    yaml.version = (1, 2)
 
-    key_list = ['entity', 'component', 'package', 'genmap', 'portmap',
-        'generic', 'port', 'config', 'architecture', 'type', 'constant',
-        'procedure', 'function', 'process', 'ifthen', 'solothen',
-        'elseclause', 'elsifclause', 'loop', 'generate', 'case', 'casewhen',
-        'begin', 'assertion', 'assignment', 'default']
+    rules_str = sublime.load_resource('Packages/VHDL Mode/Syntax/beautify_rules.yaml')
+    rules_blob = yaml.load(rules_str)
 
-    open_rules = {
-        'entity': {
-            'pattern': r'^entity\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'component': {
-            'pattern': r'^\s*(?<!end )\bcomponent\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'package': {
-            'pattern': r'(?<!end )\bpackage\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'genmap': {
-            'pattern': r'\bgeneric map\b',
-            'indent_rule': (1, 1),
-            'close_rule': (
-                ('close_paren', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 1
-        },
-
-        'portmap': {
-            'pattern': r'\bport map\b',
-            'indent_rule': (1, 1),
-            'close_rule': (
-                ('close_semi', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 1
-        },
-
-        'generic': {
-            'pattern': r'\bgeneric\b',
-            'indent_rule': (0, 0),
-            'close_rule': (
-                ('close_semi', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 0
-        },
-
-        'port': {
-            'pattern': r'\bport\b',
-            'indent_rule': (0, 0),
-            'close_rule': (
-                ('close_semi', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 0
-        },
-
-        'config': {
-            'pattern': r'(?<!end )configuration\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'architecture': {
-            'pattern': r'^architecture\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'type': {
-            'pattern': r'^\btype\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('semicolon', None),
-                ('record', 'record')
-            ),
-            'solo_flag': True,
-            'close_offset': 1
-        },
-
-        'constant': {
-            'pattern': r'^\bconstant\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('semicolon', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 1
-        },
-
-        'procedure': {
-            'pattern': r'^(?<!end )\bprocedure\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('semicolon', None),
-                ('isclause', 'isclause')
-            ),
-            'solo_flag': True,
-            'close_offset': 1
-        },
-
-        'function': {
-            'pattern': r'^(?<!end )(?:(pure|impure) )?function\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('function_semi', None),
-                ('function_is', 'function_is')
-            ),
-            'solo_flag': True,
-            'close_offset': 1
-        },
-
-        'process': {
-            'pattern': r'(?<!end )(?<!end postponed )\bprocess\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'ifthen': {
-            'pattern': r'(?<!end )\bif\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'solothen': {
-            'pattern': r'^then\b',
-            'indent_rule': (-1, 0),
-            'close_rule': None,
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'elseclause': {
-            'pattern': r'^else\b',
-            'indent_rule': (-1, 0),
-            'close_rule': None,
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'elsifclause': {
-            'pattern': r'^elsif\b',
-            'indent_rule': (-1, 0),
-            'close_rule': None,
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'loop': {
-            'pattern': r'(?<!end )\bloop\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'generate': {
-            'pattern': r'(?<!end )\bgenerate\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'case': {
-            'pattern': r'(?<!end )\bcase\b',
-            'indent_rule': (0, 2),
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'casewhen': {
-            'pattern': r'^when\b',
-            'indent_rule': (-1, 0),
-            'close_rule': None,
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'begin': {
-            'pattern': r'\bbegin\b',
-            'indent_rule': (-1, 0),
-            'close_rule': None,
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        'assertion': {
-            'pattern': r'^assert\b',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('semicolon', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 0
-        },
-
-        'assignment': {
-            'pattern': r' <= ',
-            'indent_rule': (0, 1),
-            'close_rule': (
-                ('semicolon', None),
-            ),
-            'solo_flag': True,
-            'close_offset': 0
-        },
-
-        'default': {
-            'pattern': r'.*',
-            'indent_rule': (0, 0),
-            'close_rule': None,
-            'solo_flag': False,
-            'close_offset': 0
-        },
-
-        # Keys past here are only dummies for continuing
-        # a statement whose lexical possibilities branch.
-        # They will not be scanned as a primary opener
-        # because default will catch everything not matched.
-        # Still need the closing result parameters.  These
-        # guys have one more parameter that others don't have
-        # which is a start_offset.  Because they are in
-        # a special class that's not a proper open, nor a
-        # proper close, funny things happen on the line
-        # they're on.
-
-        # 'is' ends a procedure/function in the same place
-        # as a semicolon, but sets up another closing
-        #
-        # Maintaining these entries at the bottom of the list
-        # in case I can ever go back to OrderedDict.
-        # Excluding them from the key_list iteration does
-        # the same thing as the default matching everything.
-        'isclause': {
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': True,
-            'start_offset': -1,
-            'close_offset': 0
-        },
-
-        'function_is': {
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': True,
-            'start_offset': -1,
-            'close_offset': 0
-        },
-
-        # 'record' is a branch off of type.
-        'record': {
-            'close_rule': (
-                ('endclause', None),
-            ),
-            'solo_flag': False,
-            'start_offset': 0,
-            'close_offset': 0
-        }
-    }
-
-    close_rules = {
-        'semicolon': r';',
-        'close_paren': r'\)',
-        'close_semi': r'\);',
-        'endclause': r'\bend\s?(\w+)?\s?(\w+)?\s?(\w+)?\s?',
-        'isclause': r'\bis\b',
-        'record': r'\brecord\b',
-        'function_is': r'\breturn\s+\w+\s+is',
-        'function_semi': r'\breturn\s+\w+;'
-    }
+    key_list = rules_blob['key_list']
+    open_rules = rules_blob['open_rules']
+    close_rules = rules_blob['close_rules']
 
     # Initialize the indent indexes.
     # closing_stack is using deque() and each element is:
     # 0. The key name matched.
     # 1. The current indent level.
     # Since it's a stack, we're always referencing element 0 (top).
-    current_indent = initial
-    next_indent = current_indent
-    paren_count = [0, 0]
+    current_indent = next_indent = initial
+    parens = Parentheses()
     closing_stack = collections.deque()
     unbalance_flag = False
     # Set the indent to tabs or spaces here
@@ -630,15 +324,8 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
     # Scan the lines.
     for i in range(len(lines)):
         # Strip any comment from the line before analysis.
-        # TODO: Need to avoid comment triggers inside of strings.
-        #line = re.sub('--.*$', '', lines[i])
         line = strip_comments(lines[i])
-        # Figure out the line's parentheses
-        paren_count, open_paren_pos, close_paren_pos = \
-            analyze_parens(line, paren_count)
-
-        debug('{}: ci={} ni={} : {}'.format(i, current_indent,
-                                            next_indent, lines[i]))
+        debug('{}: ci={} ni={} : {}'.format(i, current_indent, next_indent, lines[i]))
 
         ############################################################
         # Modification Rules
@@ -651,9 +338,10 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
                 debug('{}: Evaluation pattern: {}'.format(i, rule['pattern']))
                 debug('{}: Type: {}'.format(i, key))
                 # If an ending type is noted, push the key onto the
-                # stack.
+                # stack.  Save the current indent, and the current parenthetical
+                # state as well.
                 if rule['close_rule'] is not None:
-                    closing_stack.appendleft([key, current_indent])
+                    closing_stack.appendleft([key, current_indent, copy.copy(parens)])
                 # Apply the current and next indent values to
                 # the current values.
                 current_indent += rule['indent_rule'][0]
@@ -666,10 +354,12 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
         # unbalanced, indent one additional level to the current line (but not the
         # next because we don't want to keep incrementing outwards.)  When balance
         # is restored, reset the flag.
+        parens.scan(line)
+        debug('{}: {}'.format(i, parens.stats()))
         if unbalance_flag:
-            debug('{}: Unbalanced indenting.'.format(i))
+            debug('{}: Unbalanced parenthesis indenting.'.format(i))
             current_indent += 1
-        unbalance_flag = not parens_balanced(paren_count)
+        unbalance_flag = not parens.balanced
 
         # Special: Closing Item Reset
         # Scan the line for ending key if one exists. If
@@ -680,7 +370,7 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
         if len(closing_stack):
             eval_line = True
             while eval_line:
-                debug('{}: depth={} top={}'.format(i, len(closing_stack), closing_stack[0]))
+                debug('{}: Closing stack depth={} top={} indent={} parens={}'.format(i, len(closing_stack), closing_stack[0][0], closing_stack[0][1], closing_stack[0][2].stats()))
                 # Assume that we will traverse only once, and set the flag
                 # to false.  If we need to rescan, the flag will be set
                 # true.
@@ -688,9 +378,9 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
 
                 # Since the closing rule pattern could be multiple patterns, we have to scan
                 # through that item, referencing into the close_rules dictionary for the
-                # pattern.  Assigning the rule tuple to another name to stop the madness
+                # pattern.  Assigning the rule list to another name to stop the madness
                 # of indirection.
-                stack_key, stack_indent = closing_stack[0]
+                stack_key, stack_indent, stack_parens = closing_stack[0]
                 rules = open_rules[stack_key]['close_rule']
 
                 # Step through and search for the end pattern.
@@ -698,7 +388,7 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
                     debug('{}: Evaluation line: {}'.format(i, line))
                     debug('{}: Evaluation pattern: {}'.format(i, close_rules[close_key]))
                     close_search = re.search(close_rules[close_key], line, re.IGNORECASE)
-                    if close_search and parens_balanced(paren_count):
+                    if close_search and parens.delta == stack_parens.delta:
                         # We've found a match and are in a balanced state.
                         debug('{}: Found closing match to {}'.format(i, stack_key))
                         if result is not None:
@@ -707,7 +397,7 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
                             # key to the top of the stack and re-evaluate.
                             debug('{}: Continuation found.  Re-evaluating for {}'.format(i, result))
                             closing_stack.popleft()
-                            closing_stack.appendleft([result, stack_indent])
+                            closing_stack.appendleft([result, stack_indent, stack_parens])
                             # Need to do a solo line check, mainly for those is clauses.
                             if open_rules[result]['solo_flag']:
                                 solo_search = re.search(r'^\)?\s?'+close_rules[close_key], line, re.IGNORECASE)
@@ -1306,13 +996,14 @@ class Subprogram():
         func_tail_pattern = r"return\s+(?P<rtype>.*?)\s*(;|is)"
 
         # Find our parenthesis state.
-        self.paren_count, open_pos, close_pos = analyze_parens(line, self.paren_count)
+        parens = Parentheses()
+        parens.scan(line)
 
         # If we are unbalanced, then there's nothing to do and return.  Otherwise
         # use the last paren location to trim the line and perform the search.
-        if self.paren_count[0] == self.paren_count[1]:
+        if parens.balanced:
             if close_pos:
-                new_line = line[close_pos[-1]:]
+                new_line = line[parens.close_pos[-1]:]
                 offset = close_pos[-1]
             else:
                 new_line = line
@@ -1489,12 +1180,18 @@ class Subprogram():
 
         return '\n'.join(lines)
 
+    def flatten(self):
+        new_params = []
+        if self.if_params:
+            for param in self.if_params:
+                if ',' in param.identifier:
+                    name_list = re.sub(r'\s*,\s*', ',', param.identifier).split(',')
+                    for name in name_list:
+                        new_param = copy.copy(param)
+                        new_param.identifier = name
+                        new_params.append(new_param)
 
-
-
-
-
-
-
-
+                else:
+                    new_params.append(param)
+            self.if_params = new_params
 

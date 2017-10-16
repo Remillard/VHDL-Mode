@@ -24,6 +24,7 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 	* Instantiation insertion is 'smart' in that it will not duplicate an already existing instantiation name.
 * Subprogram coping from a declaration or specification.
 	* May be pasted as a declaration, body, or call.
+	* Parameters may be flattened.
 * Stutter typing shortcuts for the assignment operators and commenting structures.
 * Templates in the form of snippets for commonly used structures.
 	* Header template is further customizable through settings and will update a time field on save.
@@ -35,10 +36,16 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 
 * [HDLProject](https://packagecontrol.io/packages/HDLProject) by bootsiaz : It's the closest thing to Emacs vhdl-mode Speedbar that I know of.  This clever implementation leverages symbolic links to make use of Sublime Text's Sidebar for hierarchical project display.
 
+## Dependencies
+
+* ruamel.yaml : This will be installed by Package Control automatically as part of installing the package if it is not already present.
+
 ## Future Design Goals
 
 * Complete VHDL-2008 compliance.
 * Leverage good scoping for better behaviors in all features.
+
+# Usage
 
 ## Configuration
 
@@ -60,8 +67,6 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 * `vhdl-copyright-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline (required due to the optional nature of this block -- see the snippet field location) and is used when `vhdl-use-copyright-block` is set to true.  This string will be searched for ${YEAR} and ${COMPANY} and replaced by the current year, and the `vhdl-company` string respectively.  The string list is required since JSON does not allow multiline strings.
 * `vhdl-use-revision-block` : *Boolean* : Setting this to true will make the header template insertion inject the revision block.  Setting this to false will make it such that this section is not used.
 * `vhdl-revision-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline.  It is used when `vhdl-use-revision-block` is set to true.  This string does not have any field substitutions.
-
-# Usage
 
 ## Key Mappings
 
@@ -94,6 +99,7 @@ It may help to remember `s` for subprogram, then `w` for write (to buffer).  Muc
 * Paste as Declaration : `M-k s d`
 * Paste as Body : `M-k s b`
 * Paste as Call : `M-k s c`
+* Flatten parameters: `M-k s f` -- An interface clause with multiple names on one line is flattened into one name per line.
 
 **Commenting**
 
