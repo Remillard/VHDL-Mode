@@ -1,0 +1,2 @@
+* Fixed bug in the Sublime Package Settings menu where the keybindings file would not display.
+* Updated Sublime Commands to add more recent commands to the Command Palette.
