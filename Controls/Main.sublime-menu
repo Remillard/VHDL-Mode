@@ -30,7 +30,7 @@
                                 "caption": "Key Bindings - Default",
                                 "command": "open_file", "args":
                                 {
-                                    "file": "${packages}/VHDL Mode/Default.sublime-keymap",
+                                    "file": "${packages}/VHDL Mode/Controls/Default.sublime-keymap",
                                 }
                             }
                         ]
