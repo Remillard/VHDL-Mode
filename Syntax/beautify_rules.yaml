@@ -6,6 +6,7 @@
 key_list:
   - entity
   - component
+  - package-instance
   - package
   - genmap
   - portmap
@@ -179,6 +180,16 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bloop\b
     solo_flag: false
+  # VHDL-2008 Construct.  Ends on a semicolon and can contain a
+  # generic map.  Generic map takes care of itself, so package instance
+  # doesn't need to indent.  We'll just look for a semicolon.
+  package-instance:
+    pattern: 'package \w* is new'
+    indent_rule: [0, 0]
+    close_rule:
+      - [close_semi, null]
+    solo_flag: false
+    close_offset: 0
   package:
     close_offset: 0
     close_rule:
