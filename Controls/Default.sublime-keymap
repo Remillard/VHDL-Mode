@@ -67,9 +67,34 @@
 
 
 	// Version Command
-	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": false}] },
 
 	// Miscellaneous
-	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"}
+	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"},
+
+	//////////////////////////////////////////////////////////////////////////
+	// Emacs Specific Keybinds
+	// Activated by setting 'vhdl-emacs-keybinds' to true in user Preferences
+	// DO NOT USE UNLESS ALSO USING EMACS PRO ESSENTIALS
+	{"keys": ["ctrl+c", "ctrl+v"], "command": "vhdl_mode_version",               "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+b"], "command": "vhdl_mode_beautify_buffer",       "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+c"], "command": "vhdl_mode_toggle_comment_region", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+k"], "command": "build",                           "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+
+	{"keys": ["ctrl+c", "ctrl+t", "ctrl+h"], "command": "vhdl_mode_insert_header", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+w"], "command": "vhdl_mode_copy_ports",           "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+s"], "command": "vhdl_mode_paste_as_signal",      "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+c"], "command": "vhdl_mode_paste_as_component",   "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+e"], "command": "vhdl_mode_paste_as_entity",      "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+i"], "command": "vhdl_mode_paste_as_instance",    "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+t"], "command": "vhdl_mode_paste_as_testbench",   "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+f"], "command": "vhdl_mode_flatten_ports",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+r"], "command": "vhdl_mode_reverse_ports",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+w"], "command": "vhdl_mode_copy_subprogram",      "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+d"], "command": "vhdl_mode_paste_as_declaration", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+b"], "command": "vhdl_mode_paste_as_body",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+c"], "command": "vhdl_mode_paste_as_call",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+f"], "command": "vhdl_mode_flatten_params",       "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] }
 
 ]

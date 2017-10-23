@@ -4,7 +4,7 @@
 
 This package attempts to recreate the functionality found in the well-loved language mode in Emacs.  The extensibility of Sublime Text makes it an excellent platform upon which to attempt this.
 
-This package may stand alone, however it was created to co-exist peacefully alone with the Emacs Pro Essential package.  In that same vein, the keyboard shortcuts were designed around the vhdl-mode shortcuts in Emacs.
+This package may stand alone, however it was created to co-exist peacefully alone with the Emacs Pro Essential package.  In that same vein, the keyboard shortcuts were designed around the vhdl-mode shortcuts in Emacs.  Additionally, there is now a Preferences setting that activates the Emacs vhdl-mode keybinds if desired.
 
 Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax definition did not conform well to current scoping best practices (noticable with color schemes) and had some issues with certain syntactical structures.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.  VHDL-2008 is a work in progress.
 
@@ -34,6 +34,7 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 
 ## Related Packages
 
+* [Emacs Pro Essentials](https://packagecontrol.io/packages/Emacs%20Pro%20Essentials) by sublime-emacs : The VHDL Mode package will work without this package, however if you are coming from Emacs vhdl-mode, you may find this package useful.  Also see the setting for turning on Emacs vhdl-mode keybinds.
 * [HDLProject](https://packagecontrol.io/packages/HDLProject) by bootsiaz : It's the closest thing to Emacs vhdl-mode Speedbar that I know of.  This clever implementation leverages symbolic links to make use of Sublime Text's Sidebar for hierarchical project display.
 
 ## Dependencies
@@ -67,12 +68,15 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 * `vhdl-copyright-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline (required due to the optional nature of this block -- see the snippet field location) and is used when `vhdl-use-copyright-block` is set to true.  This string will be searched for ${YEAR} and ${COMPANY} and replaced by the current year, and the `vhdl-company` string respectively.  The string list is required since JSON does not allow multiline strings.
 * `vhdl-use-revision-block` : *Boolean* : Setting this to true will make the header template insertion inject the revision block.  Setting this to false will make it such that this section is not used.
 * `vhdl-revision-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline.  It is used when `vhdl-use-revision-block` is set to true.  This string does not have any field substitutions.
+* `vhdl-emacs-keybinds` : *Boolean* : This setting must be set in the User's Preferences, and not the VHDL Mode package settings.  When set `true` this activates a second set of keybindings that are identical to the Emacs vhdl-mode keybindings.  ** *WARNING!!! This should NOT be used unless the user is using Emacs Pro Essentials and is familiar with Emacs keybindings.  The trigger key for most Emacs code functions starts with `C-c` which is really going to mess with your head if you're expecting that to be the typical Windows Copy command.* **
 
 ## Key Mappings
 
-As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment, and the commonly used `C-c` prefix for code mode commands in Emacs will conflict with the standard Windows copy command.  Sublime Text 3 seems to use `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  The key mappings are also context selected, so should not trigger on anything that is not a `source.vhdl` file.
+As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  However I am well aware that I'm also in a Windows environment, and the commonly used `C-c` prefix for code mode commands in Emacs will conflict with the standard Windows copy command.  Sublime Text 3 frequently uses `M-k` as an extension keymap and this seemed a suitable replacement (in the Windows environment the `Meta` key is `Alt`).  The key mappings are also context selected, so should not trigger on anything that is not a `source.vhdl` file.
 
 Another note, these are sequence keystrokes.  For example to copy a port interface from an entity, move the point into the structure (anywhere should be fine) and hit `Alt-k` then `p` then `w`.  These should not be chorded.
+
+For the long-time Emacs vhdl-mode user, there is now a preference for activating the original Emacs vhdl-mode keybinds.  I am not going to document these here as it will likely confuse new users however if interested, simply look at the `Default.sublime-keymap` file for the keybinds.
 
 **Port Interface Copy/Paste Functions**
 
@@ -118,6 +122,7 @@ Largely templating is handled by the snippet system, however the header is a spe
 
 * Package Version : `M-k v`
 * Scope at Point : `M-k S`
+* Build : `C-c C-k` -- Only if `vhdl-emacs-keybinds` is set to true.  Otherwise the Sublime Text 3 default keybind of `F7` will run build.
 
 ## Stutter Typing
 
