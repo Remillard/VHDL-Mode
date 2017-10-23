@@ -1,0 +1,7 @@
+* Implemented a fix for VHDL-2008 package library use with generic mapping.
+* Created a second set of keybindings for Emacs vhdl-mode users.  If
+  'vhdl-emacs-keybinds' is set to true in the user's preferences, it will
+  activate the normal Emacs keybinds for these commands.  This should not be
+  used unless the user is familiar with Emacs, vhdl-mode, and is also using
+  Emacs Pro Essentials because the starting keybind is `Ctrl-C` which will
+  conflict with normal Windows copy commands.
