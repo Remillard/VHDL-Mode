@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Thu Oct  5 09:15:57 2017
+-- Last update : Mon Oct 23 14:44:27 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -7,6 +7,17 @@
 -- as I do several strange things to make sure various aspects of beautification
 -- and syntax scoping are checked.
 -------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- VHDL-2008 package library use.
+package master_bfm is new work.avalon_bfm_pkg
+	generic map
+	(
+		G_DATA_WIDTH  => 32,
+		G_ADDR_WIDTH  => 10,
+		G_BURST_WIDTH => 4
+	);
+use work.master_bfm.all;
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
