@@ -78,6 +78,11 @@ contexts:
         5: keyword.declaration.begin.vhdl
       push:
         - meta_scope: meta.block.entity.vhdl
+        # Passive block set
+        - match: (?i)\b(begin)\b
+          captures:
+            1: keyword.declaration.begin.vhdl
+          set: entity-passive-statements
         # Matching identifier variation
         - match: |-
             (?xi)
@@ -121,6 +126,11 @@ contexts:
       push:
         - meta_scope: meta.block.entity.vhdl
         # Non-matching identifier variation
+        # Passive block set
+        - match: (?i)\b(begin)\b
+          captures:
+            1: keyword.declaration.begin.vhdl
+          set: entity-passive-statements
         - match: |-
             (?xi)
               ((end)\s*)
@@ -136,6 +146,42 @@ contexts:
           pop: true
         - include: generic-interface
         - include: port-interface
+
+  entity-passive-statements:
+    - meta_scope: meta.block.entity.passives.vhdl
+    # Valid identifier match.  Cannot match against the opening
+    # identifier as we've lost the capture after the set.
+    - match: |-
+        (?xi)
+          ((end)\s*)
+          ((entity)\s*)?
+          (({{identifier}})\s*)?
+          (;)
+      captures:
+        2: keyword.declaration.end.vhdl
+        4: storage.type.entity.vhdl
+        6: entity.name.entity.vhdl
+        7: punctuation.terminator.vhdl
+      pop: true
+      scope: meta.group.terminal.vhdl
+    # Invalid identifier match.
+    - match: |-
+        (?xi)
+          ((end)\s*)
+          ((entity)\s*)?
+          ((\S+)\s*)?
+          (;)
+      captures:
+        2: keyword.declaration.end.vhdl
+        4: storage.type.entity.vhdl
+        6: invalid.illegal.identifier.vhdl
+        7: punctuation.terminator.vhdl
+      pop: true
+      scope: meta.group.terminal.vhdl
+    - include: process-begin
+    - include: assertion-statement
+    # Must be last
+    - include: seq-subprogram-call
 
   package-declarations:
     # Valid identifier variation
@@ -621,45 +667,69 @@ contexts:
 
   components:
     # Valid identifier variation
-    - match: (?i)^\s*(component)\s+({{identifier}})\s+(is)?
+    - match: |-
+        (?xi)
+          ((component)\s*)
+          (({{identifier}})\s*)
+          (is)?
       captures:
-        1: storage.type.component.vhdl
-        2: entity.name.component.vhdl
-        3: keyword.declaration.vhdl
+        2: storage.type.component.vhdl
+        4: entity.name.component.vhdl
+        5: keyword.declaration.begin.vhdl
       push:
         - meta_scope: meta.block.component.vhdl
         # Matching identifier variation
-        - match: (?i)^\s*(end)\s+(component)?\s+(\2)?\s*(;)
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((component)\s*)
+              ((\4)\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.component.vhdl
-            3: entity.name.component.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.end.vhdl
+            4: storage.type.component.vhdl
+            6: entity.name.component.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
         # Non-matching identifier variation
-        - match: (?i)^\s*(end)\s+(component)?\s+(\S+)?\s*(;)
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((component)\s*)
+              ((\S+)\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.component.vhdl
-            3: invalid.illegal.non-matching-identifier.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.end.vhdl
+            4: storage.type.component.vhdl
+            6: invalid.illegal.non-matching-identifier.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
         - include: generic-interface
         - include: port-interface
     # Invalid identifier variation
-    - match: (?i)^\s*(component)\s+(\S+?)\s+(is)
+    - match: |-
+        (?xi)
+          ((component)\s*)
+          ((\S+)\s*)
+          (is)
       captures:
-        1: storage.type.component.vhdl
-        2: invalid.illegal.identifier.vhdl
-        3: keyword.declaration.vhdl
+        2: storage.type.component.vhdl
+        4: invalid.illegal.identifier.vhdl
+        5: keyword.declaration.vhdl
       push:
         - meta_scope: meta.block.component.vhdl
-        - match: (?i)^\s*(end)\s+(component)?\s+(\S+)?\s*(;)
+        # Non-matching identifier variation
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((component)\s*)?
+              ((\S+)\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.component.vhdl
-            3: invalid.illegal.identifier.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.vhdl
+            4: storage.type.component.vhdl
+            6: invalid.illegal.identifier.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
         - include: generic-interface
         - include: port-interface
@@ -695,11 +765,15 @@ contexts:
         - include: reserved-words
 
   type-decl:
-    - match: (?i)(type)\s+({{identifier}})\s+(is)
+    - match: |-
+        (?xi)
+          ((type)\s*)
+          (({{identifier}})\s*)
+          (is)?
       captures:
-        1: storage.type.type.vhdl
-        2: variable.other.vhdl
-        3: keyword.declaration.vhdl
+        2: storage.type.type.vhdl
+        4: variable.other.vhdl
+        5: keyword.declaration.begin.vhdl
       push:
         - meta_scope: meta.statement.type.vhdl
         - match: '(;)'
@@ -713,7 +787,7 @@ contexts:
   # This is sort of a special construct because it is the only
   # type keyword that uses an end structure.
   record-decl:
-    - match: (?i)(record)
+    - match: (?i)\b(record)\b
       captures:
         1: keyword.declaration.vhdl
       push:
@@ -889,6 +963,7 @@ contexts:
   # Concurrent statements
   ###########################################################################
   concurrent-statements:
+    - include: assertion-statement
     - include: process-begin
     - include: conc-signal-assignment
     - include: generate-statements
@@ -1326,6 +1401,25 @@ contexts:
                   pop: true
             - include: concurrent-statements
 
+  assertion-statement:
+    - match: |-
+        (?xi)
+          (({{identifier}})\s*(:)\s*)?
+          ((assert)\s*)
+      captures:
+        2: entity.name.label.vhdl
+        3: punctuation.separator.vhdl
+        5: keyword.other.vhdl
+      push:
+        - meta_scope: meta.statement.assert.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - match: \b(report|severity)\b
+          captures:
+            1: keyword.other.vhdl
+
   ###########################################################################
   # Sequential statements
   ###########################################################################
@@ -1336,6 +1430,8 @@ contexts:
     - include: seq-case
     - include: seq-loops
     - include: seq-shorties
+    # THIS ONE MUST BE LAST
+    - include: seq-subprogram-call
 
   seq-variable-assignment:
     # Basic
@@ -1486,23 +1582,34 @@ contexts:
 
   seq-loops:
     # Basic loop
-    - match: (?i)(({{identifier}})\s*(:)\s*)?\b(loop)\b
+    - match: |-
+        (?xi)
+          (({{identifier}})\s*(:)\s*)?
+          \b(loop)\b
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
         4: keyword.other.vhdl
       push:
         - meta_scope: meta.block.loop.body.vhdl
-        - include: sequential-statements
-        - match: (?i)(end)\s+(loop)\s*({{identifier}}\s*)?(;)
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((loop)\s*)
+              (({{identifier}})\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: keyword.other.vhdl
-            3: entity.name.label.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.vhdl
+            4: keyword.other.vhdl
+            6: entity.name.label.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
+        - include: sequential-statements
     # While loop
-    - match: (?i)(({{identifier}})\s*(:)\s*)?\b(while)\b
+    - match: |-
+        (?xi)
+          (({{identifier}})\s*(:)\s*)?
+          \b(while)\b
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
@@ -1517,16 +1624,24 @@ contexts:
             1: keyword.other.vhdl
           set:
             - meta_scope: meta.block.loop.body.vhdl
-            - include: sequential-statements
-            - match: (?i)(end)\s+(loop)\s*({{identifier}}\s*)?(;)
+            - match: |-
+                (?xi)
+                  ((end)\s*)
+                  ((loop)\s*)
+                  (({{identifier}})\s*)?
+                  (;)
               captures:
-                1: keyword.declaration.vhdl
-                2: keyword.other.vhdl
-                3: entity.name.label.vhdl
-                4: punctuation.terminator.vhdl
+                2: keyword.declaration.vhdl
+                4: keyword.other.vhdl
+                6: entity.name.label.vhdl
+                7: punctuation.terminator.vhdl
               pop: true
+            - include: sequential-statements
     # For loop
-    - match: (?i)(({{identifier}})\s*(:)\s*)?\b(for)\b
+    - match: |-
+        (?xi)
+          (({{identifier}})\s*(:)\s*)?
+          \b(for)\b
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
@@ -1541,14 +1656,19 @@ contexts:
             1: keyword.other.vhdl
           set:
             - meta_scope: meta.block.loop.body.vhdl
-            - include: sequential-statements
-            - match: (?i)(end)\s+(loop)\s*({{identifier}}\s*)?(;)
+            - match: |-
+                (?xi)
+                  ((end)\s*)
+                  ((loop)\s*)
+                  (({{identifier}})\s*)?
+                  (;)
               captures:
-                1: keyword.declaration.vhdl
-                2: keyword.other.vhdl
-                3: entity.name.label.vhdl
-                4: punctuation.terminator.vhdl
+                2: keyword.declaration.vhdl
+                4: keyword.other.vhdl
+                6: entity.name.label.vhdl
+                7: punctuation.terminator.vhdl
               pop: true
+            - include: sequential-statements
         # Needs to be last
         - include: reserved-words
         - include: discrete-range
@@ -1596,6 +1716,25 @@ contexts:
         - include: stray-parens
         - include: reserved-words
 
+  # This match should pretty much be lowest priority because it's going to
+  # match any valid identifier much like concurrent instantiations.
+  seq-subprogram-call:
+    - match: |-
+        (?xi)
+          (({{identifier}})\s*(:)\s*)?
+          (({{identifier}})\s*)
+      captures:
+        2: entity.name.label.vhdl
+        3: punctuation.separator.vhdl
+        5: variable.function.vhdl
+      push:
+        - meta_scope: meta.statement.subprogram.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - include: basic-paren-group
+        - include: stray-parens
 
   ###########################################################################
   # Utility matches
@@ -1877,6 +2016,11 @@ contexts:
       scope: support.type.numeric-std.vhdl
 
   library-functions:
+    - match: |-
+        (?xi)\b(
+          to_string
+        )\b
+      scope: support.function.predefined.vhdl
     - match: |-
         (?xi)\b(
           stop|finish|resolution_limit
