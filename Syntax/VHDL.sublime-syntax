@@ -719,11 +719,15 @@ contexts:
         - include: reserved-words
 
   type-decl:
-    - match: (?i)(type)\s+({{identifier}})\s+(is)
+    - match: |-
+        (?xi)
+          ((type)\s*)
+          (({{identifier}})\s*)
+          (is)?
       captures:
-        1: storage.type.type.vhdl
-        2: variable.other.vhdl
-        3: keyword.declaration.vhdl
+        2: storage.type.type.vhdl
+        4: variable.other.vhdl
+        5: keyword.declaration.begin.vhdl
       push:
         - meta_scope: meta.statement.type.vhdl
         - match: '(;)'
@@ -737,7 +741,7 @@ contexts:
   # This is sort of a special construct because it is the only
   # type keyword that uses an end structure.
   record-decl:
-    - match: (?i)(record)
+    - match: (?i)\b(record)\b
       captures:
         1: keyword.declaration.vhdl
       push:

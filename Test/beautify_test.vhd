@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Wed Oct 25 09:17:52 2017
+-- Last update : Wed Oct 25 09:28:41 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -635,6 +635,8 @@ package my_package is
 		name             : other_type;
 		really_long_name : yat;
 	end record;
+
+	type T_MY_ARRAY_TYPE is array (3 downto 0) of integer;
 
 	-- Simple constant
 	constant C_CLOCK_SPEED : real := 3.75e-9; -- seconds
