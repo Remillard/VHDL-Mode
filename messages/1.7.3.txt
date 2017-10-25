@@ -1,2 +1,5 @@
 * Fixed syntax bug regarding component declarations missing trailing identifier.
 * Fixed syntax bug regarding `record` requiring a whitespace boundary.
+* Added support for entity passive block.
+* To support entity passive block, added syntax context for assertions and subprograms.
+* Did some style clean-up in the syntax file for a few entries.

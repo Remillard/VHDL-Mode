@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Wed Oct 25 09:28:41 2017
+-- Last update : Wed Oct 25 11:15:30 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -154,6 +154,37 @@ entity lisp_style_entity is
 		item_1234  : in    type(3 downto 0) := X"4";
 		item_12345 : out   type);
 end entity lisp_style_entity;
+
+--------------------------------------------------------------------------------
+-- EXTENDED ENTITY TEST -- Uses the passive statements, assertion, a passive
+-- procedure, a passive process.  VHDL-2008 inclusion of PSL Directives is
+-- beyond the scope of this as I don't have a PSL syntax file.
+--------------------------------------------------------------------------------
+entity passive_test is
+	generic (
+		G_ADDR_WIDTH : integer := 10;
+		G_DATA_WIDTH : integer := 8
+	);
+	port (
+		clk      : in  std_logic;
+		reset    : in  std_logic;
+		addr     : in  std_logic_vector(G_ADDR_WIDTH-1 downto 0);
+		data_in  : in  std_logic_vector(G_DATA_WIDTH-1 downto 0);
+		we       : in  std_logic;
+		data_out : out std_logic_vector(G_DATA_WIDTH-1 downto 0)
+	);
+begin
+	CHECK : assert (G_DATA_WIDTH <= 32)
+		report "ERROR : DATA WIDTH TOO LARGE (>32)"
+		severity ERROR;
+	TIME_CHECK : process (we) is
+	begin
+		if (we = '1') then
+			report "MEMORY WRITTEN AT TIME" & to_string(now);
+		end if;
+	end process TIME_CHECK;
+	my_passive_procedure(clk, addr, result);
+end entity passive_test;
 
 -------------------------------------------------------------------------------
 -- END ENTITY TEST
@@ -435,14 +466,24 @@ begin
 		wait until (a > b);
 		wait for 10 ns;
 
+		-- Procedure call
+		SUBPROGRAM_CALL_LABEL : my_subprogram_call(values);
+
+		MY_BASIC_LOOP : loop
+
+		end loop MY_BASIC_LOOP;
+
 		-- Loop tests
 		MY_LOOP : loop
+
 			MY_INNER_LOOP : loop
-				break;
+				next;
 			end loop MY_INNER_LOOP;
+
 			MY_WHILE_LOOP : while (a > b) loop
 				a <= b;
 			end loop;
+
 			exit;
 		end loop MY_LOOP;
 
