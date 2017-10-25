@@ -621,45 +621,69 @@ contexts:
 
   components:
     # Valid identifier variation
-    - match: (?i)^\s*(component)\s+({{identifier}})\s+(is)?
+    - match: |-
+        (?xi)
+          ((component)\s*)
+          (({{identifier}})\s*)
+          (is)?
       captures:
-        1: storage.type.component.vhdl
-        2: entity.name.component.vhdl
-        3: keyword.declaration.vhdl
+        2: storage.type.component.vhdl
+        4: entity.name.component.vhdl
+        5: keyword.declaration.begin.vhdl
       push:
         - meta_scope: meta.block.component.vhdl
         # Matching identifier variation
-        - match: (?i)^\s*(end)\s+(component)?\s+(\2)?\s*(;)
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((component)\s*)
+              ((\4)\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.component.vhdl
-            3: entity.name.component.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.end.vhdl
+            4: storage.type.component.vhdl
+            6: entity.name.component.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
         # Non-matching identifier variation
-        - match: (?i)^\s*(end)\s+(component)?\s+(\S+)?\s*(;)
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((component)\s*)
+              ((\S+)\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.component.vhdl
-            3: invalid.illegal.non-matching-identifier.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.end.vhdl
+            4: storage.type.component.vhdl
+            6: invalid.illegal.non-matching-identifier.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
         - include: generic-interface
         - include: port-interface
     # Invalid identifier variation
-    - match: (?i)^\s*(component)\s+(\S+?)\s+(is)
+    - match: |-
+        (?xi)
+          ((component)\s*)
+          ((\S+)\s*)
+          (is)
       captures:
-        1: storage.type.component.vhdl
-        2: invalid.illegal.identifier.vhdl
-        3: keyword.declaration.vhdl
+        2: storage.type.component.vhdl
+        4: invalid.illegal.identifier.vhdl
+        5: keyword.declaration.vhdl
       push:
         - meta_scope: meta.block.component.vhdl
-        - match: (?i)^\s*(end)\s+(component)?\s+(\S+)?\s*(;)
+        # Non-matching identifier variation
+        - match: |-
+            (?xi)
+              ((end)\s*)
+              ((component)\s*)?
+              ((\S+)\s*)?
+              (;)
           captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.component.vhdl
-            3: invalid.illegal.identifier.vhdl
-            4: punctuation.terminator.vhdl
+            2: keyword.declaration.vhdl
+            4: storage.type.component.vhdl
+            6: invalid.illegal.identifier.vhdl
+            7: punctuation.terminator.vhdl
           pop: true
         - include: generic-interface
         - include: port-interface

@@ -1,0 +1,1 @@
+* Fixed syntax bug regarding component declarations missing trailing identifier.

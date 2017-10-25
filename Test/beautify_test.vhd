@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Mon Oct 23 14:44:27 2017
+-- Last update : Wed Oct 25 09:17:52 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -175,7 +175,8 @@ architecture rtl of my_entity is
 	-- INDENT LEVEL SHOULD BE AT LEVEL 1 HERE
 	-------------------------------------------------------------------------------
 	-------------------------------------------------------------------------------
-	-- COMPONENT STYLE TEST
+	-- COMPONENT STYLE TEST.  Also checking lexing of variations in optional
+	-- words for components.
 	-------------------------------------------------------------------------------
 	-- K&R Style
 	component kr_style_component is
@@ -192,7 +193,7 @@ architecture rtl of my_entity is
 	end component kr_style_component;
 
 	-- Allman Style
-	component allman_style_component is
+	component allman_style_component
 		generic
 		(
 			DATA_WIDTH          : integer                      := 8;
@@ -217,7 +218,7 @@ architecture rtl of my_entity is
 			reset   : in  std_logic;
 			a, b, c : in  std_logic_vector(3 downto 0);
 			q       : out std_logic);
-	end component lisp_style_component;
+	end component;
 
 	-------------------------------------------------------------------------------
 	-- END COMPONENT STYLE
