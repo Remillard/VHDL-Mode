@@ -3,3 +3,4 @@
 * Added syntax support for an entity passive block.
 * To support entity passive block, added syntax context for assertions and subprograms.
 * Did some style clean-up in the syntax file for a few entries.
+* Added `to_string` as a predefined support function.  Missed this one before.

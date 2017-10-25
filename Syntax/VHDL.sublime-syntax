@@ -2018,6 +2018,11 @@ contexts:
   library-functions:
     - match: |-
         (?xi)\b(
+          to_string
+        )\b
+      scope: support.function.predefined.vhdl
+    - match: |-
+        (?xi)\b(
           stop|finish|resolution_limit
         )\b
       scope: support.function.std.vhdl
