@@ -30,7 +30,7 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 	* Header template is further customizable through settings and will update a time field on save.
 * Code beautification supporting several parenthetical code styles natively (Kernigan & Ritchie, Allman, and Lisp)
 * Sublime Text **Goto** symbol and definition support, both local and global for source tree navigation.
-* Region comment/uncommenting
+* Region comment/uncommenting.  Also handles the continuous commenting behavior of Emacs vhdl-mode.  While writing a comment line, if the final character before hitting `Enter` is a space, the next line will also be a comment, with the commenting characters automatically inserted.
 
 ## Related Packages
 

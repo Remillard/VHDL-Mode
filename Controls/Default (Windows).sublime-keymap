@@ -1,0 +1,111 @@
+[
+	// Method to the Madness
+	// Using Alt-K as an extended command initiator.  After that,
+	// using vhdl-mode similar (though not exact) patterns
+	// 'p' starts port commands for copy and pasting.
+	{"keys": ["alt+k", "p", "w"], "command": "vhdl_mode_copy_ports",         "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "s"], "command": "vhdl_mode_paste_as_signal",    "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "c"], "command": "vhdl_mode_paste_as_component", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "e"], "command": "vhdl_mode_paste_as_entity",    "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "i"], "command": "vhdl_mode_paste_as_instance",  "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "t"], "command": "vhdl_mode_paste_as_testbench", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "f"], "command": "vhdl_mode_flatten_ports",      "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "p", "r"], "command": "vhdl_mode_reverse_ports",      "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	// 's' starts subprogram commands for copy and pasting.
+	{"keys": ["alt+k", "s", "w"], "command": "vhdl_mode_copy_subprogram",      "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "d"], "command": "vhdl_mode_paste_as_declaration", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "b"], "command": "vhdl_mode_paste_as_body",        "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "c"], "command": "vhdl_mode_paste_as_call",        "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "s", "f"], "command": "vhdl_mode_flatten_params",       "context": [{"key": "selector", "operand": "source.vhdl"}] },
+
+
+	// Toggle comment command.  'c' starts code commands.
+	{"keys": ["alt+k", "c", "c"], "command": "vhdl_mode_toggle_comment_region", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+	{"keys": ["alt+k", "c", "b"], "command": "vhdl_mode_beautify_buffer",       "context": [{"key": "selector", "operand": "source.vhdl"}] },
+
+	// 't' starts template commands
+	{"keys": ["alt+k", "t", "h"], "command": "vhdl_mode_insert_header", "context": [{"key": "selector", "operand": "source.vhdl"}] },
+
+	// Stutter typing keybinds.
+	{
+		"keys": [".", "."],
+		"command": "insert",
+		"args": {"characters": " => "},
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": [",", ","],
+		"command": "insert",
+		"args": {"characters": " <= "},
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": [";", ";"],
+		"command": "insert",
+		"args": {"characters": " : "},
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": [";"],
+		"command": "run_macro_file",
+		"args": {"file": "res://Packages/VHDL Mode/Macros/semicolon.sublime-macro"},
+		"context": [
+			{"key": "selector", "operand": "source.vhdl"},
+			{"key": "preceding_text", "operator": "regex_contains", "operand": " : $", "match_all": true}
+		]
+	},
+	{
+		"keys": ["-", "-", "-"],
+		"command": "vhdl_mode_insert_comment_line",
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	{
+		"keys": ["-", "-", "="],
+		"command": "vhdl_mode_insert_comment_box",
+		"context": [{"key": "selector", "operand": "source.vhdl"}]
+	},
+	// This keybind makes it so you can do continuous commenting if you end
+	// have already started a comment line, and the preceding character is a
+	// space.
+	{
+		"keys": ["enter"],
+		"command": "insert",
+		"args": {"characters": "\n-- "},
+		"context": [
+			{"key": "selector", "operand": "comment.line.vhdl"},
+			{"key": "preceding_text", "operator": "regex_contains", "operand": " $", "match_all": true}
+		]
+	},
+
+	// Version Command
+	{"keys": ["alt+k", "v"], "command": "vhdl_mode_version", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": false}] },
+
+	// Miscellaneous
+	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"},
+
+	//////////////////////////////////////////////////////////////////////////
+	// Emacs Specific Keybinds
+	// Activated by setting 'vhdl-emacs-keybinds' to true in user Preferences
+	// DO NOT USE UNLESS ALSO USING EMACS PRO ESSENTIALS
+	{"keys": ["ctrl+c", "ctrl+v"], "command": "vhdl_mode_version",               "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+b"], "command": "vhdl_mode_beautify_buffer",       "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+c"], "command": "vhdl_mode_toggle_comment_region", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+k"], "command": "build",                           "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+
+	{"keys": ["ctrl+c", "ctrl+t", "ctrl+h"], "command": "vhdl_mode_insert_header", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+w"], "command": "vhdl_mode_copy_ports",           "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+s"], "command": "vhdl_mode_paste_as_signal",      "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+c"], "command": "vhdl_mode_paste_as_component",   "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+e"], "command": "vhdl_mode_paste_as_entity",      "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+i"], "command": "vhdl_mode_paste_as_instance",    "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+t"], "command": "vhdl_mode_paste_as_testbench",   "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+f"], "command": "vhdl_mode_flatten_ports",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+p", "ctrl+r"], "command": "vhdl_mode_reverse_ports",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+w"], "command": "vhdl_mode_copy_subprogram",      "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+d"], "command": "vhdl_mode_paste_as_declaration", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+b"], "command": "vhdl_mode_paste_as_body",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+c"], "command": "vhdl_mode_paste_as_call",        "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+s", "ctrl+f"], "command": "vhdl_mode_flatten_params",       "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] }
+
+]

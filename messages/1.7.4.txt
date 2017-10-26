@@ -1,0 +1,9 @@
+* Split out the keybinds into three files for each operating system.
+* Altered Preferences >> Package Settings >> VHDL Mode >> Key Bindings menu
+  command to pull up the keybindings and personal user keybindings side by
+  side, similar to settings.
+* Implemented Emacs vhdl-mode continuous commenting feature.  While writing a
+  comment line, if the final character before hitting Enter is a space, the
+  next line will also be a comment, with the commenting characters automatically
+  inserted.
+* Fixed port copy for entities using passive begin block.

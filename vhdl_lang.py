@@ -179,6 +179,29 @@ class Parentheses():
         return '#(={}, #)={}, OPos={}, CPos={}'.format(self.open_cnt,
             self.close_cnt, self.open_pos, self.close_pos)
 
+    def extract(self, line):
+        '''Given a string, extracts the contents of the next parenthetical
+        grouping (including interior parenthetical groups.)'''
+        start = 0
+        end = 0
+        pcount = 0
+        for i in range(len(line)):
+            if line[i] == '(' and pcount == 0:
+                pcount += 1
+                start = i + 1
+            elif line[i] == '(':
+                pcount += 1
+
+            if line[i] == ')' and pcount > 1:
+                pcount -= 1
+            elif line[i] == ')' and pcount == 1:
+                end = i - 1
+                pcount -= 1
+                break
+        if start >= end:
+            return None
+        else:
+            return line[start:end]
 
 # ---------------------------------------------------------------
 def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
@@ -667,18 +690,6 @@ class Interface():
         p = re.compile(r"\s+")
         self.if_string = re.sub(p, " ", self.if_string)
 
-    def strip_head_tail(self):
-        """Removes the interface lexical beginning and end to
-        aid in parsing the interior."""
-        # Stripping off the beginning portion of the block
-        # as well as the end -- simplifies the chunk.
-        head_pattern = '{} {} is'.format(self.type, self.name)
-        tail_pattern = 'end\s?(?:{})?\s?(?:{})?\s?;'.format(self.type, self.name)
-        hp = re.compile(head_pattern, re.IGNORECASE)
-        tp = re.compile(tail_pattern, re.IGNORECASE)
-        hs = re.search(hp, self.if_string)
-        ts = re.search(tp, self.if_string)
-        self.if_string = self.if_string[hs.end():ts.start()]
 
     def parse_generic_port(self):
         """Attempts to break the interface into known generic and
@@ -690,46 +701,43 @@ class Interface():
         # Now checking for the existence of generic and port zones.
         # Split into generic string and port strings and then parse
         # each separately.  Standard demands generic first, then port.
-        gen_pattern  = re.compile(r"(generic)(\s)?\(", re.IGNORECASE)
-        port_pattern = re.compile(r"(port)(\s)?\(", re.IGNORECASE)
-        tail_pattern = re.compile(r"\)\s?;\s*$", re.IGNORECASE)
+        gen_pattern  = re.compile(r'generic\s*\(', re.I)
+        port_pattern = re.compile(r'port\s*\(', re.I)
         gen_search   = re.search(gen_pattern, self.if_string)
         port_search  = re.search(port_pattern, self.if_string)
-        # Starting from the end and working back, so checking port first.
-        # We don't have to search for internal parenthesis this way.
+
+        # The potential for a passive block in an entity means the previous
+        # method of extracting the port string will no longer work and the
+        # more tedious (though foolproof) method of searching forward from
+        # the port starting point is necessary.
         if port_search:
-            # First snip from port to the end.  Then snip the tail portion
-            # (the trailing parenthesis and semicolon).  This leaves a string
-            # delimited by semicolons that can be split and individually
-            # parsed.
-            port_str = self.if_string[port_search.end():]
-            port_str = re.sub(tail_pattern, "", port_str)
-            port_list = port_str.split(';')
-            for port_str in port_list:
-                port = Port(port_str)
-                if port.success:
-                    self.if_ports.append(port)
+            port_str = Parentheses().extract(self.if_string[port_search.start():])
+            if port_str is not None:
+                port_list = port_str.split(';')
+                for item in port_list:
+                    port = Port(item)
+                    if port.success:
+                        self.if_ports.append(port)
+            else:
+                print('vhdl-mode: No ports found.')
+                port_str = ""
         else:
-            print('vhdl-mode: No ports found')
+            print('vhdl-mode: No ports found.')
             port_str = ""
 
-        # Generic is actually a little tricker because if port
-        # exists, the endpoint for generic is in the middle of the
-        # string.  If not, it's at the end of the string.
         if gen_search:
-            if port_search:
-                gen_str = self.if_string[gen_search.end():port_search.start()]
+            gen_str = Parentheses().extract(self.if_string[gen_search.start():])
+            if gen_str is not None:
+                gen_list = gen_str.split(';')
+                for item in gen_list:
+                    generic = Generic(item)
+                    if generic.success:
+                        self.if_generics.append(generic)
             else:
-                gen_str = self.if_string[gen_search.end():]
-            # Snip the tail
-            gen_str = re.sub(tail_pattern, "", gen_str)
-            gen_list = gen_str.split(';')
-            for gen_str in gen_list:
-                generic = Generic(gen_str)
-                if generic.success:
-                    self.if_generics.append(generic)
+                print('vhdl-mode: No generics found.')
+                gen_str = ""
         else:
-            print('vhdl-mode: No generics found')
+            print('vhdl-mode: No generics found.')
             gen_str = ""
 
     def parse_block(self):
@@ -740,7 +748,6 @@ class Interface():
         # about it.
         self.strip_comments()
         self.strip_whitespace()
-        self.strip_head_tail()
         self.parse_generic_port()
 
     def signals(self):
