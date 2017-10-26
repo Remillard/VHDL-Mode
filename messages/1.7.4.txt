@@ -6,3 +6,4 @@
   comment line, if the final character before hitting Enter is a space, the
   next line will also be a comment, with the commenting characters automatically
   inserted.
+* Fixed port copy for entities using passive begin block.
