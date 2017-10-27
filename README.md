@@ -60,7 +60,7 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 
 * `vhdl-user` : *String* : Fills in the username portion of the header template.
 * `vhdl-company` : *String* : Fills in the company name portion of the header template.
-* `vhdl-project-name` : *String* : Fills in the project name portion of the header template.
+* `vhdl-project-name` : *String* : Fills in the project name portion of the header template.  This one is a good candidate for customizing in the `sublime-project` file!
 * `vhdl-platform` : *String* : Fills in the platform or part number portion of the header template.
 * `vhdl-standard` : *String* : Fills in the coding standard portion of the header template.
 * `vhdl-modified-time-string` : *String* : Represents the string that will be searched for when the file is saved.  If this is found, that line is replaced with a string comprising of this pattern, plus the current time.  This is also used in the header creation to make sure that header template insertion injects the correct string.
@@ -76,7 +76,7 @@ As mentioned, the goal here was to be familiar with Emacs vhdl-mode users.  Howe
 
 Another note, these are sequence keystrokes.  For example to copy a port interface from an entity, move the point into the structure (anywhere should be fine) and hit `Alt-k` then `p` then `w`.  These should not be chorded.
 
-For the long-time Emacs vhdl-mode user, there is now a preference for activating the original Emacs vhdl-mode keybinds.  I am not going to document these here as it will likely confuse new users however if interested, simply look at the `Default.sublime-keymap` file for the keybinds.
+For the long-time Emacs vhdl-mode user, there is now a preference for activating the original Emacs vhdl-mode keybinds.  I am not going to document these here as it will likely confuse new users however if interested, simply look at the `Default (Windows|OSX|Linux).sublime-keymap` file for the keybinds.
 
 **Port Interface Copy/Paste Functions**
 
@@ -149,7 +149,6 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 
 * `spro` : Synchronous Process
 * `cpro` : Combinatorial Process
-* `header` : Produces a header structure at the point (not to be confused by the insert header command which actually puts this at the top of the file.)
 * `funcd` : Produces a function specification/declaration
 * `funcb` : Produces a function with body.
 * `procd` : Produces a procedure specification/declaration
@@ -162,8 +161,8 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 ## Miscellaneous Features
 
 * The insert header command uses several fields from the package settings.  Please see above in **Configuration** for a list of the fields and types to edit to customize the header insertion.
-* The on-save event is trapped and will do a scan of the file, and by default look for `-- Last update : ` in a VHDL file.  If it finds this structure it will update the time and date on that line automatically.  This pattern is configured through settings.
-* Most commands (save for snippets) will leave a trace in the ST3 console which may be useful for debugging.  Any package message specific to this package will start with 'vhdl-mode:'
+* The on-save event is trapped and will do a scan of the file, and by default look for `-- Last update : ` in a VHDL file.  If it finds this structure it will update the time and date on that line automatically (it removes that lines and replaces it).  This pattern is configured through settings.
+* Most commands (save for snippets) will leave a trace in the ST3 console which may be useful for debugging.  Any package message specific to this package will start with `vhdl-mode:`
 
 ## Known Issues and Design Commentary
 
