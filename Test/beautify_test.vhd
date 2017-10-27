@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Fri Oct 27 10:10:19 2017
+-- Last update : Fri Oct 27 10:49:25 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -416,6 +416,7 @@ begin
 				y3 <= 10#10_24.0#E+00;
 
 				z0 <= math_pi;
+				a  <= 3 + 4;
 			end if;
 		end if;
 

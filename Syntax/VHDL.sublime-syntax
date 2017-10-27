@@ -870,22 +870,28 @@ contexts:
           pop: true
         - include: reserved-words
 
-  # This one is a bit weird because alias targets almost anything
-  # and has a lot of optional bits.
+  # Simplified the alias declaration a bit.
   alias-decl:
-    - match: '(?i)\b(alias)\s+(({{identifier}})|(''.'')|({{operator_symbols}}))(\s*(:)\s*(\S+))?\s+\b(is)\b'
-      captures:
-        1: storage.type.alias.vhdl
-        2: entity.name.alias.vhdl
-        7: punctuation.separator.vhdl
-        8: storage.type.subtype.vhdl
-        9: keyword.declaration.vhdl
+    - match: (?i)\b(alias)\b
+      scope: storage.type.alias.vhdl
       push:
         - meta_scope: meta.statement.alias.vhdl
-        - match: (;)
-          captures:
-            1: punctuation.terminator.vhdl
-          pop: true
+        - match: (?i)\b(is)\b
+          scope: keyword.declaration.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - match: ({{identifier}})
+              scope: variable.other.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+        - include: expression-operators
+        - include: character-literal
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - include: basic-paren-group
+        - include: stray-parens
         - include: reserved-words
 
   procedure-spec:
@@ -1727,6 +1733,16 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: reserved-words
+    # Null statements
+    - match: '(?i)\b(null)\b'
+      captures:
+        1: keyword.other.vhdl
+      push:
+        - meta_scope: meta.statement.null.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
 
   # This match should pretty much be lowest priority because it's going to
   # match any valid identifier much like concurrent instantiations.
@@ -2083,7 +2099,7 @@ contexts:
   reserved-words:
     - match: |-
         (?xi)\b(
-          abs|access|after|alias|all|and|architecture|array|assert|assume|
+          abs|access|after|alias-decl|all|and|architecture|array|assert|assume|
           assume_guarantee|attribute|begin|block|body|buffer|bus|case|
           component|configuration|constant|context|cover|default|disconnect|
           downto|else|elsif|end|entity|exit|fairness|file|for|force|function|
@@ -2096,7 +2112,13 @@ contexts:
           subtype|then|to|transport|type|unaffected|units|until|use|variable|
           vmode|vprop|vunit|wait|when|while|with|xnor|xor
         )\b
-      scope: keyword.other.vhdl
+      scope: keyword.reserved.vhdl
+    - match: |-
+        (?xi)\b(
+          left|right|low|high|range|reverse_range|length|ascending|
+          element
+        )\b
+      scope: keyword.attribute.vhdl
 
   library-names:
     - match: |-
