@@ -1,0 +1,2 @@
+* Fixed syntactical/lexing bug that incorrectly scoped signal, constant and
+  variable declarations that specified multiple identifiers per line.

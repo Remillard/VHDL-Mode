@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Wed Oct 25 11:15:30 2017
+-- Last update : Fri Oct 27 10:10:19 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -263,12 +263,14 @@ architecture rtl of my_entity is
 	-------------------------------------------------------------------------------
 	signal my_signal_1 : std_logic;
 	signal my_signal_2 : std_logic_vector(3 downto 0);
+	signal a, b, c     : std_logic;
 	-------------------------------------------------------------------------------
 	-- INDENT LEVEL SHOULD BE AT LEVEL 1 HERE
 	-------------------------------------------------------------------------------
 
-	constant C_CLOCK_PERIOD : real := 1.23e-9;
-	constant MY_PI          : real := 3.141592654;
+	constant C_CLOCK_PERIOD : real    := 1.23e-9;
+	constant MY_PI          : real    := 3.141592654;
+	constant C_FOO, C_BAR   : integer := 999;
 
 	alias slv is std_logic_vector;
 	alias 'c' is letter_c;
@@ -388,7 +390,8 @@ begin
 	-- MIXED CODE TESTS
 	-------------------------------------------------------------------------------
 	SEQUENTIAL_PROCESS : process (clk, reset)
-		variable my_variable : integer;
+		variable my_variable  : integer;
+		shared variable alpha : std_logic_vector(31 downto 0);
 	begin
 		-- If/then normal style
 		IF_LABEL : if (reset = '1') then
@@ -823,6 +826,7 @@ package body my_package is
 		) return boolean is
 		variable low_limit  : unsigned(b'range);
 		variable high_limit : unsigned(b'range);
+		variable foo, bar   : std_logic;
 	begin
 		low_limit  := b - tol;
 		high_limit := b + tol;

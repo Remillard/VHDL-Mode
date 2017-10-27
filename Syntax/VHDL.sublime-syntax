@@ -735,34 +735,42 @@ contexts:
         - include: port-interface
 
   signal-decl:
-    - match: (?i)(signal)\s+({{identifier}})\s*(:)
-      captures:
-        1: storage.type.signal.vhdl
-        2: variable.other.vhdl
-        3: punctuation.separator.vhdl
+    - match: (?i)signal
+      scope: storage.type.signal.vhdl
       push:
         - meta_scope: meta.statement.signal.vhdl
-        - match: '(;)'
-          scope: punctuation.terminator.vhdl
-          pop: true
-        - include: basic-paren-group
-        - include: stray-parens
-        - include: reserved-words
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: basic-paren-group
+            - include: stray-parens
+            - include: reserved-words
 
   constant-decl:
-    - match: (?i)(constant)\s+({{identifier}})\s*(:)
-      captures:
-        1: storage.type.constant.vhdl
-        2: variable.other.vhdl
-        3: punctuation.separator.vhdl
+    - match: (?i)constant
+      scope: storage.type.constant.vhdl
       push:
         - meta_scope: meta.statement.constant.vhdl
-        - match: '(;)'
-          scope: punctuation.terminator.vhdl
-          pop: true
-        - include: basic-paren-group
-        - include: stray-parens
-        - include: reserved-words
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: basic-paren-group
+            - include: stray-parens
+            - include: reserved-words
 
   type-decl:
     - match: |-
@@ -813,19 +821,25 @@ contexts:
         - include: reserved-words
 
   variable-decl:
-    - match: (?i)(shared\s+)?(variable)\s+({{identifier}})\s*(:)
+    - match: (?i)((shared)\s*)?(variable)
       captures:
-        1: keyword.other.vhdl
-        2: storage.type.variable.vhdl
-        3: variable.other.vhdl
-        4: punctuation:separator.vhdl
+        2: keyword.other.vhdl
+        3: storage.type.variable.vhdl
       push:
         - meta_scope: meta.statement.variable.vhdl
-        - match: (;)
-          captures:
-            1: punctuation.terminator.vhdl
-          pop: true
-        - include: reserved-words
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: basic-paren-group
+            - include: stray-parens
+            - include: reserved-words
 
   attribute-decl:
     - match: (?i)(attribute)\s+({{identifier}})\s*(:)
@@ -918,10 +932,8 @@ contexts:
       push:
         - meta_scope: meta.block.function.specification.vhdl
         - include: interface-list
-        - match: (return)\s+({{identifier}})
-          captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.return.vhdl
+        - match: (?i)\b(return)\b
+          scope: keyword.declaration.vhdl
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
