@@ -240,6 +240,7 @@ open_rules:
     close_rule:
     - [semicolon, null]
     - [record, record]
+    - [units, units]
     indent_rule:  [0, 1]
     pattern: ^\btype\b
     solo_flag: true
@@ -278,6 +279,12 @@ open_rules:
     - [endclause, null]
     solo_flag: false
     start_offset: 0
+  units:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    solo_flag: false
+    start_offset: 0
 
 close_rules:
   close_paren: \)
@@ -288,4 +295,5 @@ close_rules:
   isclause: \bis\b
   record: \brecord\b
   semicolon: ;
+  units: \bunits\b
 

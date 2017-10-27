@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Fri Oct 27 10:49:25 2017
+-- Last update : Fri Oct 27 13:46:26 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -679,9 +679,21 @@ package my_package is
 		name             : type(3 downto 0);
 		name             : other_type;
 		really_long_name : yat;
+		a, b, c          : std_logic;
 	end record;
 
 	type T_MY_ARRAY_TYPE is array (3 downto 0) of integer;
+	type word is array (0 to 31) of bit;
+	type state_counts is array (idle to error) of natural;
+	type state_counts is array (controller_state range idle to error) of natural;
+	type coeff_array is array (coeff_ram_address'reverse_range) of real;
+	type my_range is range 0 to 31;
+	type bit_index is range 0 to number_of_bits-1;
+	type resistance is range 0 to 1e9 units
+		ohm;
+		kohm = 1000 ohm;
+		Mohm = 1000 kohm;
+	end units resistance;
 
 	-- Simple constant
 	constant C_CLOCK_SPEED : real := 3.75e-9; -- seconds

@@ -773,39 +773,26 @@ contexts:
             - include: reserved-words
 
   type-decl:
-    - match: |-
-        (?xi)
-          ((type)\s*)
-          (({{identifier}})\s*)
-          (is)?
+    - match: (?i)((type)\s*)({{identifier}})
       captures:
         2: storage.type.type.vhdl
-        4: variable.other.vhdl
-        5: keyword.declaration.begin.vhdl
+        3: entity.name.type.vhdl
       push:
         - meta_scope: meta.statement.type.vhdl
-        - match: '(;)'
+        - match: (;)
           scope: punctuation.terminator.vhdl
           pop: true
-        - include: record-decl
-        - include: basic-paren-group
-        - include: stray-parens
-        - include: reserved-words
-
-  # This is sort of a special construct because it is the only
-  # type keyword that uses an end structure.
-  record-decl:
-    - match: (?i)\b(record)\b
-      captures:
-        1: keyword.declaration.vhdl
-      push:
-        - meta_scope: meta.block.record.vhdl
-        - match: '(end)\s+(record)'
-          captures:
-            1: keyword.declaration.vhdl
-            2: keyword.declaration.vhdl
-          pop: true
-        - include: basic-identifier-decl
+        - match: \b(is)\b
+          scope: keyword.declaration.begin.vhdl
+          set:
+            - meta_scope: meta.statement.type.vhdl
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: record-type
+            - include: enumeration-type
+            - include: array-type
+            - include: range-type
 
   subtype-decl:
     - match: (?i)(subtype)\s+({{identifier}})\s+(is)
@@ -976,6 +963,81 @@ contexts:
     - include: attribute-decl
     - include: attribute-spec
 
+  ###########################################################################
+  # Type Definitions.  There are a lot of variations on type.
+  ###########################################################################
+  record-type:
+    - match: (?i)\b(record)\b
+      scope: storage.type.record.vhdl
+      push:
+        - meta_scope: meta.block.record.vhdl
+        - match: \b(end)\s+(record)\b
+          captures:
+            1: keyword.declaration.end.vhdl
+            2: storage.type.record.vhdl
+          pop: true
+        - include: basic-identifier-decl
+
+  enumeration-type:
+    - match: \(
+      scope: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.group.enumeration.vhdl
+        - match: \)
+          scope: punctuation.group.parens.end.vhdl
+          pop: true
+        - match: ({{identifier}})
+          scope: entity.name.enum.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+
+  array-type:
+    - match: (?i)\b(array)\b\s*(\()
+      captures:
+        1: storage.type.array.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.block.array.vhdl
+        - match: (?i)(\))\s*(of)
+          captures:
+            1: punctuation.group.parens.end.vhdl
+            2: keyword.other.vhdl
+          pop: true
+        - include: reserved-words
+
+  # Numeric range is just "range <expr> to|downto <expr>" or
+  # "range <identifier>'<attribute>" so there's really not much I can
+  # do in the way of defining more scope here.  Physical range type
+  # has a block we can define
+  range-type:
+    - match: (?i)\b(range)\b
+      scope: storage.type.range.vhdl
+    - include: arithmetic-operators
+    - match: (?i)\b(units)\b
+      scope: storage.type.units.vhdl
+      push:
+        - meta_scope: meta.block.units.vhdl
+        - match: (?i)\b(end)\s*(units)\s*({{identifier}})?
+          captures:
+            1: keyword.declaration.end.vhdl
+            2: storage.type.units.vhdl
+            3: entity.name.type.vhdl
+          pop: true
+        - match: ({{identifier}})\s*(;)
+          captures:
+            1: entity.name.units.vhdl
+            2: punctuation.terminator.vhdl
+        - match: ({{identifier}})\s*(=)
+          captures:
+            1: entity.name.units.vhdl
+            2: keyword.operator.assignment.vhdl
+          push:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - match: ({{identifier}})
+              scope: entity.name.units.vhdl
+    - include: reserved-words
 
   ###########################################################################
   # Concurrent statements
