@@ -735,69 +735,64 @@ contexts:
         - include: port-interface
 
   signal-decl:
-    - match: (?i)(signal)\s+({{identifier}})\s*(:)
-      captures:
-        1: storage.type.signal.vhdl
-        2: variable.other.vhdl
-        3: punctuation.separator.vhdl
+    - match: (?i)signal
+      scope: storage.type.signal.vhdl
       push:
         - meta_scope: meta.statement.signal.vhdl
-        - match: '(;)'
-          scope: punctuation.terminator.vhdl
-          pop: true
-        - include: basic-paren-group
-        - include: stray-parens
-        - include: reserved-words
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: basic-paren-group
+            - include: stray-parens
+            - include: reserved-words
 
   constant-decl:
-    - match: (?i)(constant)\s+({{identifier}})\s*(:)
-      captures:
-        1: storage.type.constant.vhdl
-        2: variable.other.vhdl
-        3: punctuation.separator.vhdl
+    - match: (?i)constant
+      scope: storage.type.constant.vhdl
       push:
         - meta_scope: meta.statement.constant.vhdl
-        - match: '(;)'
-          scope: punctuation.terminator.vhdl
-          pop: true
-        - include: basic-paren-group
-        - include: stray-parens
-        - include: reserved-words
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: basic-paren-group
+            - include: stray-parens
+            - include: reserved-words
 
   type-decl:
-    - match: |-
-        (?xi)
-          ((type)\s*)
-          (({{identifier}})\s*)
-          (is)?
+    - match: (?i)((type)\s*)({{identifier}})
       captures:
         2: storage.type.type.vhdl
-        4: variable.other.vhdl
-        5: keyword.declaration.begin.vhdl
+        3: entity.name.type.vhdl
       push:
         - meta_scope: meta.statement.type.vhdl
-        - match: '(;)'
+        - match: (;)
           scope: punctuation.terminator.vhdl
           pop: true
-        - include: record-decl
-        - include: basic-paren-group
-        - include: stray-parens
-        - include: reserved-words
-
-  # This is sort of a special construct because it is the only
-  # type keyword that uses an end structure.
-  record-decl:
-    - match: (?i)\b(record)\b
-      captures:
-        1: keyword.declaration.vhdl
-      push:
-        - meta_scope: meta.block.record.vhdl
-        - match: '(end)\s+(record)'
-          captures:
-            1: keyword.declaration.vhdl
-            2: keyword.declaration.vhdl
-          pop: true
-        - include: basic-identifier-decl
+        - match: \b(is)\b
+          scope: keyword.declaration.begin.vhdl
+          set:
+            - meta_scope: meta.statement.type.vhdl
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: record-type
+            - include: enumeration-type
+            - include: array-type
+            - include: range-type
 
   subtype-decl:
     - match: (?i)(subtype)\s+({{identifier}})\s+(is)
@@ -813,19 +808,25 @@ contexts:
         - include: reserved-words
 
   variable-decl:
-    - match: (?i)(shared\s+)?(variable)\s+({{identifier}})\s*(:)
+    - match: (?i)((shared)\s*)?(variable)
       captures:
-        1: keyword.other.vhdl
-        2: storage.type.variable.vhdl
-        3: variable.other.vhdl
-        4: punctuation:separator.vhdl
+        2: keyword.other.vhdl
+        3: storage.type.variable.vhdl
       push:
         - meta_scope: meta.statement.variable.vhdl
-        - match: (;)
-          captures:
-            1: punctuation.terminator.vhdl
-          pop: true
-        - include: reserved-words
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - include: basic-paren-group
+            - include: stray-parens
+            - include: reserved-words
 
   attribute-decl:
     - match: (?i)(attribute)\s+({{identifier}})\s*(:)
@@ -856,22 +857,28 @@ contexts:
           pop: true
         - include: reserved-words
 
-  # This one is a bit weird because alias targets almost anything
-  # and has a lot of optional bits.
+  # Simplified the alias declaration a bit.
   alias-decl:
-    - match: '(?i)\b(alias)\s+(({{identifier}})|(''.'')|({{operator_symbols}}))(\s*(:)\s*(\S+))?\s+\b(is)\b'
-      captures:
-        1: storage.type.alias.vhdl
-        2: entity.name.alias.vhdl
-        7: punctuation.separator.vhdl
-        8: storage.type.subtype.vhdl
-        9: keyword.declaration.vhdl
+    - match: (?i)\b(alias)\b
+      scope: storage.type.alias.vhdl
       push:
         - meta_scope: meta.statement.alias.vhdl
-        - match: (;)
-          captures:
-            1: punctuation.terminator.vhdl
-          pop: true
+        - match: (?i)\b(is)\b
+          scope: keyword.declaration.vhdl
+          set:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - match: ({{identifier}})
+              scope: variable.other.vhdl
+        - match: (:)
+          scope: punctuation.separator.vhdl
+        - include: expression-operators
+        - include: character-literal
+        - match: ({{identifier}})
+          scope: variable.other.vhdl
+        - include: basic-paren-group
+        - include: stray-parens
         - include: reserved-words
 
   procedure-spec:
@@ -918,10 +925,8 @@ contexts:
       push:
         - meta_scope: meta.block.function.specification.vhdl
         - include: interface-list
-        - match: (return)\s+({{identifier}})
-          captures:
-            1: keyword.declaration.vhdl
-            2: storage.type.return.vhdl
+        - match: (?i)\b(return)\b
+          scope: keyword.declaration.vhdl
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
@@ -958,6 +963,81 @@ contexts:
     - include: attribute-decl
     - include: attribute-spec
 
+  ###########################################################################
+  # Type Definitions.  There are a lot of variations on type.
+  ###########################################################################
+  record-type:
+    - match: (?i)\b(record)\b
+      scope: storage.type.record.vhdl
+      push:
+        - meta_scope: meta.block.record.vhdl
+        - match: \b(end)\s+(record)\b
+          captures:
+            1: keyword.declaration.end.vhdl
+            2: storage.type.record.vhdl
+          pop: true
+        - include: basic-identifier-decl
+
+  enumeration-type:
+    - match: \(
+      scope: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.group.enumeration.vhdl
+        - match: \)
+          scope: punctuation.group.parens.end.vhdl
+          pop: true
+        - match: ({{identifier}})
+          scope: entity.name.enum.vhdl
+        - match: (,)
+          scope: punctuation.separator.vhdl
+
+  array-type:
+    - match: (?i)\b(array)\b\s*(\()
+      captures:
+        1: storage.type.array.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.block.array.vhdl
+        - match: (?i)(\))\s*(of)
+          captures:
+            1: punctuation.group.parens.end.vhdl
+            2: keyword.other.vhdl
+          pop: true
+        - include: reserved-words
+
+  # Numeric range is just "range <expr> to|downto <expr>" or
+  # "range <identifier>'<attribute>" so there's really not much I can
+  # do in the way of defining more scope here.  Physical range type
+  # has a block we can define
+  range-type:
+    - match: (?i)\b(range)\b
+      scope: storage.type.range.vhdl
+    - include: arithmetic-operators
+    - match: (?i)\b(units)\b
+      scope: storage.type.units.vhdl
+      push:
+        - meta_scope: meta.block.units.vhdl
+        - match: (?i)\b(end)\s*(units)\s*({{identifier}})?
+          captures:
+            1: keyword.declaration.end.vhdl
+            2: storage.type.units.vhdl
+            3: entity.name.type.vhdl
+          pop: true
+        - match: ({{identifier}})\s*(;)
+          captures:
+            1: entity.name.units.vhdl
+            2: punctuation.terminator.vhdl
+        - match: ({{identifier}})\s*(=)
+          captures:
+            1: entity.name.units.vhdl
+            2: keyword.operator.assignment.vhdl
+          push:
+            - match: (;)
+              scope: punctuation.terminator.vhdl
+              pop: true
+            - match: ({{identifier}})
+              scope: entity.name.units.vhdl
+    - include: reserved-words
 
   ###########################################################################
   # Concurrent statements
@@ -1715,6 +1795,16 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: reserved-words
+    # Null statements
+    - match: '(?i)\b(null)\b'
+      captures:
+        1: keyword.other.vhdl
+      push:
+        - meta_scope: meta.statement.null.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
 
   # This match should pretty much be lowest priority because it's going to
   # match any valid identifier much like concurrent instantiations.
@@ -2071,7 +2161,7 @@ contexts:
   reserved-words:
     - match: |-
         (?xi)\b(
-          abs|access|after|alias|all|and|architecture|array|assert|assume|
+          abs|access|after|alias-decl|all|and|architecture|array|assert|assume|
           assume_guarantee|attribute|begin|block|body|buffer|bus|case|
           component|configuration|constant|context|cover|default|disconnect|
           downto|else|elsif|end|entity|exit|fairness|file|for|force|function|
@@ -2084,7 +2174,13 @@ contexts:
           subtype|then|to|transport|type|unaffected|units|until|use|variable|
           vmode|vprop|vunit|wait|when|while|with|xnor|xor
         )\b
-      scope: keyword.other.vhdl
+      scope: keyword.reserved.vhdl
+    - match: |-
+        (?xi)\b(
+          left|right|low|high|range|reverse_range|length|ascending|
+          element
+        )\b
+      scope: keyword.attribute.vhdl
 
   library-names:
     - match: |-

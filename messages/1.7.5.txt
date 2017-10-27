@@ -1,0 +1,5 @@
+* Fixed syntactical/lexing bug that incorrectly scoped signal, constant and
+  variable declarations that specified multiple identifiers per line.
+* Improved the alias declaration syntax rules.
+* Improved the type declaration syntax rules and added a beautification rule
+  for physical type definition.

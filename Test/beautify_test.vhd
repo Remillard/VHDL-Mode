@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Wed Oct 25 11:15:30 2017
+-- Last update : Fri Oct 27 13:46:26 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -263,12 +263,14 @@ architecture rtl of my_entity is
 	-------------------------------------------------------------------------------
 	signal my_signal_1 : std_logic;
 	signal my_signal_2 : std_logic_vector(3 downto 0);
+	signal a, b, c     : std_logic;
 	-------------------------------------------------------------------------------
 	-- INDENT LEVEL SHOULD BE AT LEVEL 1 HERE
 	-------------------------------------------------------------------------------
 
-	constant C_CLOCK_PERIOD : real := 1.23e-9;
-	constant MY_PI          : real := 3.141592654;
+	constant C_CLOCK_PERIOD : real    := 1.23e-9;
+	constant MY_PI          : real    := 3.141592654;
+	constant C_FOO, C_BAR   : integer := 999;
 
 	alias slv is std_logic_vector;
 	alias 'c' is letter_c;
@@ -388,7 +390,8 @@ begin
 	-- MIXED CODE TESTS
 	-------------------------------------------------------------------------------
 	SEQUENTIAL_PROCESS : process (clk, reset)
-		variable my_variable : integer;
+		variable my_variable  : integer;
+		shared variable alpha : std_logic_vector(31 downto 0);
 	begin
 		-- If/then normal style
 		IF_LABEL : if (reset = '1') then
@@ -413,6 +416,7 @@ begin
 				y3 <= 10#10_24.0#E+00;
 
 				z0 <= math_pi;
+				a  <= 3 + 4;
 			end if;
 		end if;
 
@@ -675,9 +679,21 @@ package my_package is
 		name             : type(3 downto 0);
 		name             : other_type;
 		really_long_name : yat;
+		a, b, c          : std_logic;
 	end record;
 
 	type T_MY_ARRAY_TYPE is array (3 downto 0) of integer;
+	type word is array (0 to 31) of bit;
+	type state_counts is array (idle to error) of natural;
+	type state_counts is array (controller_state range idle to error) of natural;
+	type coeff_array is array (coeff_ram_address'reverse_range) of real;
+	type my_range is range 0 to 31;
+	type bit_index is range 0 to number_of_bits-1;
+	type resistance is range 0 to 1e9 units
+		ohm;
+		kohm = 1000 ohm;
+		Mohm = 1000 kohm;
+	end units resistance;
 
 	-- Simple constant
 	constant C_CLOCK_SPEED : real := 3.75e-9; -- seconds
@@ -823,6 +839,7 @@ package body my_package is
 		) return boolean is
 		variable low_limit  : unsigned(b'range);
 		variable high_limit : unsigned(b'range);
+		variable foo, bar   : std_logic;
 	begin
 		low_limit  := b - tol;
 		high_limit := b + tol;
