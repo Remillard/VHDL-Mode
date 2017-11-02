@@ -288,10 +288,10 @@ open_rules:
 
 close_rules:
   close_paren: \)
-  close_semi: \);
+  close_semi: \)\s*;
   endclause: '\bend\s?(\w+)?\s?(\w+)?\s?(\w+)?\s?'
   function_is: \breturn\s+\w+\s+is
-  function_semi: \breturn\s+\w+;
+  function_semi: \breturn\s+\w+s*;
   isclause: \bis\b
   record: \brecord\b
   semicolon: ;

@@ -1135,6 +1135,20 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: reserved-words
+    # Experimental variation -- This might replace everything above.
+    - match: (?i)\b({{identifier}})\b(?=.*<=)
+      scope: variable.other.vhdl
+      push:
+        - meta_scope: meta.statement.assignment.signal.vhdl
+        - match: <=
+          scope: keyword.operator.assignement.vhdl
+        - match: ;
+          scope: punctuation.terminator.vhdl
+          pop: true
+        - include: expression-operators
+        - include: basic-paren-group
+        - include: stray-parens
+        - include: reserved-words
     # Not exactly right for scoping but not too bad I suppose
     - match: (?i)\b(with)\b
       captures:

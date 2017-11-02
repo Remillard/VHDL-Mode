@@ -1,0 +1,4 @@
+* Fixed a beautification rule where a space between a closing parenthesis
+  and the semicolon would cause beautifier routine to miss the ending.
+* Fixed signal assignment syntax identification when interior of a index or
+  slice was a function like `to_integer`.
