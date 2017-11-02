@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Fri Oct 27 13:46:26 2017
+-- Last update : Thu Nov  2 09:21:26 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -540,6 +540,7 @@ begin
 	foo(15 downto 0)                <= other_signal_name(15 downto 0);
 	foo(some_signal'range)          <= yet_another_name'range;
 	foo(other_signal'reverse_range) <= foo(15 downto 0);
+	foo(to_integer(my_unsigned))    <= 97;
 
 	bus_rw <= '1' when (condition) else '0';
 
