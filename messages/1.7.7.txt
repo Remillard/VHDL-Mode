@@ -1,0 +1,5 @@
+* The solution to lexing signal assignments with subprograms in the slice
+  created a bug where other sequential structures that contained expressions
+  would match as a signal assignment due to the fact that signal assignment and
+  less than or equal to are the same symbol.  Lowered the priority of signal
+  assignment in the syntax definition to solve this problem.
