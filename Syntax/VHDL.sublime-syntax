@@ -1045,8 +1045,10 @@ contexts:
   concurrent-statements:
     - include: assertion-statement
     - include: process-begin
-    - include: conc-signal-assignment
     - include: generate-statements
+    # This one should also be close to last since it tends to match to
+    # lines with less than or equal to symbols in expressions.
+    - include: conc-signal-assignment
     # This one should be last or late because it matches most anything.
     - include: component-instantiation
 
@@ -1518,13 +1520,15 @@ contexts:
   # Sequential statements
   ###########################################################################
   sequential-statements:
-    - include: conc-signal-assignment
-    - include: seq-variable-assignment
     - include: seq-if
     - include: seq-case
     - include: seq-loops
     - include: seq-shorties
-    # THIS ONE MUST BE LAST
+    - include: seq-variable-assignment
+    # The signal assignment should be next to last as the assignment
+    # operator is the same as less-than-or-equal.
+    - include: conc-signal-assignment
+    # This one must be last since subprograms look like most anything.
     - include: seq-subprogram-call
 
   seq-variable-assignment:
