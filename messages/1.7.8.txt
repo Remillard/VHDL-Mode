@@ -1,0 +1,5 @@
+* Corrected small VHDL syntax error in the testbench snippet used to create a
+  testbench.  The constant declaration had a typo where the : was an =.
+* Created a version of the keybind that handles the auto_match_enabled
+  double quotes pairing that permits a leading oOxX for VHDL syntax files
+  only.
