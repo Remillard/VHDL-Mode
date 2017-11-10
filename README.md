@@ -123,6 +123,7 @@ Largely templating is handled by the snippet system, however the header is a spe
 * Package Version : `M-k v`
 * Scope at Point : `M-k S`
 * Build : `C-c C-k` -- Only if `vhdl-emacs-keybinds` is set to true.  Otherwise the Sublime Text 3 default keybind of `F7` will run build.
+* Auto matching double quotes : Additional source specific variation on this keybind to permit leading characters (oOxX) for VHDL octal and hexadecimal literals.
 
 ## Stutter Typing
 
