@@ -1456,7 +1456,7 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: expression-operators
-    - match: concurrent-statements
+    - include: concurrent-statements
 
   case-generate-statement:
     - match: |-
