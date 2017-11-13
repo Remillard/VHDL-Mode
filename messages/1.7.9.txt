@@ -1,0 +1,11 @@
+* Altered stutter typing keybinds for the arrow symbols so that they do not
+  trigger while in the middle of a comment (so that typing ellipsis in
+  documentation wouldn't create a => symbol.)
+* Corrected syntax definition error where the else clause in an if-generate
+  did not require the word `generate`.
+* Corrected syntax definition error where the code interior in an if-generate
+  would not lex correctly.  I had used the `match` directive when I wanted
+  `include` for concurrent.
+* Generated a snippet for if-generate because this one seemed tedious.  The
+  snippet trigger is `ifgen` and doesn't seem to conflict with the more
+  usual `if` snippet.
