@@ -1440,9 +1440,10 @@ contexts:
         6: entity.name.label.vhdl
         7: punctuation.terminator.vhdl
       pop: true
-    - match: (?i)\b(else)\b
+    - match: (?i)\b(else)\s*(generate)\b
       captures:
         1: keyword.other.vhdl
+        2: keyword.other.vhdl
     - match: (?i)\b(elsif)\b
       captures:
         1: keyword.other.vhdl
@@ -1455,7 +1456,7 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: expression-operators
-    - match: concurrent-statements
+    - include: concurrent-statements
 
   case-generate-statement:
     - match: |-

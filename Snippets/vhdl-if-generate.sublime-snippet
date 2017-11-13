@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[
+${1:<LABEL>} : if (${2:<condition>}) generate
+	$0
+else generate
+
+end generate $1;
+]]></content>
+	<tabTrigger>ifgen</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>
