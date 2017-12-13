@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Thu Nov  2 09:21:26 2017
+-- Last update : Wed Dec 13 11:29:31 2017
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -417,6 +417,9 @@ begin
 
 				z0 <= math_pi;
 				a  <= 3 + 4;
+
+				pt1 <= 0;
+				pt2 <= (0);
 			end if;
 		end if;
 
@@ -447,17 +450,29 @@ begin
 			when 3 =>
 				i <= j;
 				k <= l;
-			when 4         =>
+			when 4 =>
 				foo <= (others => '0');
-			when others    =>
+			when others =>
 				null;
 		end case CASE_LABEL;
 
 		-- Case test compact form
+		-- The fix for the alignment of => breaks alignment here, but it's
+		-- probably okay.  Compact is already readable.
 		case my_test is
-			 when a      => a      <= b;
-			 when c      => c      <= d;
-			 when others => e <= f;
+			when a => a <= b;
+			when c => c <= d;
+			when others => e <= f;
+		end case;
+
+		-- Case test for alignment of => in a case statement.
+		case my_alignment_test is
+			when a =>
+				long_signal_name <= (others => '0');
+			when b =>
+				another_long_name <= (others => '0');
+			when others =>
+				a_third_long_name <= (others => '0');
 		end case;
 	end process SEQUENTIAL_PROCESS;
 	-------------------------------------------------------------------------------
@@ -470,14 +485,22 @@ begin
 		wait until (a > b);
 		wait for 10 ns;
 
-		-- Procedure call
+		-- Procedure calls
 		SUBPROGRAM_CALL_LABEL : my_subprogram_call(values);
 
+		ANOTHER_CALL : some_write(L, string'("Text"));
+
+		write(L, string'("foobar"));
+
+		std.env.stop(0);
+
+		stop(0);
+
+		-- Loop tests
 		MY_BASIC_LOOP : loop
 
 		end loop MY_BASIC_LOOP;
 
-		-- Loop tests
 		MY_LOOP : loop
 
 			MY_INNER_LOOP : loop
@@ -594,7 +617,9 @@ begin
 	-------------------------------------------------------------------------------
 
 	MY_GENERATOR : for x in 0 to 7 generate
-
+		signal a : std_logic;
+	begin
+		x <= a;
 	end generate MY_GENERATOR;
 
 	for i in foobar'range generate
