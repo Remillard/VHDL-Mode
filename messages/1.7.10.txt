@@ -1,0 +1,22 @@
+* Came up with a solution for the alignment error for the => in a when
+  statement in a case statement.  It is basically just going to ignore the
+  `when option =>` lines during alignment.  This breaks alignment for the
+  very short form of a when statement like `when option => a <= b;` but this
+  is a pretty minor case and is still pretty readable without alignment.
+* Enhanced pasting an entity declaration as a testbench so that it will
+  create constants out of generics in the interface, if any exist.  Testbench
+  snippet adjusted to make a space for this declaration.
+* Fixed a weird little bug where it appears as if some subprogram parameters
+  were not correctly parsing parentheses.  This turned into a fairly deep
+  arrangement regarding the library support functions, library support
+  procedures, and the prototype context not applying inside of parenthetical
+  groups.  I believe this has been fixed, but please report anything weird
+  as it was a larger fix than originially estimated.
+* The body of a generate statement did not recognize reserved words so that's
+  been fixed.  Looked into more closely lexing generate statements and this
+  is a complicated situation and I'm not sure the lexing engine could handle
+  this correctly.  Optional 'end' statements is definitely a problem.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.
