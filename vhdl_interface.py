@@ -197,6 +197,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
 
         entity_name = '{}_tb'.format(_interface.name)
         signals_str = _interface.signals()
+        constants_str = _interface.constants()
         instance_str = _interface.instance(name="DUT")
 
         # Inserting template/snippet
@@ -204,6 +205,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
             {
                 "name"     : template,
                 "ENAME"    : entity_name,
+                "CONSTANTS": constants_str,
                 "SIGNALS"  : signals_str,
                 "INSTANCE" : instance_str
             })

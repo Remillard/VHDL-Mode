@@ -233,6 +233,7 @@ def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
         r':\s+process\b',
         r'\bif\b',
         r'\bthen\b',
+        r'\bwhen\b(?=.*?=>)'
     ]
     ban_list = []
     for pattern in ban_raw:
@@ -567,6 +568,19 @@ class Generic():
         line = '{} => {}'.format(self.name, self.name)
         return line
 
+    def print_as_constant(self):
+        '''Returns a string with the generic interface as a constant.'''
+        # So... generic doesn't necessarily have to have a default value
+        # even though it should.  So this requires a little detective work
+        # to know whether to include the whole line or add in the necessary
+        # constant definition.
+        s = re.search(r':=', self.type, re.I)
+        if s:
+            line = 'constant {} : {}'.format(self.name, self.type)
+        else:
+            line = 'constant {} : {} := <value>'.format(self.name, self.type)
+        return line
+
 # ---------------------------------------------------------------
 class Parameter():
     """
@@ -761,6 +775,22 @@ class Interface():
             for port in self.if_ports:
                 lines.append(port.print_as_signal() + ';')
             align_block_on_re(lines, r':')
+            indent_vhdl(lines, 1)
+            return '\n'.join(lines)
+        else:
+            return None
+
+    def constants(self):
+        '''
+        This method returns the generic portion of the interface
+        listed as constants.
+        '''
+        lines = []
+        if self.if_generics:
+            for generic in self.if_generics:
+                lines.append(generic.print_as_constant() + ';')
+            align_block_on_re(lines, r':')
+            align_block_on_re(lines, r':=')
             indent_vhdl(lines, 1)
             return '\n'.join(lines)
         else:

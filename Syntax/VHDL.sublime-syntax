@@ -45,7 +45,7 @@ contexts:
     - include: numbers
     - include: strings
     - include: types
-    - include: library-functions
+    - include: library-subprograms
 
   main:
     - include: library-unit-declarations
@@ -1403,7 +1403,9 @@ contexts:
                 6: entity.name.label.vhdl
                 7: punctuation.terminator.vhdl
               pop: true
+            - include: block-declarative-items
             - include: concurrent-statements
+            - include: reserved-words
         - include: reserved-words
         - include: discrete-range
 
@@ -1456,7 +1458,9 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: expression-operators
+    - include: block-declarative-items
     - include: concurrent-statements
+    - include: reserved-words
 
   case-generate-statement:
     - match: |-
@@ -1496,7 +1500,9 @@ contexts:
                   captures:
                     1: keyword.operator.assignment.vhdl
                   pop: true
+            - include: block-declarative-items
             - include: concurrent-statements
+            - include: reserved-words
 
   assertion-statement:
     - match: |-
@@ -1860,6 +1866,7 @@ contexts:
           captures:
             1: punctuation.group.parens.end.vhdl
           pop: true
+        - include: prototype
         - include: reserved-words
         - include: basic-paren-group
         - include: expression-operators
@@ -2124,39 +2131,87 @@ contexts:
         )\b
       scope: support.type.numeric-std.vhdl
 
-  library-functions:
+  # Some of these are functions, and some are procedures.  They differ in how
+  # they close.  Note for color schemes, the comment term is 'support.function'
+  # regardless of how they actually behave in the language.
+  library-subprograms:
+    # Actually built-in function, not just predefined.
     - match: |-
         (?xi)\b(
           to_string
-        )\b
-      scope: support.function.predefined.vhdl
+        )\b\s*(\()
+      captures:
+        1: support.function.predefined.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+    # Predefined Package env
     - match: |-
         (?xi)\b(
-          stop|finish|resolution_limit
-        )\b
-      scope: support.function.std.vhdl
+          resolution_limit
+        )\b\s*(\()
+      captures:
+        1: support.function.env.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+    - match: |-
+        (?xi)\b(
+          stop|finish
+        )\b\s*(\()
+      captures:
+        1: support.function.env.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-procedure-parameters
+    # Predefined Package textio
     - match: |-
         (?xi)\b(
           readline|read|sread|string_read|bread|binary_read|oread|
-          octal_read|hread|hex_read|writeline|tee|justify|write|
+          octal_read|hread|hex_read|writeline|tee|write|
           swrite|string_write|bwrite|binary_write|owrite|octal_write|
           hwrite|hex_write
-        )\b
-      scope: support.function.textio.vhdl
+        )\b\s*(\()
+      captures:
+        1: support.function.textio.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-procedure-parameters
+    - match: |-
+        (?xi)\b(
+          justify
+        )\b\s*(\()
+      captures:
+        1: support.function.textio.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+    # Predefined Package math_real
     - match: |-
         (?xi)\b(
           sign|ceil|floor|round|trunc|realmax|realmin|"mod"|
           uniform|sqrt|cbrt|exp|log2|log10|log|sin|cos|tan|
           arcsin|arccos|arctan|sinh|cosh|tanh|arcsinh|arccosh|
           arctanh
-        )\b
-      scope: support.function.math-real.vhdl
+        )\b\s*(\()
+      captures:
+        1: support.function.math-real.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+    - match: |-
+        (?xi)\b(
+          uniform
+        )\b\s*(\()
+      captures:
+        1: support.function.math-real.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-procedure-parameters
+    # Predefined Package math_complex
     - match: |-
         (?xi)\b(
           cmplx|get_principal_value|complex_to_polar|polar_to_complex|
           arg|conj
-        )\b
-      scope: support.function.math-complex.vhdl
+        )\b\s*(\()
+      captures:
+        1: support.function.math-complex.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+    # The std_logic_1164 Package
     - match: |-
         (?xi)\b(
           resolved|to_bit|to_bitvector|to_stdulogic|to_stdlogicvector|
@@ -2164,14 +2219,44 @@ contexts:
           to_slv|to_std_ulogic_vector|to_01|to_x01|to_x01z|to_ux01|
           rising_edge|falling_edge|is_x|to_bstring|to_binary_string|
           to_ostring|to_octal_string|to_hstring|to_hex_string
-        )\b
-      scope: support.function.std-logic-1164.vhdl
+        )\b\s*(\()
+      captures:
+        1: support.function.std-logic-1164.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+    # The numeric_std Package
     - match: |-
         (?xi)\b(
           std_match|resize|minimum|maximum|shift_left|shift_right|
           rotate_left|rotate_right|to_unsigned|to_signed|to_integer
-        )\b
-      scope: support.function.numeric-std.vhdl
+        )\b\s*(\()
+      captures:
+        1: support.function.numeric-std.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-function-parameters
+
+  library-function-parameters:
+    - meta_scope: meta.statement.library.vhdl
+    - include: basic-paren-group
+    - include: prototype
+    - include: reserved-words
+    - match: (\))
+      captures:
+        1: punctuation.group.parens.end.vhdl
+      pop: true
+    - include: stray-parens
+
+  library-procedure-parameters:
+    - meta_scope: meta.statement.library.vhdl
+    - include: basic-paren-group
+    - include: prototype
+    - include: reserved-words
+    - match: (\))\s*(;)
+      captures:
+        1: punctuation.group.parens.end.vhdl
+        2: punctuation.terminator.vhdl
+      pop: true
+    - include: stray-parens
 
   ###########################################################################
   # Keywords - The gigantic list.  This is for matching when there's no other

@@ -24,9 +24,13 @@ end entity ${ENAME};
 
 architecture testbench of ${ENAME} is
 
-	-- Testbench signals
+	-- Testbench DUT generics as constants
+${CONSTANTS}
+
+	-- Testbench DUT ports as signals
 ${SIGNALS}
 
+	-- Other constants
 	constant C_CLK_PERIOD : real := 10.0e-9; -- NS
 
 begin
