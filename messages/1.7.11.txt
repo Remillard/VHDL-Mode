@@ -1,0 +1,7 @@
+* Slight adjustment to the scope name for subprogram calls.  Subprograms
+  are now correctly scoped as `meta.function-call` instead of what I had
+  originally.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.
