@@ -1843,7 +1843,7 @@ contexts:
         3: punctuation.separator.vhdl
         5: variable.function.vhdl
       push:
-        - meta_scope: meta.statement.subprogram.vhdl
+        - meta_scope: meta.function-call.procedure.vhdl
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
@@ -2236,7 +2236,7 @@ contexts:
       push: library-function-parameters
 
   library-function-parameters:
-    - meta_scope: meta.statement.library.vhdl
+    - meta_scope: meta.function-call.function.vhdl
     - include: basic-paren-group
     - include: prototype
     - include: reserved-words
@@ -2247,7 +2247,7 @@ contexts:
     - include: stray-parens
 
   library-procedure-parameters:
-    - meta_scope: meta.statement.library.vhdl
+    - meta_scope: meta.function-call.procedure.vhdl
     - include: basic-paren-group
     - include: prototype
     - include: reserved-words
