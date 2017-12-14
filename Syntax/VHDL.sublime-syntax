@@ -2146,20 +2146,20 @@ contexts:
       push: library-function-parameters
     # Predefined Package env
     - match: |-
-        (?xi)\b(
+        (?xi)((std\.env\.)?\b(
           resolution_limit
-        )\b\s*(\()
+        ))\b\s*(\()
       captures:
         1: support.function.env.vhdl
-        2: punctuation.group.parens.begin.vhdl
+        4: punctuation.group.parens.begin.vhdl
       push: library-function-parameters
     - match: |-
-        (?xi)\b(
+        (?xi)((std\.env\.)?\b(
           stop|finish
-        )\b\s*(\()
+        ))\b\s*(\()
       captures:
         1: support.function.env.vhdl
-        2: punctuation.group.parens.begin.vhdl
+        4: punctuation.group.parens.begin.vhdl
       push: library-procedure-parameters
     # Predefined Package textio
     - match: |-
