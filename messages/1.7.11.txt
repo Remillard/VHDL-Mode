@@ -1,9 +1,14 @@
+Version 1.7.11
+
 * Slight adjustment to the scope name for subprogram calls.  Subprograms
   are now correctly scoped as `meta.function-call` instead of what I had
   originally.
 * Small change to regex for the standard env library so that it'll catch the
-  full library path name because it's frequently used here
+  full library path name because in this case it's more frequently used
   (e.g. std.env.stop(0)).
+* Fixed a bug in the beautification rules where signals and variables starting
+  with `end` (e.g. `end_flag`) could cause the ending of various structures
+  like ifs and cases.
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
