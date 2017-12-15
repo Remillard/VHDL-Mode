@@ -1843,7 +1843,7 @@ contexts:
         3: punctuation.separator.vhdl
         5: variable.function.vhdl
       push:
-        - meta_scope: meta.statement.subprogram.vhdl
+        - meta_scope: meta.function-call.procedure.vhdl
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
@@ -2146,20 +2146,20 @@ contexts:
       push: library-function-parameters
     # Predefined Package env
     - match: |-
-        (?xi)\b(
+        (?xi)((std\.env\.)?\b(
           resolution_limit
-        )\b\s*(\()
+        ))\b\s*(\()
       captures:
         1: support.function.env.vhdl
-        2: punctuation.group.parens.begin.vhdl
+        4: punctuation.group.parens.begin.vhdl
       push: library-function-parameters
     - match: |-
-        (?xi)\b(
+        (?xi)((std\.env\.)?\b(
           stop|finish
-        )\b\s*(\()
+        ))\b\s*(\()
       captures:
         1: support.function.env.vhdl
-        2: punctuation.group.parens.begin.vhdl
+        4: punctuation.group.parens.begin.vhdl
       push: library-procedure-parameters
     # Predefined Package textio
     - match: |-
@@ -2236,7 +2236,7 @@ contexts:
       push: library-function-parameters
 
   library-function-parameters:
-    - meta_scope: meta.statement.library.vhdl
+    - meta_scope: meta.function-call.function.vhdl
     - include: basic-paren-group
     - include: prototype
     - include: reserved-words
@@ -2247,7 +2247,7 @@ contexts:
     - include: stray-parens
 
   library-procedure-parameters:
-    - meta_scope: meta.statement.library.vhdl
+    - meta_scope: meta.function-call.procedure.vhdl
     - include: basic-paren-group
     - include: prototype
     - include: reserved-words
