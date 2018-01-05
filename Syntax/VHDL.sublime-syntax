@@ -623,7 +623,7 @@ contexts:
         # Also need to match on a lookahead for an unconsumed closing paren
         - match: (?=\))
           pop: true
-        - match: ({{modes}})
+        - match: ({{modes}})\s+
           scope: keyword.other.vhdl
     # Invalid identifiers
     - match: '(?i)(\S+(\s*,\s*\S+)*)'
