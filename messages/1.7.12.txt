@@ -1,0 +1,12 @@
+Version 1.7.12
+
+* Small syntax file fixes where some keywords were not matching with
+  case insensitivity.  (Contributor: Sven Goossens)
+* Small syntax file fix where the mode in a subprogram interface statement
+  could potentially match in error because it didn't check for word boundaries.
+  (Contributor: Sven Goossens)
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please submit pull requests to branch
+`develop`.
