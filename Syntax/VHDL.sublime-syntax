@@ -893,7 +893,7 @@ contexts:
           captures:
             1: punctuation.terminator.vhdl
           pop: true
-        - match: (?i)(is)
+        - match: (?i)\b(is)\b
           captures:
             1: keyword.declaration.vhdl
           set: procedure-body
@@ -931,7 +931,7 @@ contexts:
           captures:
             1: punctuation.terminator.vhdl
           pop: true
-        - match: (?i)(is)
+        - match: (?i)\b(is)\b
           captures:
             1: keyword.declaration.vhdl
           set: function-body
@@ -1620,7 +1620,7 @@ contexts:
         4: keyword.other.vhdl
       push:
         - meta_scope: meta.block.if.conditional.vhdl
-        - match: '(?i)(then)'
+        - match: '(?i)\b(then)\b'
           captures:
             1: keyword.other.vhdl
           set: seq-if-statements
@@ -1636,15 +1636,15 @@ contexts:
         2: keyword.other.vhdl
         3: punctuation.terminator.vhdl
       pop: true
-    - match: '(?i)(else)'
+    - match: '(?i)\b(else)\b'
       captures:
         1: keyword.other.vhdl
-    - match: '(?i)(elsif)'
+    - match: '(?i)\b(elsif)\b'
       captures:
         1: keyword.other.vhdl
       set:
         - meta_scope: meta.block.if.conditional.vhdl
-        - match: '(?i)(then)'
+        - match: '(?i)\b(then)\b'
           captures:
             1: keyword.other.vhdl
           set: seq-if-statements
@@ -1674,7 +1674,7 @@ contexts:
                 3: entity.name.label.vhdl
                 4: punctuation.terminator.vhdl
               pop: true
-            - match: '(?i)(when)'
+            - match: '(?i)\b(when)\b'
               captures:
                 1: keyword.other.vhdl
               push:
