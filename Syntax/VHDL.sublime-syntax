@@ -400,7 +400,7 @@ contexts:
 
   # Combined library and use clause
   libraries:
-    - match: \b(library)\b
+    - match: (?i)\b(library)\b
       captures:
         1: keyword.other.vhdl
       push:
@@ -410,7 +410,7 @@ contexts:
             1: punctuation.terminator.vhdl
           pop: true
         - include: library-names
-    - match: \b(use)\b
+    - match: (?i)\b(use)\b
       captures:
         1: keyword.other.vhdl
       push:
@@ -485,6 +485,7 @@ contexts:
             3: punctuation.terminator.vhdl
           pop: true
         - include: libraries
+        - include: item-configurations
 
   ###########################################################################
   # Interface Definition - This is used for entities and components, but then
