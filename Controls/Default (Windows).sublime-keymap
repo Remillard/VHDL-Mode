@@ -31,38 +31,38 @@
 		"keys": [".", "."],
 		"command": "insert",
 		"args": {"characters": " => "},
-		"context": [{"key": "selector", "operand": "source.vhdl - comment"}]
+		"context": [{"key": "selector", "operand": "source.vhdl - comment - string.quoted"}]
 	},
 	{
 		"keys": [",", ","],
 		"command": "insert",
 		"args": {"characters": " <= "},
-		"context": [{"key": "selector", "operand": "source.vhdl - comment"}]
+		"context": [{"key": "selector", "operand": "source.vhdl - comment - string.quoted"}]
 	},
 	{
 		"keys": [";", ";"],
 		"command": "insert",
 		"args": {"characters": " : "},
-		"context": [{"key": "selector", "operand": "source.vhdl - comment"}]
+		"context": [{"key": "selector", "operand": "source.vhdl - comment - string.quoted"}]
 	},
 	{
 		"keys": [";"],
 		"command": "run_macro_file",
 		"args": {"file": "res://Packages/VHDL Mode/Macros/semicolon.sublime-macro"},
 		"context": [
-			{"key": "selector", "operand": "source.vhdl - comment"},
+			{"key": "selector", "operand": "source.vhdl - comment - string.quoted"},
 			{"key": "preceding_text", "operator": "regex_contains", "operand": " : $", "match_all": true}
 		]
 	},
 	{
 		"keys": ["-", "-", "-"],
 		"command": "vhdl_mode_insert_comment_line",
-		"context": [{"key": "selector", "operand": "source.vhdl"}]
+		"context": [{"key": "selector", "operand": "source.vhdl - string.quoted"}]
 	},
 	{
 		"keys": ["-", "-", "="],
 		"command": "vhdl_mode_insert_comment_box",
-		"context": [{"key": "selector", "operand": "source.vhdl"}]
+		"context": [{"key": "selector", "operand": "source.vhdl - string.quoted"}]
 	},
 	// This keybind makes it so you can do continuous commenting if you end
 	// have already started a comment line, and the preceding character is a
