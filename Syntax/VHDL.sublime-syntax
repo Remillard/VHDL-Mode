@@ -2070,7 +2070,7 @@ contexts:
       scope: keyword.operator.comparison.vhdl
 
   arithmetic-operators:
-    - match: \+|\-|\*|\*\*|/|&|abs
+    - match: \+|\-|\*|\*\*|/|&|\babs
       scope: keyword.operator.arithmetic.vhdl
 
   logical-operators:
