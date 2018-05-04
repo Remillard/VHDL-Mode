@@ -1866,6 +1866,8 @@ contexts:
         1: punctuation.group.parens.begin.vhdl
       push:
         - meta_scope: meta.group.vhdl
+        - match: ','
+          scope: punctuation.separator.vhdl
         - match: '(\))'
           captures:
             1: punctuation.group.parens.end.vhdl
@@ -2246,6 +2248,8 @@ contexts:
     - include: basic-paren-group
     - include: prototype
     - include: reserved-words
+    - match: ','
+      scope: punctuation.separator.vhdl
     - match: (\))
       captures:
         1: punctuation.group.parens.end.vhdl
