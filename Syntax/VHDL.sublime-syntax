@@ -1520,7 +1520,7 @@ contexts:
           captures:
             1: punctuation.terminator.vhdl
           pop: true
-        - match: \b(report|severity)\b
+        - match: (?xi)\b(report|severity)\b
           captures:
             1: keyword.other.vhdl
 
@@ -1728,7 +1728,7 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: expression-operators
-        - match: '\b(loop)\b'
+        - match: (?xi)\b(loop)\b
           captures:
             1: keyword.other.vhdl
           set:
@@ -2092,7 +2092,7 @@ contexts:
   constants:
     - match: (?i)\b(true|false)\b
       scope: constant.language.vhdl
-    - match: (?i)\b(note|warning|error|failrue)\b
+    - match: (?i)\b(note|warning|error|failure)\b
       scope: support.constant.std.vhdl
     - match: |-
         (?xi)\b(
