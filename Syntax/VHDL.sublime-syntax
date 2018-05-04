@@ -412,7 +412,7 @@ contexts:
         - include: library-names
     - match: (?i)\b(use)\b
       captures:
-        1: keyword.other.vhdl
+        1: keyword.control.import.vhdl
       push:
         - meta_scope: meta.statement.use.vhdl
         - match: (;)
@@ -1418,7 +1418,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        4: keyword.other.vhdl
+        4: keyword.conditional.vhdl
       push:
         - meta_scope: meta.block.generate.conditional.vhdl
         - match: (?i)\b(generate)\b
@@ -1445,7 +1445,7 @@ contexts:
       pop: true
     - match: (?i)\b(else)\s*(generate)\b
       captures:
-        1: keyword.other.vhdl
+        1: keyword.conditional.vhdl
         2: keyword.other.vhdl
     - match: (?i)\b(elsif)\b
       captures:
@@ -1618,7 +1618,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        4: keyword.other.vhdl
+        4: keyword.conditional.vhdl
       push:
         - meta_scope: meta.block.if.conditional.vhdl
         - match: '(?i)\b(then)\b'
@@ -1634,15 +1634,15 @@ contexts:
     - match: (?i)\b(end)\s+(if)\s*;
       captures:
         1: keyword.declaration.vhdl
-        2: keyword.other.vhdl
+        2: keyword.conditional.vhdl
         3: punctuation.terminator.vhdl
       pop: true
     - match: '(?i)\b(else)\b'
       captures:
-        1: keyword.other.vhdl
+        1: keyword.conditional.vhdl
     - match: '(?i)\b(elsif)\b'
       captures:
-        1: keyword.other.vhdl
+        1: keyword.conditional.vhdl
       set:
         - meta_scope: meta.block.if.conditional.vhdl
         - match: '(?i)\b(then)\b'
@@ -1824,7 +1824,7 @@ contexts:
     # Null statements
     - match: '(?i)\b(null)\b'
       captures:
-        1: keyword.other.vhdl
+        1: constant.language.vhdl
       push:
         - meta_scope: meta.statement.null.vhdl
         - match: (;)
@@ -2086,7 +2086,7 @@ contexts:
 
   constants:
     - match: (?i)\b(true|false)\b
-      scope: support.constant.std.vhdl
+      scope: constant.language.vhdl
     - match: (?i)\b(note|warning|error|failrue)\b
       scope: support.constant.std.vhdl
     - match: |-
