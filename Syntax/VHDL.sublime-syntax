@@ -589,7 +589,7 @@ contexts:
         # Also need to match on a lookahead for an unconsumed closing paren
         - match: (?=\))
           pop: true
-        - match: ({{modes}})
+        - match: (\b{{modes}}\b)
           scope: keyword.other.vhdl
     # File declaration
     - match: (?i)(file)\s+({{identifier}}(\s*,\s*{{identifier}})*)\s*(\:)
