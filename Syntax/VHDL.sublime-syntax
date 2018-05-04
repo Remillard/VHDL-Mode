@@ -1944,11 +1944,13 @@ contexts:
       push:
         - meta_scope: string.quoted.single.vhdl
         - match: '(.)('')'
-          1: constant.character.vhdl
-          2: punctuation.definition.string.end.vhdl
+          captures:
+            1: constant.character.vhdl
+            2: punctuation.definition.string.end.vhdl
           pop: true
         - match: '(.*)'
-          1: invalid.illegal.unclosed-string.vhdl
+          captures:
+            1: invalid.illegal.unclosed-string.vhdl
           pop: true
 
   binary-bit-string-literal:
