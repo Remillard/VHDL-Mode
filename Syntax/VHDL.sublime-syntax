@@ -886,7 +886,7 @@ contexts:
     - match: (?i)(procedure)\s+({{identifier}})
       captures:
         1: storage.type.procedure.vhdl
-        2: entity.name.procedure.vhdl
+        2: entity.name.function.procedure.vhdl
       push:
         - meta_scope: meta.block.procedure.specification.vhdl
         - include: interface-list
@@ -912,7 +912,7 @@ contexts:
           captures:
             1: keyword.declaration.end.vhdl
             2: storage.type.procedure.vhdl
-            3: entity.name.procedure.vhdl
+            3: entity.name.function.procedure.vhdl
             5: punctuation.terminator.vhdl
           pop: true
         - include: sequential-statements
@@ -922,7 +922,7 @@ contexts:
       captures:
         2: keyword.other.vhdl
         3: storage.type.function.vhdl
-        4: entity.name.function.vhdl
+        4: entity.name.function.function.vhdl
       push:
         - meta_scope: meta.block.function.specification.vhdl
         - include: interface-list
@@ -950,7 +950,7 @@ contexts:
           captures:
             1: keyword.declaration.end.vhdl
             2: storage.type.procedure.vhdl
-            3: entity.name.procedure.vhdl
+            3: entity.name.function.function.vhdl
             5: punctuation.terminator.vhdl
           pop: true
         - include: sequential-statements
@@ -1155,12 +1155,12 @@ contexts:
     # Not exactly right for scoping but not too bad I suppose
     - match: (?i)\b(with)\b
       captures:
-        1: keyword.other.vhdl
+        1: keyword.control.vhdl
       push:
         - meta_scope: meta.statement.with-select.vhdl
         - match: (?i)\b(select)\b
           captures:
-            1: keyword.other.vhdl
+            1: keyword.control.vhdl
           pop: true
         - include: expression-operators
         - include: basic-paren-group
@@ -1177,7 +1177,7 @@ contexts:
           ((postponed)\s*)?
           (process)
       captures:
-        2: entity.name.label.vhdl
+        2: entity.name.function.process.vhdl
         3: punctuation.separator.vhdl
         5: keyword.other.vhdl
         6: keyword.other.vhdl
@@ -1471,7 +1471,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        5: keyword.other.vhdl
+        5: keyword.control.vhdl
       push:
         - meta_scope: meta.block.generate.case.vhdl
         - include: arithmetic-operators
@@ -1494,7 +1494,7 @@ contexts:
               pop: true
             - match: (?i)\b(when)\b
               captures:
-                1: keyword.other.vhdl
+                1: keyword.control.vhdl
               push:
                 - meta_scope: meta.choice.vhdl
                 - match: '(\=>)'
@@ -1659,7 +1659,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        4: keyword.other.vhdl
+        4: keyword.control.vhdl
       push:
         - meta_scope: meta.block.case.expression.vhdl
         - include: arithmetic-operators
@@ -1677,13 +1677,16 @@ contexts:
               pop: true
             - match: '(?i)\b(when)\b'
               captures:
-                1: keyword.other.vhdl
+                1: keyword.control.vhdl
               push:
                 - meta_scope: meta.choice.vhdl
                 - match: (\=>)
                   captures:
                     1: keyword.operator.assignment.vhdl
                   pop: true
+                - match: (\|)
+                  captures:
+                    1: keyword.operator.logical.vhdl
             - include: sequential-statements
 
   seq-loops:
@@ -1891,12 +1894,12 @@ contexts:
     - match: ({{decchars}})
       captures:
         constant.numeric.decimal.vhdl
-    - match: (to|downto)
+    - match: \b(to|downto)\b
       captures:
         1: keyword.other.vhdl
-    - match: ({{identifier}})
-      captures:
-        1: storage.type.subtype.vhdl
+    # - match: ({{identifier}})
+    #   captures:
+    #     1: storage.type.subtype.vhdl
 
   ###########################################################################
   # Comment Definitions
