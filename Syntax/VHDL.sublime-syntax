@@ -1827,7 +1827,7 @@ contexts:
     # Null statements
     - match: '(?i)\b(null)\b'
       captures:
-        1: constant.language.vhdl
+        1: keyword.other.vhdl
       push:
         - meta_scope: meta.statement.null.vhdl
         - match: (;)
@@ -1899,9 +1899,6 @@ contexts:
     - match: \b(to|downto)\b
       captures:
         1: keyword.other.vhdl
-    # - match: ({{identifier}})
-    #   captures:
-    #     1: storage.type.subtype.vhdl
 
   ###########################################################################
   # Comment Definitions
