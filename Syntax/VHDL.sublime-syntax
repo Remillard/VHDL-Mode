@@ -1211,7 +1211,7 @@ contexts:
         2: keyword.declaration.vhdl
         4: keyword.other.vhdl
         6: keyword.other.vhdl
-        8: entity.name.label.vhdl
+        8: entity.name.function.process.vhdl
         9: punctuation.terminator.vhdl
       pop: true
     - include: sequential-statements
@@ -2074,7 +2074,7 @@ contexts:
       scope: keyword.operator.comparison.vhdl
 
   arithmetic-operators:
-    - match: \+|\-|\*|\*\*|/|&|\babs
+    - match: \+|\-|\*|\*\*|/|&|\babs\b
       scope: keyword.operator.arithmetic.vhdl
 
   logical-operators:
