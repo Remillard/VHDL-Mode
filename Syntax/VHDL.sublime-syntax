@@ -772,6 +772,7 @@ contexts:
             - include: basic-paren-group
             - include: stray-parens
             - include: reserved-words
+            - include: expression-operators
 
   type-decl:
     - match: (?i)((type)\s*)({{identifier}})
