@@ -204,7 +204,7 @@ class Parentheses():
             return line[start:end]
 
 # ---------------------------------------------------------------
-def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
+def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, scope_data=None):
     """
     Receives a list of individual lines.  Scans each line looking
     for the provided lexical pattern that should align on
@@ -251,6 +251,14 @@ def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
                 banned = True
                 break
 
+        # Adding a hook here for better comment handling.  Check to see if this
+        # is a commented line and if we should pay attention to it.
+        # ignore_comment_lines is True by default and until this routine is
+        # more sophisticated should probably remain true.
+        comment_check = False
+        if ignore_comment_lines:
+            comment_check = check_for_comment(lines[i])
+
         # Scan for the aligning pattern
         s = re.search(regexp, lines[i])
 
@@ -266,12 +274,17 @@ def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
 
         # A special check for the last line to add to the group, otherwise
         # we process before we can evaluate that line.
-        if s and (i == len(lines)-1) and not check_for_comment(lines[i]) and not banned:
+        if s and (i == len(lines)-1) and not comment_check and not banned:
             if padside == 'post':
                 match_data.append((i, s.end()))
             else:
                 match_data.append((i, s.start()))
 
+        # This is where the actual lines are adjusted.  If this line breaks the
+        # sequence of lines that had the pattern, or if it's the last line, or
+        # if it was a line that was skipped due to banning, or if the whole
+        # line scope changed (e.g. comment line broke the block) then process
+        # the block for alignment.
         if not s or scope_switch or (i == len(lines)-1) or banned:
             if len(match_data) > 1:
                 # Scan for max value and check to see if extra space needed
@@ -292,9 +305,9 @@ def align_block_on_re(lines, regexp, padside='pre', scope_data=None):
             # data
             match_data = []
 
-        # Next, if this line has an alignment symbol in it (and not banned)
+        # Finally, if this line has an alignment symbol in it (and not banned)
         # start adding data again.
-        if s and not check_for_comment(lines[i]) and not banned:
+        if s and not comment_check and not banned:
             # If we find a match, record the line and
             # location but do nothing else.
             #print("Match on Line: {} Start:'{}' Stop:'{}'".\

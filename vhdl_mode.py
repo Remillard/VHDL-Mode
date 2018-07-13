@@ -20,7 +20,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.7.13")
+        print("vhdl-mode: VHDL Mode Version 1.7.14")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -234,7 +234,11 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
 
         # Post indent alignment
         vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
-        vhdl.align_block_on_re(lines=lines, regexp=r'--', scope_data=scope_list)
+        # TBD -- There's a hook for more sophisticated handling of comment
+        # lines which would be required for perfect alignment of inline comment
+        # blocks, however it's not working, so leave that parameter as True for
+        # now.
+        vhdl.align_block_on_re(lines=lines, regexp=r'--', ignore_comment_lines=True, scope_data=scope_list)
 
         # Recombine into one big blobbed string.
         buffer_str = '\n'.join(lines)
