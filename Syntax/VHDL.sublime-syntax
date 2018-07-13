@@ -400,7 +400,7 @@ contexts:
 
   # Combined library and use clause
   libraries:
-    - match: \b(library)\b
+    - match: (?i)\b(library)\b
       captures:
         1: keyword.other.vhdl
       push:
@@ -410,9 +410,9 @@ contexts:
             1: punctuation.terminator.vhdl
           pop: true
         - include: library-names
-    - match: \b(use)\b
+    - match: (?i)\b(use)\b
       captures:
-        1: keyword.other.vhdl
+        1: keyword.control.import.vhdl
       push:
         - meta_scope: meta.statement.use.vhdl
         - match: (;)
@@ -485,6 +485,7 @@ contexts:
             3: punctuation.terminator.vhdl
           pop: true
         - include: libraries
+        - include: item-configurations
 
   ###########################################################################
   # Interface Definition - This is used for entities and components, but then
@@ -588,7 +589,7 @@ contexts:
         # Also need to match on a lookahead for an unconsumed closing paren
         - match: (?=\))
           pop: true
-        - match: ({{modes}})
+        - match: (\b{{modes}}\b)
           scope: keyword.other.vhdl
     # File declaration
     - match: (?i)(file)\s+({{identifier}}(\s*,\s*{{identifier}})*)\s*(\:)
@@ -885,7 +886,7 @@ contexts:
     - match: (?i)(procedure)\s+({{identifier}})
       captures:
         1: storage.type.procedure.vhdl
-        2: entity.name.procedure.vhdl
+        2: entity.name.function.procedure.vhdl
       push:
         - meta_scope: meta.block.procedure.specification.vhdl
         - include: interface-list
@@ -893,7 +894,7 @@ contexts:
           captures:
             1: punctuation.terminator.vhdl
           pop: true
-        - match: (?i)(is)
+        - match: (?i)\b(is)\b
           captures:
             1: keyword.declaration.vhdl
           set: procedure-body
@@ -911,7 +912,7 @@ contexts:
           captures:
             1: keyword.declaration.end.vhdl
             2: storage.type.procedure.vhdl
-            3: entity.name.procedure.vhdl
+            3: entity.name.function.procedure.vhdl
             5: punctuation.terminator.vhdl
           pop: true
         - include: sequential-statements
@@ -921,7 +922,7 @@ contexts:
       captures:
         2: keyword.other.vhdl
         3: storage.type.function.vhdl
-        4: entity.name.function.vhdl
+        4: entity.name.function.function.vhdl
       push:
         - meta_scope: meta.block.function.specification.vhdl
         - include: interface-list
@@ -931,7 +932,7 @@ contexts:
           captures:
             1: punctuation.terminator.vhdl
           pop: true
-        - match: (?i)(is)
+        - match: (?i)\b(is)\b
           captures:
             1: keyword.declaration.vhdl
           set: function-body
@@ -949,7 +950,7 @@ contexts:
           captures:
             1: keyword.declaration.end.vhdl
             2: storage.type.procedure.vhdl
-            3: entity.name.procedure.vhdl
+            3: entity.name.function.function.vhdl
             5: punctuation.terminator.vhdl
           pop: true
         - include: sequential-statements
@@ -1154,12 +1155,12 @@ contexts:
     # Not exactly right for scoping but not too bad I suppose
     - match: (?i)\b(with)\b
       captures:
-        1: keyword.other.vhdl
+        1: keyword.control.vhdl
       push:
         - meta_scope: meta.statement.with-select.vhdl
         - match: (?i)\b(select)\b
           captures:
-            1: keyword.other.vhdl
+            1: keyword.control.vhdl
           pop: true
         - include: expression-operators
         - include: basic-paren-group
@@ -1176,7 +1177,7 @@ contexts:
           ((postponed)\s*)?
           (process)
       captures:
-        2: entity.name.label.vhdl
+        2: entity.name.function.process.vhdl
         3: punctuation.separator.vhdl
         5: keyword.other.vhdl
         6: keyword.other.vhdl
@@ -1210,7 +1211,7 @@ contexts:
         2: keyword.declaration.vhdl
         4: keyword.other.vhdl
         6: keyword.other.vhdl
-        8: entity.name.label.vhdl
+        8: entity.name.function.process.vhdl
         9: punctuation.terminator.vhdl
       pop: true
     - include: sequential-statements
@@ -1417,7 +1418,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        4: keyword.other.vhdl
+        4: keyword.conditional.vhdl
       push:
         - meta_scope: meta.block.generate.conditional.vhdl
         - match: (?i)\b(generate)\b
@@ -1444,7 +1445,7 @@ contexts:
       pop: true
     - match: (?i)\b(else)\s*(generate)\b
       captures:
-        1: keyword.other.vhdl
+        1: keyword.conditional.vhdl
         2: keyword.other.vhdl
     - match: (?i)\b(elsif)\b
       captures:
@@ -1470,7 +1471,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        5: keyword.other.vhdl
+        5: keyword.control.vhdl
       push:
         - meta_scope: meta.block.generate.case.vhdl
         - include: arithmetic-operators
@@ -1493,7 +1494,7 @@ contexts:
               pop: true
             - match: (?i)\b(when)\b
               captures:
-                1: keyword.other.vhdl
+                1: keyword.control.vhdl
               push:
                 - meta_scope: meta.choice.vhdl
                 - match: '(\=>)'
@@ -1519,7 +1520,7 @@ contexts:
           captures:
             1: punctuation.terminator.vhdl
           pop: true
-        - match: \b(report|severity)\b
+        - match: (?xi)\b(report|severity)\b
           captures:
             1: keyword.other.vhdl
 
@@ -1617,10 +1618,10 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        4: keyword.other.vhdl
+        4: keyword.conditional.vhdl
       push:
         - meta_scope: meta.block.if.conditional.vhdl
-        - match: '(?i)(then)'
+        - match: '(?i)\b(then)\b'
           captures:
             1: keyword.other.vhdl
           set: seq-if-statements
@@ -1633,18 +1634,18 @@ contexts:
     - match: (?i)\b(end)\s+(if)\s*;
       captures:
         1: keyword.declaration.vhdl
-        2: keyword.other.vhdl
+        2: keyword.conditional.vhdl
         3: punctuation.terminator.vhdl
       pop: true
-    - match: '(?i)(else)'
+    - match: '(?i)\b(else)\b'
       captures:
-        1: keyword.other.vhdl
-    - match: '(?i)(elsif)'
+        1: keyword.conditional.vhdl
+    - match: '(?i)\b(elsif)\b'
       captures:
-        1: keyword.other.vhdl
+        1: keyword.conditional.vhdl
       set:
         - meta_scope: meta.block.if.conditional.vhdl
-        - match: '(?i)(then)'
+        - match: '(?i)\b(then)\b'
           captures:
             1: keyword.other.vhdl
           set: seq-if-statements
@@ -1658,7 +1659,7 @@ contexts:
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
-        4: keyword.other.vhdl
+        4: keyword.control.vhdl
       push:
         - meta_scope: meta.block.case.expression.vhdl
         - include: arithmetic-operators
@@ -1674,15 +1675,18 @@ contexts:
                 3: entity.name.label.vhdl
                 4: punctuation.terminator.vhdl
               pop: true
-            - match: '(?i)(when)'
+            - match: '(?i)\b(when)\b'
               captures:
-                1: keyword.other.vhdl
+                1: keyword.control.vhdl
               push:
                 - meta_scope: meta.choice.vhdl
                 - match: (\=>)
                   captures:
                     1: keyword.operator.assignment.vhdl
                   pop: true
+                - match: (\|)
+                  captures:
+                    1: keyword.operator.logical.vhdl
             - include: sequential-statements
 
   seq-loops:
@@ -1724,7 +1728,7 @@ contexts:
         - include: basic-paren-group
         - include: stray-parens
         - include: expression-operators
-        - match: '\b(loop)\b'
+        - match: (?xi)\b(loop)\b
           captures:
             1: keyword.other.vhdl
           set:
@@ -1862,14 +1866,16 @@ contexts:
         1: punctuation.group.parens.begin.vhdl
       push:
         - meta_scope: meta.group.vhdl
+        - match: ','
+          scope: punctuation.separator.vhdl
         - match: '(\))'
           captures:
             1: punctuation.group.parens.end.vhdl
           pop: true
         - include: prototype
+        - include: expression-operators
         - include: reserved-words
         - include: basic-paren-group
-        - include: expression-operators
 
   stray-parens:
     # Should always be included after the basic paren consumer
@@ -1890,12 +1896,9 @@ contexts:
     - match: ({{decchars}})
       captures:
         constant.numeric.decimal.vhdl
-    - match: (to|downto)
+    - match: \b(to|downto)\b
       captures:
         1: keyword.other.vhdl
-    - match: ({{identifier}})
-      captures:
-        1: storage.type.subtype.vhdl
 
   ###########################################################################
   # Comment Definitions
@@ -1943,11 +1946,13 @@ contexts:
       push:
         - meta_scope: string.quoted.single.vhdl
         - match: '(.)('')'
-          1: constant.character.vhdl
-          2: punctuation.definition.string.end.vhdl
+          captures:
+            1: constant.character.vhdl
+            2: punctuation.definition.string.end.vhdl
           pop: true
         - match: '(.*)'
-          1: invalid.illegal.unclosed-string.vhdl
+          captures:
+            1: invalid.illegal.unclosed-string.vhdl
           pop: true
 
   binary-bit-string-literal:
@@ -2069,7 +2074,7 @@ contexts:
       scope: keyword.operator.comparison.vhdl
 
   arithmetic-operators:
-    - match: \+|\-|\*|\*\*|/|&|abs
+    - match: \+|\-|\*|\*\*|/|&|\babs\b
       scope: keyword.operator.arithmetic.vhdl
 
   logical-operators:
@@ -2083,8 +2088,8 @@ contexts:
 
   constants:
     - match: (?i)\b(true|false)\b
-      scope: support.constant.std.vhdl
-    - match: (?i)\b(note|warning|error|failrue)\b
+      scope: constant.language.vhdl
+    - match: (?i)\b(note|warning|error|failure)\b
       scope: support.constant.std.vhdl
     - match: |-
         (?xi)\b(
@@ -2240,6 +2245,8 @@ contexts:
     - include: basic-paren-group
     - include: prototype
     - include: reserved-words
+    - match: ','
+      scope: punctuation.separator.vhdl
     - match: (\))
       captures:
         1: punctuation.group.parens.end.vhdl

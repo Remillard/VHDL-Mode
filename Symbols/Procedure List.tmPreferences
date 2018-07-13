@@ -4,7 +4,7 @@
 	<key>name</key>
 	<string>Symbol List</string>
 	<key>scope</key>
-	<string>source.vhdl meta.block.procedure.specification entity.name.procedure</string>
+	<string>source.vhdl meta.block.procedure.specification entity.name.function.procedure</string>
 	<key>settings</key>
 	<dict>
 		<key>showInSymbolList</key>
