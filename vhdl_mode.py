@@ -234,6 +234,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
 
         # Post indent alignment
         vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
+        vhdl.align_block_on_re(lines=lines, regexp=r'--', scope_data=scope_list)
 
         # Recombine into one big blobbed string.
         buffer_str = '\n'.join(lines)
