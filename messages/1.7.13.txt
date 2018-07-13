@@ -1,0 +1,18 @@
+Version 1.7.13
+
+* Alteration to the scope names for procedure, function, and process.  This was
+  done to improve the syntax file's interaction with color schemes.  You may
+  notice some small tweaks to names (primarily process labels) depending on your
+  color scheme.  (Contributor: Sven Goossens)
+* Corrections to case insensitivity and regular expression word boundaries for
+  some keywords and support functions (math functions like `abs`).
+  (Contributor: Sven Goossens)
+* Corrections to a few match/capture pairs in syntax file that might have
+  prevented proper scoping.  (Contributor: Sven Goossens).
+* Fixed a small issue with operators in constant assignment expressions not
+  being included for scoping.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please submit pull requests to branch
+`develop`.

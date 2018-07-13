@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Wed Dec 13 11:29:31 2017
+-- Last update : Fri Jul 13 08:48:30 2018
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -268,9 +268,14 @@ architecture rtl of my_entity is
 	-- INDENT LEVEL SHOULD BE AT LEVEL 1 HERE
 	-------------------------------------------------------------------------------
 
-	constant C_CLOCK_PERIOD : real    := 1.23e-9;
-	constant MY_PI          : real    := 3.141592654;
-	constant C_FOO, C_BAR   : integer := 999;
+	constant C_CLOCK_PERIOD   : real                          := 1.23e-9;
+	constant MY_PI            : real                          := 3.141592654;
+	constant C_FOO, C_BAR     : integer                       := 999;
+	constant C_OPERATOR_CHECK : std_logic_vector(31 downto 0) :=
+		std_logic_vector(to_unsigned(1, 8)) &
+		std_logic_vector(to_unsigned(2, 8)) &
+		std_logic_vector(to_unsigned(3, 8)) &
+		std_logic_vector(to_unsigned(4, 8));
 
 	alias slv is std_logic_vector;
 	alias 'c' is letter_c;
@@ -912,6 +917,13 @@ package body my_package is
 		end loop;
 		return vector_out;
 	end function onehot_vector;
+
+	-- Padding function
+	function make_miso_word (d_in : std_logic_vector)
+	return std_logic_vector is
+		variable d_out : std_logic_vector(C_SPI_DATA_LEN-1 downto 0);
+	begin
+	end function make_miso_word;
 
 
 end package body my_package;
