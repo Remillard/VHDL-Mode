@@ -15,7 +15,8 @@
 // overridden default values.  Edit as needed.
 "settings":
 {
-	"vhdl-user"         : "<Name> <E-mail>"
+	"vhdl-line-length"  : 80,
+	"vhdl-user"         : "<Name> <E-mail>",
 	"vhdl-company"      : "<Company Name>",
 	"vhdl-project-name" : "<Project Name>",
 	"vhdl-platform"     : "<Part Number>",
@@ -26,12 +27,12 @@
 		"-- Copyright (c) \${YEAR} \${COMPANY}",
 		"-- ",
 		"-- Project Specific Copyright / Export Control Boilerplate",
-		"-------------------------------------------------------------------------------"
+		"\${LINE}"
 	],
 	"vhdl-revision-block" : [
 		"-- Revisions: <project specific revision control notice or",
 		"-- individual revision entries if desired.>",
-		"-------------------------------------------------------------------------------"
+		"\${LINE}"
 	]
 },
 "build_systems":

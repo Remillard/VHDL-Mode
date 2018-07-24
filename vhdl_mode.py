@@ -20,7 +20,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.7.14")
+        print("vhdl-mode: VHDL Mode Version 1.7.15")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -47,6 +47,7 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
             filename = '<filename>'
 
         # Get the other fields out of settings.
+        linesize = util.get_vhdl_setting(self, 'vhdl-line-length')
         project = util.get_vhdl_setting(self, 'vhdl-project-name')
         author = util.get_vhdl_setting(self, 'vhdl-user')
         company = util.get_vhdl_setting(self, 'vhdl-company')
@@ -57,6 +58,10 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
         use_revision = util.get_vhdl_setting(self, 'vhdl-use-revision-block')
         copyright_list = util.get_vhdl_setting(self, 'vhdl-copyright-block')
         revision_list = util.get_vhdl_setting(self, 'vhdl-revision-block')
+
+        # Set the string to dynamically replace the line field to the chosen
+        # line length.
+        linestr = '-'*linesize
 
         # Get the current time and create the modified time string.
         date = time.ctime(time.time())
@@ -70,11 +75,13 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
             copyright = '\n'.join(copyright_list)
             copyright = re.sub(r'\${YEAR}', year, copyright)
             copyright = re.sub(r'\${COMPANY}', company, copyright)
+            copyright = re.sub(r'\${LINE}', linestr, copyright)
             copyright = '\n' + copyright
         else:
             copyright = ''
         if use_revision:
             revision = '\n'.join(revision_list)
+            revision = re.sub(r'\${LINE}', linestr, revision)
             revision = '\n' + revision
         else:
             revision = ''
@@ -100,7 +107,8 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
                 "PLATFORM" : platform,
                 "STANDARD" : standard,
                 "COPYRIGHT_BLOCK" : copyright,
-                "REVISION_BLOCK" : revision
+                "REVISION_BLOCK" : revision,
+                "LINE"     : linestr
             })
         print('vhdl-mode: Inserted header template.')
 
@@ -320,11 +328,16 @@ class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
         # Figure out if any tab characters were used.
         line = self.view.substr(self.view.line(original_point))
         numtabs = line.count('\t')
-        # Get the current tab size
+        # Get the current tab size and line length.
         tabsize = util.get_vhdl_setting(self, 'tab_size')
+        linesize = util.get_vhdl_setting(self, 'vhdl-line-length')
         # Create string of correct amount of dashes.  A tab consumed
         # one character but generates tabsize-1 space.
-        line = '-'*(80-point_c-(tabsize-1)*numtabs)
+        numdash = linesize-point_c-(tabsize-1)*numtabs
+        if numdash <= 2:
+            print('vhdl-mode: Warning: Line length setting violation.  Setting number of dashes to 2.')
+            numdash = 2
+        line = '-'*numdash
         num_chars = self.view.insert(edit, original_point, line)
         print('vhdl-mode: Inserted comment line.')
 
@@ -347,9 +360,14 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
         numtabs = line.count('\t')
         # Get the current tab size
         tabsize = util.get_vhdl_setting(self, 'tab_size')
+        linesize = util.get_vhdl_setting(self, 'vhdl-line-length')
         # Create string of correct amount of dashes.  A tab consumed
         # one character but generates tabsize-1 space.
-        line = '-'*(80-point_c-(tabsize-1)*numtabs)
+        numdash = linesize-point_c-(tabsize-1)*numtabs
+        if numdash <= 2:
+            print('vhdl-mode: Warning: Line length setting violation.  Setting number of dashes to 2.')
+            numdash = 2
+        line = '-'*numdash
         # Create snippet object.
         snippet = line + '\n' + '-- $0' + '\n' + line + '\n'
         # Inserting template/snippet
@@ -357,6 +375,7 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
             {
                 "contents" : snippet
             })
+        print('vhdl-mode: Inserted comment box.')
 
 #----------------------------------------------------------------
 class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
@@ -372,7 +391,8 @@ class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
         print('vhdl-mode: {}: {}'.format('tab_size', util.get_vhdl_setting(self, 'tab_size')))
         print('vhdl-mode: {}: {}'.format('translate_tabs_to_spaces', util.get_vhdl_setting(self, 'translate_tabs_to_spaces')))
         vhdl_settings = sublime.load_settings('vhdl_mode.sublime-settings')
-        keys = ['vhdl-user',
+        keys = ['vhdl-line-length',
+                'vhdl-user',
                 'vhdl-company',
                 'vhdl-project-name',
                 'vhdl-platform',

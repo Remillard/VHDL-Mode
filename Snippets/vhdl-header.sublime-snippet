@@ -1,6 +1,7 @@
 <snippet>
 	<!--
 		Current fields supported:
+			LINE     : Will produce a comment line to 'vhdl-line-length' setting.
 			PROJECT  : 'vhdl-project-name' in settings.
 			FILENAME : Will fill in the current buffer name if found, if not
 			           found, will fill in the file name, and if that's not
@@ -28,10 +29,10 @@
 		Numeric fields are tabbed between when snippet is inserted.
 	-->
 	<content><![CDATA[
--------------------------------------------------------------------------------
+${LINE}
 -- Title       : ${1:<Title Block>}
 -- Project     : ${PROJECT}
--------------------------------------------------------------------------------
+${LINE}
 -- File        : ${FILENAME}
 -- Author      : ${AUTHOR}
 -- Company     : ${COMPANY}
@@ -39,9 +40,9 @@
 ${MODIFIED_TIME_STRING}
 -- Platform    : ${PLATFORM}
 -- Standard    : ${STANDARD}
--------------------------------------------------------------------------------${COPYRIGHT_BLOCK}
+${LINE}${COPYRIGHT_BLOCK}
 -- Description: $2
--------------------------------------------------------------------------------${REVISION_BLOCK}
+${LINE}${REVISION_BLOCK}
 
 $0
 ]]></content>

@@ -1,0 +1,23 @@
+Version 1.7.15
+
+* Added a user setting for desired line length.  This only affects the following
+  functions: insert comment line, insert comment box, and insert header template.
+  The new setting is `vhdl-line-length` and defaults to 80 characters (so if
+  you are happy with the current behavior you won't see any difference.)  If a
+  client or project requires a different line length standard, this may be
+  customized in the project settings to be specific to that project.
+* If your cursor is beyond your `vhdl-line-length` margin and you attempt to
+  insert a commment line, or insert a comment box, it should degrade somewhat
+  gracefully and simply produce a minimal amount of commenting, and will also
+  generate a warning in the console to let the user know that the output
+  could not be generated perfectly.
+* The project file helper snippet was altered to demonstrate the use of the
+  dynamic line field for a few of those optional header blocks, and also
+  demonstrates setting the line length setting there as well (again the
+  package default is 80 characters so if no change is desired, all this
+  may be ignored safely.)
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please submit pull requests to branch
+`develop`.
