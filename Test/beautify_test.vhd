@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Fri Jul 13 08:48:30 2018
+-- Last update : Fri Jul 13 10:16:51 2018
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -45,8 +45,8 @@ commenting */
 -- Comment above
 entity my_entity is -- comments everywhere
 	generic( -- I mean everywhere
-		DATA_WIDTH          : integer                      := 8; -- This value is 8
-		REALLY_LONG_GENERIC : std_logic_vector(3 downto 0) := X"4"
+		DATA_WIDTH          : integer                      := 8;   -- This value is 8
+		REALLY_LONG_GENERIC : std_logic_vector(3 downto 0) := X"4" -- This comment should align with prior
 	); -- Holy crap another comment -- with a comment inside the -- comment
 	port ( -- What about a comment here?
 		-- Basic ports

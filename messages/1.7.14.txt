@@ -1,0 +1,12 @@
+Version 1.7.14
+
+* Added aligning inline comments to the beautify routine.  Testing so far seems
+  to work, but let me know if anything weird happens.
+* Added the tmPreferences file that lets Sublime Text's base comment and
+  uncommenting routine work correctly.  Since I'd written my own variation on
+  this, it was an oversight to make ST's routine work also.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please submit pull requests to branch
+`develop`.
