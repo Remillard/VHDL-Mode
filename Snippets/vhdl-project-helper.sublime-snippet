@@ -15,7 +15,8 @@
 // overridden default values.  Edit as needed.
 "settings":
 {
-	"vhdl-user"         : "<Name> <E-mail>"
+	"vhdl-line-length"  : 80,
+	"vhdl-user"         : "<Name> <E-mail>",
 	"vhdl-company"      : "<Company Name>",
 	"vhdl-project-name" : "<Project Name>",
 	"vhdl-platform"     : "<Part Number>",
