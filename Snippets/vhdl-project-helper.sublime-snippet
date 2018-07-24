@@ -26,12 +26,12 @@
 		"-- Copyright (c) \${YEAR} \${COMPANY}",
 		"-- ",
 		"-- Project Specific Copyright / Export Control Boilerplate",
-		"-------------------------------------------------------------------------------"
+		"\${LINE}"
 	],
 	"vhdl-revision-block" : [
 		"-- Revisions: <project specific revision control notice or",
 		"-- individual revision entries if desired.>",
-		"-------------------------------------------------------------------------------"
+		"\${LINE}"
 	]
 },
 "build_systems":

@@ -63,11 +63,12 @@ Code beautification should pay attention to the `tab_size` and `translate_tabs_t
 * `vhdl-project-name` : *String* : Fills in the project name portion of the header template.  This one is a good candidate for customizing in the `sublime-project` file!
 * `vhdl-platform` : *String* : Fills in the platform or part number portion of the header template.
 * `vhdl-standard` : *String* : Fills in the coding standard portion of the header template.
+* `vhdl-line-length` : *Integer* : This value is used for determining the length of line for comment "lines" generated.  Defaults to 80 characters.
 * `vhdl-modified-time-string` : *String* : Represents the string that will be searched for when the file is saved.  If this is found, that line is replaced with a string comprising of this pattern, plus the current time.  This is also used in the header creation to make sure that header template insertion injects the correct string.
 * `vhdl-use-copyright-block` : *Boolean* : Setting this to true will make the header template insertion inject the copyright block.  Setting this to false will make it such that this section is not used.
-* `vhdl-copyright-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline (required due to the optional nature of this block -- see the snippet field location) and is used when `vhdl-use-copyright-block` is set to true.  This string will be searched for ${YEAR} and ${COMPANY} and replaced by the current year, and the `vhdl-company` string respectively.  The string list is required since JSON does not allow multiline strings.
+* `vhdl-copyright-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline (required due to the optional nature of this block -- see the snippet field location) and is used when `vhdl-use-copyright-block` is set to true.  This string will be searched for `${YEAR}` and `${COMPANY}` and replaced by the current year, and the `vhdl-company` string respectively.  The string list is required since JSON does not allow multiline strings.  This block now also supports `${LINE}` to generate a line matching the `vhdl-line-length` parameter.
 * `vhdl-use-revision-block` : *Boolean* : Setting this to true will make the header template insertion inject the revision block.  Setting this to false will make it such that this section is not used.
-* `vhdl-revision-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline.  It is used when `vhdl-use-revision-block` is set to true.  This string does not have any field substitutions.
+* `vhdl-revision-block` : *String List* : This list of strings will be joined by newlines and prepended by a newline.  It is used when `vhdl-use-revision-block` is set to true.  This block now also supports `${LINE}` to generate a line matching the `vhdl-line-length` parameter.
 * `vhdl-emacs-keybinds` : *Boolean* : This setting must be set in the User's Preferences, and not the VHDL Mode package settings.  When set `true` this activates a second set of keybindings that are identical to the Emacs vhdl-mode keybindings.  ***WARNING!!! This should NOT be used unless the user is using Emacs Pro Essentials and is familiar with Emacs keybindings.  The trigger key for most Emacs code functions starts with `C-c` which is really going to mess with your head if you're expecting that to be the typical Windows Copy command.***
 
 ## Key Mappings
@@ -133,8 +134,8 @@ In Emacs vhdl-mode, double striking some keys will insert some syntactical punct
 * `;;;` : Produces ` := ` (See notes below)
 * `..` : Produces ` => `
 * `,,` : Produces ` <= `
-* `---` : Produces a comment line extending to column 80 starting where the cursor is, and accounting for tabs.  This one pays attention to the `tab_size` Preference if you use tabs.
-* `--=` : Produces a three-sided comment box extending to column 80 starting whree the cursor is, and accounting for tabs.  (See notes.)
+* `---` : Produces a comment line extending to the column set by the `vhdl-line-length` setting (default: 80) starting where the cursor is, and accounting for tabs.  This one pays attention to the `tab_size` Preference if you use tabs.  If the cursor is beyond the defined line length, the line will simply be a two character comment `--` and produce a warning in the console.
+* `--=` : Produces a three-sided comment box extending to the column set by the `vhdl-line-length` setting (default: 80) starting where the cursor is, and accounting for tabs.  If the cursor is beyond the defined line length, the box will simply be bounded by `--` above and below (not a "line"), and a warning will be produced in the console.  (See notes on variation from the original Emacs vhdl-mode `----` box.)
 
 The following are the stutter typing replacements I cannot do.
 
