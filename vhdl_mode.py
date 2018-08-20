@@ -20,7 +20,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.7.15")
+        print("vhdl-mode: VHDL Mode Version 1.7.16")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -315,7 +315,7 @@ class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):
 #----------------------------------------------------------------
 class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
     """
-    This should insert a line out to the margine (80 characters)
+    This should insert a line out to the margin (80 characters)
     starting where the point is.  This is intended to run after
     the user types '---' (see keybindings)
     """

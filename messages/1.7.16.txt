@@ -1,0 +1,10 @@
+Version 1.7.16
+
+* Removed the tab trigger command for the header snippet as it was causing some
+  confusion.  The header should be inserted using the Insert Header command and
+  not directly using the snippet.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please submit pull requests to branch
+`develop`.
