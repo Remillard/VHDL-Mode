@@ -46,6 +46,6 @@ ${LINE}${REVISION_BLOCK}
 
 $0
 ]]></content>
-	<tabTrigger>header</tabTrigger>
+	<tabTrigger></tabTrigger>
 	<scope>source.vhdl</scope>
 </snippet>
