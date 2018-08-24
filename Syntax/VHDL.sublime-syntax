@@ -1415,7 +1415,7 @@ contexts:
     - match: |-
         (?xi)
           (({{identifier}})\s*(:)\s*)?
-          (if)
+          (\bif\b)
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl

@@ -3,6 +3,8 @@ Version 1.7.16
 * Removed the tab trigger command for the header snippet as it was causing some
   confusion.  The header should be inserted using the Insert Header command and
   not directly using the snippet.
+* Added whitespace check for conditional generate so it doesn't flag instance
+  names that start with `if`.
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
