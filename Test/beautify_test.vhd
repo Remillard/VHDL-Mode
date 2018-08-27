@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Fri Jul 13 10:16:51 2018
+-- Last update : Mon Aug 27 10:17:21 2018
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -384,6 +384,14 @@ begin
 			y(3 downto 0) => 9,
 			z(x'range)    => zz);
 
+	i_if_cpu : if_cpu
+		port map (
+			clk   => clk,
+			reset => reset,
+			a     => a,
+			b     => b
+		);
+
 	-------------------------------------------------------------------------------
 	-- END OF INSTANTIATION TESTS
 	-------------------------------------------------------------------------------
@@ -569,6 +577,12 @@ begin
 	foo(some_signal'range)          <= yet_another_name'range;
 	foo(other_signal'reverse_range) <= foo(15 downto 0);
 	foo(to_integer(my_unsigned))    <= 97;
+
+	foo(some_signal'range)          <= yet_another_name'range;
+	foo(other_signal'reverse_range) <= foo(15 downto 0);
+	adder1 <= ( '0' & add_l) + ( '0' & add_m);
+	adder2 <= ("0" & add_r) + ('0' & add_b);
+    adder <= ('0' & adder1) + ('0' & adder2);
 
 	bus_rw <= '1' when (condition) else '0';
 
