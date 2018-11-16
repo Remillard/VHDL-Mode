@@ -80,6 +80,19 @@ def strip_comments(line):
             return line
 
 # ---------------------------------------------------------------------------
+def reduce_strings(line):
+    """
+    Reduces any strings to a single character so that beautification
+    triggers won't trigger on string (similar to the comment issue.)
+    """
+    str_p = r'".*?"'
+    str_s = re.search(str_p, line)
+    if str_s:
+        return re.sub(str_p, r'"xxx"', line)
+    else:
+        return line
+
+# ---------------------------------------------------------------------------
 def pad_vhdl_symbols(lines):
     """
     Ensuring that special symbols that later we'll align on have a minimum
@@ -360,9 +373,10 @@ def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
 
     # Scan the lines.
     for i in range(len(lines)):
-        # Strip any comment from the line before analysis.
-        line = strip_comments(lines[i])
+        # Strip any comment from the line before analysis.  Also strings
         debug('{}: ci={} ni={} : {}'.format(i, current_indent, next_indent, lines[i]))
+        line = reduce_strings(lines[i])
+        line = strip_comments(line)
 
         ############################################################
         # Modification Rules
