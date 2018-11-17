@@ -337,7 +337,7 @@ def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, s
 
 
 # ---------------------------------------------------------------
-def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
+def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=False):
     """
     This method takes a list of lines of source code, that have
     been left justified, and attempts impose indentation rules
