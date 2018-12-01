@@ -13,6 +13,8 @@ Version 1.7.16
 * Added file declaration to the block declarative items in the syntax file
   as file declarations were not being picked up in syntax there.  (They were
   in subprogram paramters though which was a weird oversight.)
+* Improved signal and constant scoping and syntax identification by looking
+  for the default value operator explicitly.
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
