@@ -748,6 +748,9 @@ contexts:
         - match: (:)
           scope: punctuation.separator.vhdl
           set:
+            - meta_scope: meta.statement.signal.vhdl
+            - match: (:=)
+              scope: punctuation.assignment.vhdl
             - match: (;)
               scope: punctuation.terminator.vhdl
               pop: true
@@ -767,6 +770,9 @@ contexts:
         - match: (:)
           scope: punctuation.separator.vhdl
           set:
+            - meta_scope: meta.statement.constant.vhdl
+            - match: (:=)
+              scope: punctuation.assignment.vhdl
             - match: (;)
               scope: punctuation.terminator.vhdl
               pop: true
