@@ -2,6 +2,9 @@ Version 1.7.16
 
 * Fixed issue where beautification would trigger on text that exists in
   strings.  Issue #106.
+* Altered a behavior to default to tabs rather than spaces for port 
+  copying so that the user's Sublime Text preferences will take effect 
+  upon saving (Stefan Lippuner)
 
 
 As always, if bugs are discovered, or features desired, please visit
