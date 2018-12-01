@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Mon Aug 27 10:17:21 2018
+-- Last update : Sat Dec  1 09:39:26 2018
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -263,7 +263,7 @@ architecture rtl of my_entity is
 	-------------------------------------------------------------------------------
 	signal my_signal_1 : std_logic;
 	signal my_signal_2 : std_logic_vector(3 downto 0);
-	signal a, b, c     : std_logic;
+	signal a, b, c     : std_logic := '1';
 	-------------------------------------------------------------------------------
 	-- INDENT LEVEL SHOULD BE AT LEVEL 1 HERE
 	-------------------------------------------------------------------------------
