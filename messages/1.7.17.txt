@@ -10,6 +10,9 @@ Version 1.7.16
   It's unlikely that Emacsen folk will be using the command palette too much
   and are likely to know the vhdl-mode keybinds by touch.
 * Fixed generic map snippet having a trailing semicolon.
+* Added file declaration to the block declarative items in the syntax file
+  as file declarations were not being picked up in syntax there.  (They were
+  in subprogram paramters though which was a weird oversight.)
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can

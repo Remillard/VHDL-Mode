@@ -659,6 +659,7 @@ contexts:
     - include: constant-decl
     - include: subtype-decl
     - include: type-decl
+    - include: file-decl
     - include: variable-decl
     - include: attribute-decl
     - include: attribute-spec
@@ -795,6 +796,20 @@ contexts:
             - include: enumeration-type
             - include: array-type
             - include: range-type
+
+  file-decl:
+    - match: (?i)(file)\s+({{identifier}}(\s*,\s*{{identifier}})*)\s*(\:)
+      captures:
+        1: storage.type.variable.vhdl
+        2: variable.parameter.variable.vhdl
+        4: punctuation.separator.vhdl
+      push:
+        - meta_scope: meta.statement.interface.file.vhdl
+        - include: basic-paren-group
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
 
   subtype-decl:
     - match: (?i)(subtype)\s+({{identifier}})\s+(is)
