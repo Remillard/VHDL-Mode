@@ -275,6 +275,12 @@ def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, s
         # Scan for the aligning pattern
         s = re.search(regexp, lines[i])
 
+        # Decide if search found something in a string literal by checking for
+        # even number of quotes prior to the success.
+        in_str = False
+        if s and lines[i][:s.start()].count('"') % 2 == 1:
+            in_str = True
+
         # First decide if based on lack of pattern, scope change, or
         # a banned line or end of file whether we should process any
         # currently existing match list.
@@ -298,7 +304,7 @@ def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, s
         # if it was a line that was skipped due to banning, or if the whole
         # line scope changed (e.g. comment line broke the block) then process
         # the block for alignment.
-        if not s or scope_switch or (i == len(lines)-1) or banned:
+        if not s or scope_switch or (i == len(lines)-1) or banned or in_str:
             if len(match_data) > 1:
                 # Scan for max value and check to see if extra space needed
                 # due to lack of preceding space.
@@ -320,7 +326,7 @@ def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, s
 
         # Finally, if this line has an alignment symbol in it (and not banned)
         # start adding data again.
-        if s and not comment_check and not banned:
+        if s and not comment_check and not banned and not in_str:
             # If we find a match, record the line and
             # location but do nothing else.
             #print("Match on Line: {} Start:'{}' Stop:'{}'".\
