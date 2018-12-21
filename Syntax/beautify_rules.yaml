@@ -103,7 +103,7 @@ open_rules:
     close_rule:
     - [endclause, null]
     indent_rule:  [0, 1]
-    pattern: (?<!end )configuration\b
+    pattern: (?<!end )\bconfiguration\b
     solo_flag: false
   constant:
     close_offset: 1
