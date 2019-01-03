@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+${1:<LOOP_LABEL>} : while (${2:<conditional>}) loop
+	$0
+end loop $1;
+]]></content>
+	<tabTrigger>while</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

@@ -1,7 +1,7 @@
 Version 1.8.0
 
 * Fixed issue where beautification would trigger on text that exists in
-  strings.  Issue #106.
+  strings.  Issue #106.  Also continued into the next point.
 * Larger backend rewrite and refactor for beautification that ought to aid in
   fixing some of the weirder behaviors.  This is largely why the version
   incremented to 1.8.0 as it's a fair departure from the 1.7.x version.
@@ -36,6 +36,14 @@ Version 1.8.0
   in subprogram parameters though which was a weird oversight.)
 * Improved signal and constant scoping and syntax identification by looking
   for the default value operator explicitly.
+* A signal that contained the word 'configuration' was getting incorrectly
+  indented due to needing a word boundary check in the regexp rule matching
+  configurations.
+* Added a much needed snippet for while loops.
+* Added a requested snippet for configurations.  Fair warning, configurations
+  can be wildly diverse and this is a single example for specifying a
+  particular architecture for an instance in the targeted architecture of the
+  targeted entity.  Edit to taste, I guess.  (VincentSmit)
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can

@@ -1,0 +1,13 @@
+<snippet>
+	<content><![CDATA[
+configuration ${1:<configuration_identifier>} of ${2:<entity_name>} is
+	for ${3:<arch_name>}
+		for ${4:<instance_name>} : ${5:<component_name>}
+			use entity work.$5(${6:<arch_name>});
+		end for;
+	end for;
+end configuration $1;
+]]></content>
+	<tabTrigger>config</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>
