@@ -194,10 +194,10 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         begin = 0
         end = self.view.size()-1
 
-        # Slurp up entire buffer
+        # Slurp up entire buffer and create CodeBlock object
         whole_region = sublime.Region(begin, end)
         buffer_str = self.view.substr(whole_region)
-        lines = buffer_str.split('\n')
+        cb = vhdl.CodeBlock.from_block(buffer_str)
 
         # Get the scope for column 0 of each line.
         point = 0
@@ -207,56 +207,40 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
             point = util.move_down(self, point)
         scope_list.append(self.view.scope_name(point))
 
-        # Process each line
-        # Left justify
-        vhdl.left_justify(lines)
-
-        # Because there are some really terrible typists out there
-        # I end up having to MAKE SURE that symbols like : := <= and =>
-        # have spaces to either side of them.  I'm just going to wholesale
-        # replace them all with padded versions and then I remove extra space
-        # later, which seems wasteful, but easier than trying to come up with
-        # a ton of complicated patterns.
-        vhdl.pad_vhdl_symbols(lines)
-
-        # Remove extra blank space and convert tabs to spaces
-        vhdl.remove_extra_space(lines)
-
-        # Align
+        # Process the block of code.
+        cb.prep()
+        cb.left_justify()
         print('vhdl-mode: Aligning symbols.')
-        vhdl.align_block_on_re(lines=lines, regexp=r':(?!=)', scope_data=scope_list)
-        vhdl.align_block_on_re(
-            lines=lines,
-            regexp=r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*',
-            padside='post',
-            scope_data=scope_list)
-        vhdl.align_block_on_re(lines=lines, regexp=r'<|:(?==)', scope_data=scope_list)
-        vhdl.align_block_on_re(lines=lines, regexp=r'=>', scope_data=scope_list)
+        cb.align_symbol(r':(?!=)', 'pre', scope_list)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', scope_list)
+        cb.align_symbol(r'<|:(?==)', 'pre', scope_list)
+        cb.align_symbol(r'=>', 'pre', scope_list)
+        cb.status()
 
-        # Indent!  Get some settings first.
-        use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')
-        tab_size = util.get_vhdl_setting(self, 'tab_size')
-        print('vhdl-mode: Indenting.')
-        vhdl.indent_vhdl(lines=lines, initial=0, tab_size=tab_size,
-                         use_spaces=use_spaces)
+        # # Indent!  Get some settings first.
+        # use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')
+        # tab_size = util.get_vhdl_setting(self, 'tab_size')
+        # print('vhdl-mode: Indenting.')
+        # vhdl.indent_vhdl(lines=lines, initial=0, tab_size=tab_size,
+        #                  use_spaces=use_spaces)
 
-        # Post indent alignment
-        vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
-        # TBD -- There's a hook for more sophisticated handling of comment
-        # lines which would be required for perfect alignment of inline comment
-        # blocks, however it's not working, so leave that parameter as True for
-        # now.
-        vhdl.align_block_on_re(lines=lines, regexp=r'--', ignore_comment_lines=True, scope_data=scope_list)
+        # # Post indent alignment
+        # vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
+        # # TBD -- There's a hook for more sophisticated handling of comment
+        # # lines which would be required for perfect alignment of inline comment
+        # # blocks, however it's not working, so leave that parameter as True for
+        # # now.
+        # vhdl.align_block_on_re(lines=lines, regexp=r'--', ignore_comment_lines=True, scope_data=scope_list)
 
-        # Recombine into one big blobbed string.
-        buffer_str = '\n'.join(lines)
+        # # Recombine into one big blobbed string.
+        # buffer_str = '\n'.join(lines)
 
-        # Annnd if all went well, write it back into the buffer
-        self.view.replace(edit, whole_region, buffer_str)
+        # # Annnd if all went well, write it back into the buffer
+        # self.view.replace(edit, whole_region, buffer_str)
 
-        # Put cursor back to original point (roughly)
-        original_point = self.view.text_point(orig_x, orig_y)
-        util.set_cursor(self, original_point)
+        # # Put cursor back to original point (roughly)
+        # original_point = self.view.text_point(orig_x, orig_y)
+        # util.set_cursor(self, original_point)
 
 #----------------------------------------------------------------
 class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):

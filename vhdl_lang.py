@@ -13,10 +13,10 @@ import copy
 import sublime
 import ruamel.yaml
 
-_debug = False
+_debug = True
 
 
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def debug(string):
     """
     Some of these functions ended up with a lot of debug output for analyzing
@@ -25,17 +25,7 @@ def debug(string):
     if _debug:
         print(string)
 
-
-# ---------------------------------------------------------------------------
-def left_justify(lines):
-    """
-    Method removes all whitespace at the beginning of a line.
-    """
-    for i in range(len(lines)):
-        lines[i] = re.sub(r"^\s*", '', lines[i])
-
-
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def check_for_comment(line):
     """
     Simple method that will return False if a line does not
@@ -47,89 +37,7 @@ def check_for_comment(line):
     s = re.search(p, line)
     return bool(s)
 
-
-# ---------------------------------------------------------------
-def strip_comments(line):
-    """
-    Removes any inline comment from the line, accounting for
-    comment symbols inside of a text string.  Does not account
-    for multiline commenting.
-    """
-    str_p = r'".*?"'
-    comment_p = r'--.*$'
-    # First check for an inline string.  Will only handle one.
-    str_s = re.search(str_p, line)
-    # If a string exists, then we break up into searching the
-    # beginning and end separately.  Otherwise, just a basic
-    # whole line search is fine.
-    if str_s:
-        comment_s = re.search(comment_p, line[:str_s.start()])
-        if comment_s:
-            return line[:comment_s.start()]
-        else:
-            comment_s = re.search(comment_p, line[str_s.end():])
-            if comment_s:
-                return line[:str_s.end()+comment_s.start()]
-            else:
-                return line
-    else:
-        comment_s = re.search(comment_p, line)
-        if comment_s:
-            return line[:comment_s.start()]
-        else:
-            return line
-
-# ---------------------------------------------------------------------------
-def reduce_strings(line):
-    """
-    Reduces any strings to a single character so that beautification
-    triggers won't trigger on string (similar to the comment issue.)
-    """
-    str_p = r'".*?"'
-    str_s = re.search(str_p, line)
-    if str_s:
-        return re.sub(str_p, r'"xxx"', line)
-    else:
-        return line
-
-# ---------------------------------------------------------------------------
-def pad_vhdl_symbols(lines):
-    """
-    Ensuring that special symbols that later we'll align on have a minimum
-    leading and trailing space.  Aids correct alignment.  Leaving it at
-    assignment and languaage delimeters for now.
-    """
-    for i in range(len(lines)):
-        if not check_for_comment(lines[i]):
-            lines[i] = re.sub(':(?!=)', ' : ',  lines[i])
-            lines[i] = re.sub(':=',     ' := ', lines[i])
-            lines[i] = re.sub('<=',     ' <= ', lines[i])
-            lines[i] = re.sub('=>',     ' => ', lines[i])
-
-
-# ---------------------------------------------------------------------------
-def remove_extra_space(lines):
-    """
-    Method that takes out extra whitespace in a line.  Avoids
-    full line comments and attempts to avoid in-line comments.
-    """
-    for i in range(len(lines)):
-        if not check_for_comment(lines[i]):
-            # Check and save off inline comments.
-            cs = re.search(r'--.*$', lines[i])
-            if cs:
-                comment = lines[i][cs.start():]
-                code = lines[i][0:cs.start()]
-            else:
-                comment = ''
-                code = lines[i]
-            # Compress space in code portion of the line.
-            code = re.sub(r'\s+', ' ', code)
-            code = re.sub(r'\t', ' ', code)
-            lines[i] = code + comment
-
-
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Parentheses():
     '''
     An object whose purpose is to keep track of parenthesis counts
@@ -216,133 +124,233 @@ class Parentheses():
         else:
             return line[start:end]
 
-# ---------------------------------------------------------------
-def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, scope_data=None):
+# ------------------------------------------------------------------------------
+class CodeLine():
     """
-    Receives a list of individual lines.  Scans each line looking
-    for the provided lexical pattern that should align on
-    adjoining lines. Once a pattern is found, record the line index
-    and pattern location.  For each subsequent line that also
-    identifies the pattern, add the line index and pattern location.
-    When a line is identified that does not have the pattern, find
-    the line in the list with the most leftmost symbol, and then
-    iterate through the list of affected lines and pad on the side
-    declared (anything that is not 'post' is prepend because that's
-    most common.)
-
-    Alignment should happen when the strings are left justified
-    so that it doesn't need to know about the spacing.
-
-    This is intended to be run in several passes on several patterns
-    which is why it takes the regexp as a parameter.
-
-    Added some blacklist words, otherwise you can get some matching
-    between conditionals and assignments and other nonsense.
-
-    TODO: Add scope checking for alignment instead of ban list
-    when provided.
+    The CodeLine object encapsulates a number of methods used to manipulate a
+    string of code.
+    * Masking methods block off portions of the string in order not to trigger
+      any regular expression hits in strings or comments.
+    * Left Justify removes space at the beginning of the line, prelude to
+      indentation efforts.
+    * Padding symbols is done to ensure spaces around symbols which aids
+      pattern matching.  Only done for symbols we intend to align vertically.
+    * Removing extra space (except in strings and comments) is done to prep
+      the line for alignment.
     """
-    ban_raw = [
-        r':\s+process\b',
-        r'\bif\b',
-        r'\bthen\b',
-        r'\bwhen\b(?=.*?=>)'
-    ]
-    ban_list = []
-    for pattern in ban_raw:
-        ban_list.append(re.compile(pattern, re.IGNORECASE))
+    def __init__(self, line):
+        self.line = line
+        self.matches = []
+        self.index = 0
 
-    prior_scope = ""
-    match_data = []
-    for i in range(len(lines)):
+    def mask_strings(self):
+        matches = re.finditer(r'(\".*?\")', self.line)
+        for m in matches:
+            x, y = m.start(), m.end()
+            pattern = '$%02d' % self.index + 'x'*(y-x-3)
+            self.line = self.line.replace(m.group(0), pattern)
+            self.matches.append([pattern, m.group(0)])
+            self.index = self.index + 1
 
-        # Check for banned lines we don't even want to think about.
-        banned = False
-        for pattern in ban_list:
-            ban_search = re.search(pattern, lines[i])
-            if ban_search:
-                banned = True
-                break
+    def mask_comments(self):
+        matches = re.finditer(r'(--.*)', self.line)
+        for m in matches:
+            x, y = m.start(), m.end()
+            pattern = '$%02d' % self.index + 'x'*(y-x-3)
+            self.line = self.line.replace(m.group(0), pattern)
+            self.matches.append([pattern, m.group(0)])
+            self.index = self.index + 1
 
-        # Adding a hook here for better comment handling.  Check to see if this
-        # is a commented line and if we should pay attention to it.
-        # ignore_comment_lines is True by default and until this routine is
-        # more sophisticated should probably remain true.
-        comment_check = False
-        if ignore_comment_lines:
-            comment_check = check_for_comment(lines[i])
+    def restore(self):
+        for pattern, original in self.matches:
+            self.line = self.line.replace(pattern, original)
+        self.matches = []
 
-        # Scan for the aligning pattern
-        s = re.search(regexp, lines[i])
+    def left_justify(self):
+        self.line = re.sub(r'^\s*', '', self.line)
 
-        # Decide if search found something in a string literal by checking for
-        # even number of quotes prior to the success.
-        in_str = False
-        if s and lines[i][:s.start()].count('"') % 2 == 1:
-            in_str = True
+    def pad_vhdl_symbols(self):
+        self.line = re.sub(':(?!=)', ' : ', self.line)
+        self.line = re.sub(':=', ' := ', self.line)
+        self.line = re.sub('<=', ' <= ', self.line)
+        self.line = re.sub('=>', ' => ', self.line)
 
-        # First decide if based on lack of pattern, scope change, or
-        # a banned line or end of file whether we should process any
-        # currently existing match list.
-        scope_switch = False
-        if scope_data is not None:
-            if scope_data[i] != prior_scope:
-                scope_switch = True
-            else:
-                scope_switch = False
+    def remove_spaces(self):
+        self.line = re.sub(r'\s+', ' ', self.line)
+        self.line = re.sub(r'\t', ' ', self.line)
 
-        # A special check for the last line to add to the group, otherwise
-        # we process before we can evaluate that line.
-        if s and (i == len(lines)-1) and not comment_check and not banned:
-            if padside == 'post':
-                match_data.append((i, s.end()))
-            else:
-                match_data.append((i, s.start()))
+# ------------------------------------------------------------------------------
+class CodeBlock():
+    """
+    The CodeBlock is a way of encapsulating the CodeLine functions and contains
+    whole region or block manipulations for the code.  ]
 
-        # This is where the actual lines are adjusted.  If this line breaks the
-        # sequence of lines that had the pattern, or if it's the last line, or
-        # if it was a line that was skipped due to banning, or if the whole
-        # line scope changed (e.g. comment line broke the block) then process
-        # the block for alignment.
-        if not s or scope_switch or (i == len(lines)-1) or banned or in_str:
-            if len(match_data) > 1:
-                # Scan for max value and check to see if extra space needed
-                # due to lack of preceding space.
-                maxpos = 0
-                for pair in match_data:
-                    if pair[1] > maxpos:
-                        maxpos = pair[1]
-                        if lines[pair[0]][pair[1]-1] != ' ':
-                            maxpos = maxpos + 1
-                # Now insert spaces on each line (max-current+1)
-                # to make up the space.
-                for pair in match_data:
-                    lines[pair[0]] = lines[pair[0]][0:pair[1]] + \
-                                     ' '*(maxpos-pair[1]) + \
-                                     lines[pair[0]][pair[1]:]
-            # No match for more than one line so erase match
-            # data
-            match_data = []
+    CodeBlock receives a list of lines nominally and turns them into a list of
+    CodeLines. Another factory constructor permits receiving a block of text
+    with embedded newlines from which it will then extract the lines and
+    construct the list of CodeLines.  There is also an append method for
+    incrementally generating this block.
 
-        # Finally, if this line has an alignment symbol in it (and not banned)
-        # start adding data again.
-        if s and not comment_check and not banned and not in_str:
-            # If we find a match, record the line and
-            # location but do nothing else.
-            #print("Match on Line: {} Start:'{}' Stop:'{}'".\
-            #       format(line_num, lines[line_num][0:s.start()],\
-            #              lines[line_num][s.start():]))
-            if padside == 'post':
-                match_data.append((i, s.end()))
-            else:
-                match_data.append((i, s.start()))
+    CodeBlock similarly provides methods for returning the CodeLines via a list
+    of lines or a block of text.
 
-        # Make sure we save the current scope off before looping
-        if scope_data is not None:
-            prior_scope = scope_data[i]
+    CodeBlock provides methods for manipulating the lines of code in various
+    ways (justifying, aligning, indenting, etc.)
+    """
+    def __init__(self, lines=None):
+        """ Fundamental constructor from a list of lines. """
+        self.code_lines = []
+        if lines is not None:
+            for line in lines:
+                self.code_lines.append(CodeLine(line))
 
+    @classmethod
+    def from_block(cls, block):
+        """ Constructor from a block of text. """
+        lines = block.split('\n')
+        return cls(lines)
 
-# ---------------------------------------------------------------
+    def to_list(self):
+        """ Returns a list of lines. """
+        lines = []
+        for cl in self.code_lines:
+            lines.append(cl.line)
+        return lines
+
+    def to_block(self):
+        """ Returns the code in a block of text. """
+        lines = []
+        for cl in self.code_lines:
+            lines.append(cl.line)
+        return '\n'.join(lines)
+
+    def append(self, line):
+        """ Adds a single line to the list of CodeLines. """
+        self.code_lines.append(CodeLine(line))
+
+    def prep(self):
+        """ This method automates a lot of the initial preparatory work with
+        spacing and padding. """
+        for cl in self.code_lines:
+            cl.mask_comments()
+            cl.mask_strings()
+            cl.pad_vhdl_symbols()
+            cl.remove_spaces()
+            cl.restore()
+
+    def left_justify(self):
+        """ This method left justifies an entire block. """
+        for cl in self.code_lines:
+            cl.left_justify()
+
+    def status(self):
+        for cl in self.code_lines:
+            debug('{}'.format(cl.line))
+
+    def align_symbol(self, expr, side='pre', scope_data=None):
+        """
+        This is a in-class rework of the original align block on regular
+        expression function.  The same parameters exist except it doesn't need
+        to pass the entire block of lines because that's integral to the class
+        members.  Additionally the method no longer takes the ignore comment
+        lines parameter because there will be a specialized method for aligning
+        comments later.
+
+        Prepares each line by masking out comments and quotes first.
+        Scans each line for the provided regular expression pattern that should
+        align with subsequent lines.
+        Once the pattern is found, pushes the location onto a stack and
+        continues to the next line.
+        When a line is identified that breaks the chain, go back through the
+        stack and identify the rightmost position, and then pad.
+        There exists a parameter to pad afterwards as there is one case where
+        we want to look for port modes and pad afterwards to align the type.
+        There exist some lines we don't even want to monkey with because the
+        symbols tend to conflict (conditional signals in if/thens, case choice
+        lines, etc.)
+        """
+        ignored_expr = [
+            r':\s+process\b',     # don't remember why I ignore this one
+            r'\bif\b',            # ignore if statement conditional symbols
+            r'\bthen\b',          # ignore if statement conditional symbols
+            r'\belsif\b',         # ignore if statement conditional symbols
+            r'\bwhen\b(?=.*?=>)'  # ignore case choice
+        ]
+
+        # Initializing variables
+        prior_scope = ""
+        match_data = []
+
+        # Iterating over lines of code now.  Using enumerate to aid detection
+        # of the last item in the list.
+        for idx, cl in enumerate(self.code_lines):
+            # Prep work
+            cl.mask_comments()
+            cl.mask_strings()
+
+            # Check for a number of items that will trigger
+            # Checking for the last line in the list.
+            last_line = False
+            if idx == len(self.code_lines)-1:
+                last_line = True
+
+            # Checking for lines we want to ignore
+            ignored = False
+            for pattern in ignored_expr:
+                ignore_search = re.search(pattern, cl.line, re.I)
+                if ignore_search:
+                    ignored = True
+
+            # Checking for a change of scope on a line which will alter the
+            # contex of the symbol being searched for and should not be aligned.
+            # This is for a particular special case that I don't recall.
+            scope_switch = False
+            if scope_data is not None:
+                if scope_data[idx] != prior_scope:
+                    scope_switch = True
+                prior_scope = scope_data[idx]
+
+            # Search for the alignment pattern and then restore the masked
+            # strings.
+            match = re.search(expr, cl.line, re.I)
+            cl.restore()
+
+            # If this line has a expression match and isn't an ignored line and
+            # is in the same scope context, add it to the list.
+            if match and not ignored and not scope_switch:
+                # If we find a match, record the line and position
+                #debug('Match Line {}: {} : Pos {}'.format(idx, cl.line, match.start()))
+                if side == 'post':
+                    match_data.append((cl, match.end()))
+                else:
+                    match_data.append((cl, match.start()))
+
+            # Trigger the adjustment on past stored lines.
+            if not match or scope_switch or last_line or ignored:
+                if len(match_data) > 1:
+                    # Scan for the rightmost (maximum) position value and check
+                    # to see if extra space needed due to lack of preceding
+                    # space.
+                    maxpos = 0
+                    for mcl, pos in match_data:
+                        if pos > maxpos:
+                            maxpos = pos
+                            if mcl.line[pos-1] != ' ':
+                                maxpos = maxpos + 1
+                    # Adjust the spacial padding in the line.
+                    for mcl, pos in match_data:
+                        mcl.line = mcl.line[0:pos] + ' '*(maxpos-pos) + mcl.line[pos:]
+                match_data = []
+
+            # Case that there was a match in a new scope context must be
+            # added to the list after the previous batch was processed.
+            if match and scope_switch:
+                if side == 'post':
+                    match_data.append((cl, match.end()))
+                else:
+                    match_data.append((cl, match.start()))
+
+# ------------------------------------------------------------------------------
 def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=False):
     """
     This method takes a list of lines of source code, that have
