@@ -20,7 +20,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.7.17")
+        print("vhdl-mode: VHDL Mode Version 1.8.0")
 
 #----------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
@@ -218,7 +218,6 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', scope_list)
         cb.align_symbol(r'<|:(?==)', 'pre', scope_list)
         cb.align_symbol(r'=>', 'pre', scope_list)
-        cb.status()
 
         # Indent!  Get some settings first.
         use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')

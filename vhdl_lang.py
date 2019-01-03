@@ -1,11 +1,12 @@
+# pylint: disable=C0103, C0111
 """
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
  VHDL Language Module.
 
  Defines class structures and methods for identifying and
  manipulating text structures, and extracting and replicating
  lexical elements.
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
 """
 import re
 import collections
@@ -25,6 +26,7 @@ def debug(string):
     if _debug:
         print(string)
 
+
 # ------------------------------------------------------------------------------
 def check_for_comment(line):
     """
@@ -36,6 +38,7 @@ def check_for_comment(line):
     p = re.compile(pattern, re.IGNORECASE)
     s = re.search(p, line)
     return bool(s)
+
 
 # ------------------------------------------------------------------------------
 class Parentheses():
@@ -124,6 +127,7 @@ class Parentheses():
         else:
             return line[start:end]
 
+
 # ------------------------------------------------------------------------------
 class CodeLine():
     """
@@ -178,6 +182,7 @@ class CodeLine():
     def remove_spaces(self):
         self.line = re.sub(r'\s+', ' ', self.line)
         self.line = re.sub(r'\t', ' ', self.line)
+
 
 # ------------------------------------------------------------------------------
 class CodeBlock():
@@ -302,8 +307,9 @@ class CodeBlock():
                     ignored = True
 
             # Checking for a change of scope on a line which will alter the
-            # contex of the symbol being searched for and should not be aligned.
-            # This is for a particular special case that I don't recall.
+            # context of the symbol being searched for and should not be
+            # aligned.  This is for a particular special case that I don't
+            # recall.
             scope_switch = False
             if scope_data is not None:
                 if scope_data[idx] != prior_scope:
@@ -319,7 +325,6 @@ class CodeBlock():
             # is in the same scope context, add it to the list.
             if match and not ignored and not scope_switch:
                 # If we find a match, record the line and position
-                #debug('Match Line {}: {} : Pos {}'.format(idx, cl.line, match.start()))
                 if side == 'post':
                     match_data.append((cl, match.end()))
                 else:
@@ -427,7 +432,6 @@ class CodeBlock():
                 current_indent += 1
             unbalance_flag = not parens.balanced
 
-
             # Special: Closing Item Reset
             # Scan the line for ending key if one exists. If parentheses are
             # balanced and then ending key has been found then reset the
@@ -512,7 +516,8 @@ class CodeBlock():
             # Set current for next line.
             current_indent = next_indent
 
-# ---------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Port():
     """
     This is the class of ports and ways to manipulate ports.
@@ -545,7 +550,6 @@ class Port():
         """Returns a string with the port formatted for a signal."""
         # Trailing semicolon provided by calling routine.
         line = 'signal {} : {}'.format(self.name, self.type)
-        #print(line)
         return line
 
     def print_as_portmap(self):
@@ -567,11 +571,10 @@ class Port():
         """Returns a string with the port formatted as a port."""
         # Trailing semicolon provided by calling routine.
         line = '{} : {} {}'.format(self.name, self.mode, self.type)
-        #print(line)
         return line
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Generic():
     """
     This is the class of generics and ways to manipulate them.
@@ -625,7 +628,8 @@ class Generic():
             line = 'constant {} : {} := <value>'.format(self.name, self.type)
         return line
 
-# ---------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Parameter():
     """
     This is the class of subprogram parameters.  Might ultimately
@@ -644,10 +648,8 @@ class Parameter():
     def parse_str(self, param_str):
         """Better regexp should be able to extract everything!"""
         regex = r"^\s*((?P<storage>constant|signal|variable|file)\s*)?((?P<name>.*?)\s*)(?::\s*)((?P<mode>inout\b|in\b|out\b|buffer\b)\s*)?((?P<type>.*?)\s*)((?:\:\=)\s*(?P<expression>.*?)\s*)?$"
-        #print('Input: "{}"'.format(param_str))
         s = re.search(regex, param_str)
         if s:
-            #print('Storage: "{}", Name: "{}", Mode: "{}", Type: "{}", Expression: "{}"'.format(s.group('storage'), s.group('name'), s.group('mode'), s.group('type'), s.group('expression')))
             if s.group('storage'):
                 self.storage = s.group('storage')
             self.identifier = s.group('name')
@@ -672,7 +674,6 @@ class Parameter():
         string = string + '{}'.format(self.type)
         if self.expression:
             string = string + ' := {}'.format(self.expression)
-        #print(string)
         return string
 
     def print_call(self):
@@ -681,7 +682,7 @@ class Parameter():
         return string
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Interface():
     """
     The Interface class contains the essential elements to a
@@ -747,7 +748,6 @@ class Interface():
         # which might conflict with type names.
         p = re.compile(r"\s+")
         self.if_string = re.sub(p, " ", self.if_string)
-
 
     def parse_generic_port(self):
         """Attempts to break the interface into known generic and
@@ -818,9 +818,11 @@ class Interface():
         if self.if_ports:
             for port in self.if_ports:
                 lines.append(port.print_as_signal() + ';')
-            align_block_on_re(lines, r':')
-            indent_vhdl(lines, 1)
-            return '\n'.join(lines)
+            cb = CodeBlock(lines)
+            cb.align_symbol(r':(?!=)', 'pre', None)
+            cb.align_symbol(r'<|:(?==)', 'pre', None)
+            cb.indent_vhdl(1)
+            return cb.to_block()
         else:
             return None
 
@@ -833,10 +835,11 @@ class Interface():
         if self.if_generics:
             for generic in self.if_generics:
                 lines.append(generic.print_as_constant() + ';')
-            align_block_on_re(lines, r':')
-            align_block_on_re(lines, r':=')
-            indent_vhdl(lines, 1)
-            return '\n'.join(lines)
+            cb = CodeBlock(lines)
+            cb.align_symbol(r':', 'pre', None)
+            cb.align_symbol(r':=', 'pre', None)
+            cb.indent_vhdl(1)
+            return cb.to_block()
         else:
             return None
 
@@ -885,10 +888,10 @@ class Interface():
                 lines.append(port_str)
             lines.append(");")
 
-        align_block_on_re(lines, '=>')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r'\=\>', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def component(self):
         """
@@ -923,12 +926,12 @@ class Interface():
             lines.append(");")
         lines.append("end component {};".format(self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def entity(self):
         """
@@ -963,12 +966,12 @@ class Interface():
             lines.append(");")
         lines.append("end entity {};".format(self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 0)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(0)
+        return cb.to_block()
 
     def flatten(self):
         '''
@@ -1016,7 +1019,7 @@ class Interface():
                     port.mode = 'in'
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Subprogram():
     """
     Class that contains information about a VHDL subprogram
@@ -1083,9 +1086,9 @@ class Subprogram():
         # If we are unbalanced, then there's nothing to do and return.  Otherwise
         # use the last paren location to trim the line and perform the search.
         if parens.balanced:
-            if close_pos:
+            if parens.close_pos:
                 new_line = line[parens.close_pos[-1]:]
-                offset = close_pos[-1]
+                offset = parens.close_pos[-1]
             else:
                 new_line = line
                 offset = 0
@@ -1130,13 +1133,11 @@ class Subprogram():
                 break
         if start and stop:
             self.if_string = self.if_string[start:stop]
-            #print(self.if_string)
             param_list = self.if_string.split(';')
             for param_str in param_list:
                 param = Parameter(param_str)
                 if param.success:
                     self.if_params.append(param)
-                    #param.print()
         else:
             print('vhdl-mode: No subprogram parameters found.')
 
@@ -1186,12 +1187,12 @@ class Subprogram():
             else:
                 lines.append('{} {};'.format(self.type, self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def body(self):
         """Constructs a subprogram body from the currently
@@ -1233,12 +1234,12 @@ class Subprogram():
         lines.append(' ')
         lines.append('end {} {};'.format(self.type, self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def call(self):
         """Constructs a subprogram call.  Much simpler than the
@@ -1256,10 +1257,10 @@ class Subprogram():
         else:
             lines.append('{};'.format(self.name))
 
-        align_block_on_re(lines, '=>')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r'\=\>', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def flatten(self):
         new_params = []
