@@ -207,40 +207,40 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
             point = util.move_down(self, point)
         scope_list.append(self.view.scope_name(point))
 
-        # Process the block of code.
+        # Process the block of code.  Prep pads symbols and removes extra
+        # spaces.
         cb.prep()
         cb.left_justify()
-        print('vhdl-mode: Aligning symbols.')
+
+        # Do the initial alignment after justification.
+        print('vhdl-mode: Pre-indent symbol alignment.')
         cb.align_symbol(r':(?!=)', 'pre', scope_list)
         cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', scope_list)
         cb.align_symbol(r'<|:(?==)', 'pre', scope_list)
         cb.align_symbol(r'=>', 'pre', scope_list)
         cb.status()
 
-        # # Indent!  Get some settings first.
-        # use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')
-        # tab_size = util.get_vhdl_setting(self, 'tab_size')
-        # print('vhdl-mode: Indenting.')
-        # vhdl.indent_vhdl(lines=lines, initial=0, tab_size=tab_size,
-        #                  use_spaces=use_spaces)
+        # Indent!  Get some settings first.
+        use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')
+        tab_size = util.get_vhdl_setting(self, 'tab_size')
+        print('vhdl-mode: Indenting.')
+        cb.indent_vhdl(0, tab_size, use_spaces)
 
-        # # Post indent alignment
-        # vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
-        # # TBD -- There's a hook for more sophisticated handling of comment
-        # # lines which would be required for perfect alignment of inline comment
-        # # blocks, however it's not working, so leave that parameter as True for
-        # # now.
+        # Post indent alignment
+        print('vhdl-mode: Post-indent symbol alignment.')
+        cb.align_symbol(r'\bwhen\b', 'pre', scope_list)
+        # TBD Comment alignment method
         # vhdl.align_block_on_re(lines=lines, regexp=r'--', ignore_comment_lines=True, scope_data=scope_list)
 
-        # # Recombine into one big blobbed string.
-        # buffer_str = '\n'.join(lines)
+        # Recombine into one big blobbed string.
+        buffer_str = cb.to_block()
 
-        # # Annnd if all went well, write it back into the buffer
-        # self.view.replace(edit, whole_region, buffer_str)
+        # Annnd if all went well, write it back into the buffer
+        self.view.replace(edit, whole_region, buffer_str)
 
-        # # Put cursor back to original point (roughly)
-        # original_point = self.view.text_point(orig_x, orig_y)
-        # util.set_cursor(self, original_point)
+        # Put cursor back to original point (roughly)
+        original_point = self.view.text_point(orig_x, orig_y)
+        util.set_cursor(self, original_point)
 
 #----------------------------------------------------------------
 class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):
