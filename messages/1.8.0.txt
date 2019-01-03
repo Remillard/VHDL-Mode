@@ -1,7 +1,11 @@
-Version 1.7.16
+Version 1.8.0
 
 * Fixed issue where beautification would trigger on text that exists in
   strings.  Issue #106.
+* Larger backend rewrite and refactor for beautification that ought to aid in
+  fixing some of the weirder behaviors (maybe).  This is largely why the
+  version incremented to 1.8.0 as it's a fair departure from the 1.7.x code
+  line.
 * Altered a behavior to default to tabs rather than spaces for port
   copying so that the user's Sublime Text preferences will take effect
   upon saving. (Stefan Lippuner)
