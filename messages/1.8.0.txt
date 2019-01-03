@@ -3,9 +3,26 @@ Version 1.8.0
 * Fixed issue where beautification would trigger on text that exists in
   strings.  Issue #106.
 * Larger backend rewrite and refactor for beautification that ought to aid in
-  fixing some of the weirder behaviors (maybe).  This is largely why the
-  version incremented to 1.8.0 as it's a fair departure from the 1.7.x code
-  line.
+  fixing some of the weirder behaviors.  This is largely why the version
+  incremented to 1.8.0 as it's a fair departure from the 1.7.x version.
+* Comments should align better.  Comments will align with the line of code
+  following the comment rather than the line of code preceding (most notable
+  with case/when constructs.)  Additionally inline comments will align with
+  each other and continuation full comment lines will align with the prior
+  inline comment until the next non commented line.  Thus comments can look
+  like:
+
+  entity foobar is
+      port (
+          --
+          -- Some Basic Stuff
+          --
+          clk   : std_logic; -- This clock will
+                             -- run at 100 MHz
+          reset : std_logic
+      );
+  end entity foobar;
+
 * Altered a behavior to default to tabs rather than spaces for port
   copying so that the user's Sublime Text preferences will take effect
   upon saving. (Stefan Lippuner)
@@ -16,7 +33,7 @@ Version 1.8.0
 * Fixed generic map snippet having a trailing semicolon.
 * Added file declaration to the block declarative items in the syntax file
   as file declarations were not being picked up in syntax there.  (They were
-  in subprogram paramters though which was a weird oversight.)
+  in subprogram parameters though which was a weird oversight.)
 * Improved signal and constant scoping and syntax identification by looking
   for the default value operator explicitly.
 

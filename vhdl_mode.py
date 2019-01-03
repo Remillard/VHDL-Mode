@@ -228,8 +228,8 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         # Post indent alignment
         print('vhdl-mode: Post-indent symbol alignment.')
         cb.align_symbol(r'\bwhen\b', 'pre', scope_list)
-        # TBD Comment alignment method
-        # vhdl.align_block_on_re(lines=lines, regexp=r'--', ignore_comment_lines=True, scope_data=scope_list)
+        print('vhdl-mode: Aligning comments.')
+        cb.align_comments()
 
         # Recombine into one big blobbed string.
         buffer_str = cb.to_block()

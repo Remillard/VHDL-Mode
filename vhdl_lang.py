@@ -178,10 +178,20 @@ class CodeLine():
         self.line = re.sub(':=', ' := ', self.line)
         self.line = re.sub('<=', ' <= ', self.line)
         self.line = re.sub('=>', ' => ', self.line)
+        self.line = re.sub(';', '; ', self.line)
 
     def remove_spaces(self):
         self.line = re.sub(r'\s+', ' ', self.line)
         self.line = re.sub(r'\t', ' ', self.line)
+
+    @property
+    def is_full_comment(self):
+        return bool(re.search(r'^\s*(--.*)', self.line, re.I))
+
+    @property
+    def has_inline_comment(self):
+        s = re.search(r'^\s*(?!--)\S+.*(--.*)', self.line, re.I)
+        return bool(s)
 
 
 # ------------------------------------------------------------------------------
@@ -515,6 +525,76 @@ class CodeBlock():
             debug('{}: ci={} ni={} : {} \n'.format(idx, current_indent, next_indent, cl.line))
             # Set current for next line.
             current_indent = next_indent
+
+    def align_comments(self):
+        """
+        Comments are a little different from normal alignment and
+        identation.
+
+        1. Full comment lines should be aligned, however they should be
+           indented to the level of the next code line, not the previous
+           which is what happens with the indent_vhdl routine.  This is most
+           notable with case/when code regions where a comment preceding a
+           'when' will be indented at the level of the previous when block.
+           Thus full comment lines should be aligned after regular indentation
+           is complete.  The method assumes that the calling code has already
+           completed indent_vhdl.
+
+           The indentation will be accomplished by copying the text between the
+           aligning line back into the comment lines, so space/tab alignment
+           is preserved.  Also this way I don't need to know what the indent
+           level actually is, just using what's there already.
+
+        2. Inline comment lines cannot be aligned with symbol alignment because
+           I mask off comments.  So in addition to aligning these, we'd like
+           continuation comment lines (which might be full comment lines) to
+           maintain the same position as the previous until non full comment
+           line occurs.
+
+           The indentation will be accomplished with spaces.  There's no way to
+           do this otherwise.
+
+        To accomplish both of these, instituting a couple of properties on the
+        CodeLine class that determine if a line is a full comment line or if
+        a line has an inline comment.  Between these, we should be able to
+        scan a CodeBlock and adjust the indentation of comment lines.
+        """
+        # Pass one, full line comments
+        match_data = []
+        for idx, cl in enumerate(self.code_lines):
+            if cl.is_full_comment:
+                match_data.append(cl)
+            else:
+                # Look for the first non blank line to align comments with.
+                nbls = re.search(r'^(\s*)\S', cl.line, re.I)
+                if nbls:
+                    for mcl in match_data:
+                        mcl.left_justify()
+                        mcl.line = nbls.group(1) + mcl.line
+                    match_data = []
+
+        # Pass two, inline comments.  This is actually closer to the original
+        # alignment method since I record position as well.
+        match_data = []
+        for idx, cl in enumerate(self.code_lines):
+            if cl.has_inline_comment or cl.is_full_comment:
+                s = re.search(r'^.*?(--.*)', cl.line, re.I)
+                if match_data:
+                    match_data.append((cl, s.start(1)))
+                elif cl.has_inline_comment:
+                    match_data.append((cl, s.start(1)))
+            else:
+                # Process matches if there's more than one
+                if len(match_data) > 1:
+                    maxpos = 0
+                    for mcl, pos in match_data:
+                        if pos > maxpos:
+                            maxpos = pos
+                            if mcl.line[pos-1] != ' ':
+                                maxpos = maxpos + 1
+                    for mcl, pos in match_data:
+                        mcl.line = mcl.line[0:pos] + ' '*(maxpos-pos) + mcl.line[pos:]
+                match_data = []
 
 
 # ------------------------------------------------------------------------------
