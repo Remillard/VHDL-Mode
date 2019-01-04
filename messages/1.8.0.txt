@@ -43,7 +43,10 @@ Version 1.8.0
 * Added a requested snippet for configurations.  Fair warning, configurations
   can be wildly diverse and this is a single example for specifying a
   particular architecture for an instance in the targeted architecture of the
-  targeted entity.  Edit to taste, I guess.  (VincentSmit)
+  targeted entity.  Edit to taste, I guess.
+* Beautification frequently shifted the viewport to the right especially when
+  working with split windows and now it should scoot it back to the left at
+  the end.
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can

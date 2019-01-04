@@ -14,7 +14,8 @@ import sublime_plugin
 from . import vhdl_lang as vhdl
 from . import vhdl_util as util
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     """
     Prints the version to the console.
@@ -22,7 +23,8 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         print("vhdl-mode: VHDL Mode Version 1.8.0")
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
     """
     This command is used to insert a predefined header into the
@@ -112,7 +114,8 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
             })
         print('vhdl-mode: Inserted header template.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeToggleCommentRegionCommand(sublime_plugin.TextCommand):
     """
     The command analyzes the block delivered to the command
@@ -175,7 +178,8 @@ class vhdlModeToggleCommentRegionCommand(sublime_plugin.TextCommand):
         # Replace the current region with the new region
         self.view.replace(edit, region, block)
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
     """
     This is a Sublime Text variation of the standalone beautify
@@ -240,8 +244,13 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         # Put cursor back to original point (roughly)
         original_point = self.view.text_point(orig_x, orig_y)
         util.set_cursor(self, original_point)
+        # This routine seems to frequently shift the viewport when working
+        # with split windows and the following scoots it back left.
+        x, y = self.view.viewport_position()
+        self.view.set_viewport_position((0, y), False)
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):
     """
     Finds the last updated field in the header and updates the time
@@ -266,7 +275,8 @@ class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):
         else:
             print('vhdl-mode: No last modified time field found.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeUpdateModifiedTimeOnSave(sublime_plugin.EventListener):
     """
     Watches for a save event and updates the Last update
@@ -283,7 +293,8 @@ class vhdlModeUpdateModifiedTimeOnSave(sublime_plugin.EventListener):
         if util.is_vhdl_file(view.scope_name(0)):
             view.run_command("vhdl_mode_update_last_updated")
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):
     """
     My own scope sniffing command that prints to
@@ -295,7 +306,8 @@ class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):
         sniff_point = region.begin()
         print('vhdl-mode: {}'.format(self.view.scope_name(sniff_point)))
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
     """
     This should insert a line out to the margin (80 characters)
@@ -324,7 +336,8 @@ class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
         num_chars = self.view.insert(edit, original_point, line)
         print('vhdl-mode: Inserted comment line.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
     """
     This should insert a box out to the margin (80 characters)
@@ -360,7 +373,8 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
             })
         print('vhdl-mode: Inserted comment box.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
     '''
     Creating a command to check settings in various
@@ -394,4 +408,9 @@ class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
             print('vhdl-mode: {}: {}'.format(key, util.get_vhdl_setting(self, key)))
 
 
-
+#-------------------------------------------------------------------------------
+class vhdlModeViewportSniffer(sublime_plugin.TextCommand):
+    def run(self, edit):
+        x, y = self.view.viewport_position()
+        print('vhdl-mode: Viewport X: {} Y: {}'.format(x,y))
+        self.view.set_viewport_position((0, y), False)
