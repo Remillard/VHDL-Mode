@@ -24,6 +24,7 @@ key_list:
   - elseclause
   - elsifclause
   - loop
+  - for
   - generate
   - case
   - casewhen
@@ -136,6 +137,13 @@ open_rules:
     - [endclause, null]
     indent_rule:  [0, 1]
     pattern: ^entity\b
+    solo_flag: false
+  for:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule: [0, 1]
+    pattern: ^\s*\bfor\b
     solo_flag: false
   function:
     close_offset: 1
