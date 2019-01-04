@@ -119,7 +119,7 @@ class Parentheses():
             if line[i] == ')' and pcount > 1:
                 pcount -= 1
             elif line[i] == ')' and pcount == 1:
-                end = i - 1
+                end = i
                 pcount -= 1
                 break
         if start >= end:
