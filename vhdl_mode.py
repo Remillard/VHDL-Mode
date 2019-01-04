@@ -246,6 +246,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         util.set_cursor(self, original_point)
         # This routine seems to frequently shift the viewport when working
         # with split windows and the following scoots it back left.
+        print('vhdl-mode: Resetting viewport left.')
         x, y = self.view.viewport_position()
         self.view.set_viewport_position((0, y), False)
 

@@ -141,6 +141,10 @@ class CodeLine():
       pattern matching.  Only done for symbols we intend to align vertically.
     * Removing extra space (except in strings and comments) is done to prep
       the line for alignment.
+
+    WARNING: When using CodeLine masking, should always mask strings before
+    comments simply because the regexp for comments gets triggerred when the
+    pattern is in a string.
     """
     def __init__(self, line):
         self.line = line
@@ -166,7 +170,8 @@ class CodeLine():
             self.index = self.index + 1
 
     def restore(self):
-        for pattern, original in self.matches:
+        # Reversing the order of matches for the case of nested masks
+        for pattern, original in reversed(self.matches):
             self.line = self.line.replace(pattern, original)
         self.matches = []
 
@@ -190,7 +195,11 @@ class CodeLine():
 
     @property
     def has_inline_comment(self):
+        # Masking strings so we don't get a false positive for the pattern
+        # inside a string literal.
+        self.mask_strings()
         s = re.search(r'^\s*(?!--)\S+.*(--.*)', self.line, re.I)
+        self.restore()
         return bool(s)
 
 
@@ -300,8 +309,8 @@ class CodeBlock():
         # of the last item in the list.
         for idx, cl in enumerate(self.code_lines):
             # Prep work
-            cl.mask_comments()
             cl.mask_strings()
+            cl.mask_comments()
 
             # Check for a number of items that will trigger
             # Checking for the last line in the list.
@@ -405,8 +414,8 @@ class CodeBlock():
             # Prep line for scanning and avoiding matches in comments and
             # strings.
             debug('{}: ci={} ni={} : {}'.format(idx, current_indent, next_indent, cl.line))
-            cl.mask_comments()
             cl.mask_strings()
+            cl.mask_comments()
 
             ############################################################
             # Modification Rules
