@@ -220,7 +220,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         print('vhdl-mode: Pre-indent symbol alignment.')
         cb.align_symbol(r':(?!=)', 'pre', scope_list)
         cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', scope_list)
-        cb.align_symbol(r'<|:(?==)', 'pre', scope_list)
+        cb.align_symbol(r'<(?==)|:(?==)', 'pre', scope_list)
         cb.align_symbol(r'=>', 'pre', scope_list)
 
         # Indent!  Get some settings first.
