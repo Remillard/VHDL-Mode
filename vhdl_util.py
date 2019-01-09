@@ -12,26 +12,26 @@ def move_up(self, point):
     """
     Moves up one line, attempting to maintain column position.
     """
-    x, y = self.view.rowcol(point)
-    if x == 0:
+    row, col = self.view.rowcol(point)
+    if row == 0:
         return self.view.text_point(0, 0)
     else:
-        return self.view.text_point(x-1, y)
+        return self.view.text_point(row-1, col)
 
 #----------------------------------------------------------------------------
 def move_down(self, point):
     """
     Moves down one line, attempting to maintain column position.
     """
-    eof_x, eof_y = self.view.rowcol(self.view.size())
-    x, y = self.view.rowcol(point)
+    eof_row, eof_col = self.view.rowcol(self.view.size())
+    row, col = self.view.rowcol(point)
     #print('row={} col={} eof_row={} eof_col={}'.format(x, y, eof_x, eof_y))
-    if x == eof_x:
+    if row == eof_row:
         # The size is the number of characters and the point is
         # zero indexed, so subtract one from the size.
         return self.view.size()-1
     else:
-        return self.view.text_point(x+1, y)
+        return self.view.text_point(row+1, col)
 
 #----------------------------------------------------------------------------
 def move_to_bol(self, point):
@@ -42,12 +42,21 @@ def move_to_bol(self, point):
     return self.view.text_point(x, 0)
 
 #----------------------------------------------------------------------------
+def move_to_1st_char(self, point):
+    row, col = self.view.rowcol(point)
+    #print('Row={} Col={} Char="{}"'.format(row+1, col, self.view.substr(point)))
+    while self.view.substr(point) == ' ' or self.view.substr(point) == '\t':
+        point += 1
+        #print('Row={} Col={} Char="{}"'.format(row+1, col, self.view.substr(point)))
+    return point
+
+#----------------------------------------------------------------------------
 def is_top_line(self, point):
     """
     A simple check for the top line of the file.
     """
-    x, y = self.view.rowcol(point)
-    return bool(x == 0)
+    row, col = self.view.rowcol(point)
+    return bool(row == 0)
 
 #----------------------------------------------------------------------------
 def is_end_line(self, point):
@@ -55,12 +64,12 @@ def is_end_line(self, point):
     A simple check for the bottom line of the file
     (not necessarily the end of file.)
     """
-    x, y = self.view.rowcol(point)
+    row, col = self.view.rowcol(point)
     # The size is the number of characters and the
     # point is zero indexed, so subtract on from the size
     # for the final character.
-    eof_x, eof_y = self.view.rowcol(self.view.size()-1)
-    return bool(x == eof_x)
+    eof_row, eof_col = self.view.rowcol(self.view.size()-1)
+    return bool(row == eof_row)
 
 #----------------------------------------------------------------------------
 def set_cursor(self, point):

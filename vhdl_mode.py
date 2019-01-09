@@ -202,11 +202,17 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         buffer_str = self.view.substr(whole_region)
         cb = vhdl.CodeBlock.from_block(buffer_str)
 
-        # Get the scope for column 0 of each line.
+        # Get the scope for each line.  There's commented out code here for
+        # which scope to get first column of the line, and first character of
+        # the line.  The first column seems to give the best results, though
+        # there are anomalies (like a when <choice> => followed by a line that
+        # uses => as a discrete member group assignment).
         point = 0
         scope_list = []
         while not util.is_end_line(self, point):
+            #point = util.move_to_1st_char(self, point)
             scope_list.append(self.view.scope_name(point))
+            #point = util.move_to_bol(self, point)
             point = util.move_down(self, point)
         scope_list.append(self.view.scope_name(point))
 

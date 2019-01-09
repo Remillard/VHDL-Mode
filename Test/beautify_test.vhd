@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Sat Dec  1 09:39:26 2018
+-- Last update : Wed Jan  9 14:35:42 2019
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -43,22 +43,22 @@ commenting */
 -- beautification or port copying.
 ---------------------------------------
 -- Comment above
-entity my_entity is -- comments everywhere
-	generic( -- I mean everywhere
+entity my_entity is                                                -- comments everywhere
+	generic(                                                       -- I mean everywhere
 		DATA_WIDTH          : integer                      := 8;   -- This value is 8
 		REALLY_LONG_GENERIC : std_logic_vector(3 downto 0) := X"4" -- This comment should align with prior
-	); -- Holy crap another comment -- with a comment inside the -- comment
-	port ( -- What about a comment here?
-		-- Basic ports
+	);                                                             -- Holy crap another comment -- with a comment inside the -- comment
+	port (                                                         -- What about a comment here?
+		                                                           -- Basic ports
 		clk : in std_logic;
 		-- Another comment on a line by itself!
-		reset   : in  std_logic; -- And here's an inline comment.
-		--d : in std_logic; -- Oh no! I commented out an actual line
+		reset : in std_logic; -- And here's an inline comment.
+		                      --d : in std_logic; -- Oh no! I commented out an actual line
 		a, b, c : in  std_logic_vector(3 downto 0);
 		q       : out std_logic); -- And finally
-	-- A final
-end entity my_entity; -- Comment
--- Comment below.
+                                  -- A final
+end entity my_entity;             -- Comment
+                                  -- Comment below.
 
 ---------------------------------------
 -- Blank Entity (and variations)
@@ -196,8 +196,8 @@ end entity passive_test;
 configuration foobar of my_entity is
 	use work.my_package.all;
 	for rtl
-	use lala.other_thing.all;
-end for;
+		use lala.other_thing.all;
+	end for;
 end configuration foobar;
 
 architecture rtl of my_entity is
@@ -480,7 +480,7 @@ begin
 
 		-- Case test for alignment of => in a case statement.
 		case my_alignment_test is
-			when a =>
+			when a                      =>
 				long_signal_name <= (others => '0');
 			when b =>
 				another_long_name <= (others => '0');
@@ -580,9 +580,9 @@ begin
 
 	foo(some_signal'range)          <= yet_another_name'range;
 	foo(other_signal'reverse_range) <= foo(15 downto 0);
-	adder1 <= ( '0' & add_l) + ( '0' & add_m);
-	adder2 <= ("0" & add_r) + ('0' & add_b);
-    adder <= ('0' & adder1) + ('0' & adder2);
+	adder1                          <= ( '0' & add_l) + ( '0' & add_m);
+	adder2                          <= ("0" & add_r) + ('0' & add_b);
+	adder                           <= ('0' & adder1) + ('0' & adder2);
 
 	bus_rw <= '1' when (condition) else '0';
 
