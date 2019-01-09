@@ -113,7 +113,8 @@
 
 	// Miscellaneous
 	{"keys": ["alt+k", "S"], "command": "vhdl_mode_scope_sniffer"},
-	//{"keys": ["alt+k", "V"], "command": "vhdl_mode_viewport_sniffer"},
+	{"keys": ["alt+k", "V"], "command": "vhdl_mode_viewport_sniffer"},
+	{"keys": ["alt+k", "T"], "command": "vhdl_mode_test"},
 
 	// Auto-pair quotes enabled for VHDL literals.  Permits a leading o, O, x,
 	// or X for octal and hex literals.

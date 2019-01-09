@@ -174,6 +174,7 @@ class CodeLine():
         for pattern, original in reversed(self.matches):
             self.line = self.line.replace(pattern, original)
         self.matches = []
+        self.index = 0
 
     def left_justify(self):
         self.line = re.sub(r'^\s*', '', self.line)
@@ -535,7 +536,7 @@ class CodeBlock():
             # Set current for next line.
             current_indent = next_indent
 
-    def align_comments(self):
+    def align_comments(self, tab_size=4, use_spaces=False):
         """
         Comments are a little different from normal alignment and
         identation.
@@ -561,7 +562,8 @@ class CodeBlock():
            line occurs.
 
            The indentation will be accomplished with spaces.  There's no way to
-           do this otherwise.
+           do this otherwise.  However for the inline comments, I attempt to
+           take tabs into account for spacing.
 
         To accomplish both of these, instituting a couple of properties on the
         CodeLine class that determine if a line is a full comment line or if
@@ -575,12 +577,18 @@ class CodeBlock():
                 match_data.append(cl)
             else:
                 # Look for the first non blank line to align comments with.
+                bls = re.search(r'^\s*$', cl.line, re.I)
                 nbls = re.search(r'^(\s*)\S', cl.line, re.I)
-                if nbls:
-                    for mcl in match_data:
-                        mcl.left_justify()
-                        mcl.line = nbls.group(1) + mcl.line
+                if bls:
+                    # Do nothing and keep text at current indent level.
                     match_data = []
+                elif nbls:
+                    # If we've got a set of lines to align, process the match.
+                    if match_data:
+                        for mcl in match_data:
+                            mcl.left_justify()
+                            mcl.line = nbls.group(1) + mcl.line
+                        match_data = []
 
         # Pass two, inline comments.  This is actually closer to the original
         # alignment method since I record position as well.
@@ -593,16 +601,20 @@ class CodeBlock():
                 elif cl.has_inline_comment:
                     match_data.append((cl, s.start(1)))
             else:
-                # Process matches if there's more than one
+                # Process matches if there's more than one.
                 if len(match_data) > 1:
                     maxpos = 0
                     for mcl, pos in match_data:
-                        if pos > maxpos:
-                            maxpos = pos
+                        tab_count = mcl.line.count('\t')
+                        adj_pos = pos + tab_count*(tab_size-1)
+                        if adj_pos > maxpos:
+                            maxpos = adj_pos
                             if mcl.line[pos-1] != ' ':
                                 maxpos = maxpos + 1
                     for mcl, pos in match_data:
-                        mcl.line = mcl.line[0:pos] + ' '*(maxpos-pos) + mcl.line[pos:]
+                        tab_count = mcl.line.count('\t')
+                        adj_pos = pos + tab_count*(tab_size-1)
+                        mcl.line = mcl.line[0:pos] + ' '*(maxpos-adj_pos) + mcl.line[pos:]
                 match_data = []
 
 

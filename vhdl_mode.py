@@ -11,6 +11,7 @@ import textwrap
 import sublime
 import sublime_plugin
 
+#from threading import Thread
 from . import vhdl_lang as vhdl
 from . import vhdl_util as util
 
@@ -186,13 +187,14 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
     code program.  Sets the region to the entire buffer, obtains
     the lines, then processes them and writes them back.
     """
+    #def run(self, edit):
+    #    Thread(target=self.beautify, args=(edit,)).start()
+
     def run(self, edit):
-        # Save original point, and convert to row col.  Beautify
-        # will change the number of characters in the file, so
-        # need coordinates to know where to go back to.
-        original_region = self.view.sel()[0]
-        original_point = original_region.begin()
-        orig_x, orig_y = self.view.rowcol(original_point)
+        # Finding the current view and location of the point.
+        x, y = self.view.viewport_position()
+        row, col = self.view.rowcol(self.view.sel()[0].begin())
+        #print('vhdl-mode: x={}, y={}, row={}, col={}'.format(x, y, row, col))
 
         # Create points for a region that define beginning and end.
         begin = 0
@@ -233,7 +235,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         print('vhdl-mode: Post-indent symbol alignment.')
         cb.align_symbol(r'\bwhen\b', 'pre', scope_list)
         print('vhdl-mode: Aligning comments.')
-        cb.align_comments()
+        cb.align_comments(tab_size, use_spaces)
 
         # Recombine into one big blobbed string.
         buffer_str = cb.to_block()
@@ -241,14 +243,10 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         # Annnd if all went well, write it back into the buffer
         self.view.replace(edit, whole_region, buffer_str)
 
-        # Put cursor back to original point (roughly)
-        original_point = self.view.text_point(orig_x, orig_y)
+        # Restore the view.
+        original_point = self.view.text_point(row, col)
         util.set_cursor(self, original_point)
-        # This routine seems to frequently shift the viewport when working
-        # with split windows and the following scoots it back left.
-        print('vhdl-mode: Resetting viewport left.')
-        x, y = self.view.viewport_position()
-        self.view.set_viewport_position((0, y), False)
+        self.view.set_viewport_position((x, y), False)
 
 
 #-------------------------------------------------------------------------------
@@ -415,3 +413,23 @@ class vhdlModeViewportSniffer(sublime_plugin.TextCommand):
         x, y = self.view.viewport_position()
         print('vhdl-mode: Viewport X: {} Y: {}'.format(x,y))
         self.view.set_viewport_position((0, y), False)
+
+
+#-------------------------------------------------------------------------------
+class vhdlModeTest(sublime_plugin.TextCommand):
+    def run(self, edit):
+        # Create points for a region that define beginning and end.
+        print('vhdl-mode: Test Start')
+        begin = 0
+        end = self.view.size()-1
+
+        # Slurp up entire buffer and create CodeBlock object
+        whole_region = sublime.Region(begin, end)
+        buffer_str = self.view.substr(whole_region)
+
+        # Do a lot of stuff to buffer_str
+
+        # Annnd if all went well, write it back into the buffer
+        self.view.replace(edit, whole_region, buffer_str)
+        print('vhdl-mode: Test End')
+
