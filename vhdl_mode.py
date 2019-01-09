@@ -187,9 +187,6 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
     code program.  Sets the region to the entire buffer, obtains
     the lines, then processes them and writes them back.
     """
-    #def run(self, edit):
-    #    Thread(target=self.beautify, args=(edit,)).start()
-
     def run(self, edit):
         # Finding the current view and location of the point.
         x, y = self.view.viewport_position()
@@ -241,12 +238,18 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         buffer_str = cb.to_block()
 
         # Annnd if all went well, write it back into the buffer
-        self.view.replace(edit, whole_region, buffer_str)
+        #self.view.replace(edit, whole_region, buffer_str)
+        # New replacement routine that does not trigger Sublime's
+        # repainting mechanism that seems to be triggered by using
+        # self.view.replace()
+        self.view.run_command("select_all")
+        self.view.run_command("left_delete")
+        self.view.run_command("append", {"characters": buffer_str})
 
         # Restore the view.
+        self.view.set_viewport_position((x, y), False)
         original_point = self.view.text_point(row, col)
         util.set_cursor(self, original_point)
-        self.view.set_viewport_position((x, y), False)
 
 
 #-------------------------------------------------------------------------------
@@ -412,24 +415,6 @@ class vhdlModeViewportSniffer(sublime_plugin.TextCommand):
     def run(self, edit):
         x, y = self.view.viewport_position()
         print('vhdl-mode: Viewport X: {} Y: {}'.format(x,y))
-        self.view.set_viewport_position((0, y), False)
+        #self.view.set_viewport_position((0, y), False)
 
-
-#-------------------------------------------------------------------------------
-class vhdlModeTest(sublime_plugin.TextCommand):
-    def run(self, edit):
-        # Create points for a region that define beginning and end.
-        print('vhdl-mode: Test Start')
-        begin = 0
-        end = self.view.size()-1
-
-        # Slurp up entire buffer and create CodeBlock object
-        whole_region = sublime.Region(begin, end)
-        buffer_str = self.view.substr(whole_region)
-
-        # Do a lot of stuff to buffer_str
-
-        # Annnd if all went well, write it back into the buffer
-        self.view.replace(edit, whole_region, buffer_str)
-        print('vhdl-mode: Test End')
 
