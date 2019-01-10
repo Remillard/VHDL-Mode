@@ -1,5 +1,7 @@
 Version 1.8.0
 
+This one has been a long time coming.  Thanks for the patience.
+
 * Fixed issue where beautification would trigger on text that exists in
   strings.  Issue #106.  Also continued into the next point.
 * Larger backend rewrite and refactor for beautification that ought to aid in
@@ -48,8 +50,8 @@ Version 1.8.0
   working with split windows and now the viewport should not move during this
   operation.  Many thanks to FicheFoil, OdatNurd, and Mitranim on the Discord
   for working through this rather tricky problem.
-* Fixed an issue with entity copying that would fail if the closing ); of a
-  port (); structure was immediately next to the last character.  It'd chop
+* Fixed an issue with entity copying that would fail if the closing `);` of a
+  `port ();` structure was immediately next to the last character.  It'd chop
   off the final character.  Issue was in the parenthetical extraction method.
 
 As always, if bugs are discovered, or features desired, please visit
