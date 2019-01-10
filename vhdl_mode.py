@@ -244,18 +244,23 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         buffer_str = cb.to_block()
 
         # Annnd if all went well, write it back into the buffer
-        #self.view.replace(edit, whole_region, buffer_str)
+        self.view.replace(edit, whole_region, buffer_str)
         # New replacement routine that does not trigger Sublime's
         # repainting mechanism that seems to be triggered by using
         # self.view.replace()
-        self.view.run_command("select_all")
-        self.view.run_command("left_delete")
-        self.view.run_command("append", {"characters": buffer_str})
+        #self.view.run_command("select_all")
+        #self.view.run_command("left_delete")
+        #self.view.run_command("append", {"characters": buffer_str})
 
         # Restore the view.
-        self.view.set_viewport_position((x, y), False)
         original_point = self.view.text_point(row, col)
         util.set_cursor(self, original_point)
+        # Trying out another method for handling the viewport.  You can have
+        # a zero value for set_timeout() delay so this executes after the
+        # command exits.
+        restore = lambda: self.view.set_viewport_position((x, y), False)
+        sublime.set_timeout(restore, 0)
+        #self.view.set_viewport_position((x, y), False)
 
 
 #-------------------------------------------------------------------------------
