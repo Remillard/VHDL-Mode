@@ -1,0 +1,60 @@
+Version 1.8.0
+
+This one has been a long time coming.  Thanks for the patience.
+
+* Fixed issue where beautification would trigger on text that exists in
+  strings.  Issue #106.  Also continued into the next point.
+* Larger backend rewrite and refactor for beautification that ought to aid in
+  fixing some of the weirder behaviors.  This is largely why the version
+  incremented to 1.8.0 as it's a fair departure from the 1.7.x version.
+* Comments should align better.  Comments will align with the line of code
+  following the comment rather than the line of code preceding (most notable
+  with case/when constructs.)  Additionally inline comments will align with
+  each other and continuation full comment lines will align with the prior
+  inline comment until the next non commented line.  Thus comments can look
+  like:
+
+  entity foobar is
+      port (
+          --
+          -- Some Basic Stuff
+          --
+          clk   : std_logic; -- This clock will
+                             -- run at 100 MHz
+          reset : std_logic
+      );
+  end entity foobar;
+
+* Altered a behavior to default to tabs rather than spaces for port
+  copying so that the user's Sublime Text preferences will take effect
+  upon saving. (Stefan Lippuner)
+* Altered the order of the keybinds to make certain the default keybinds
+  show up in the Command Palette hint (right side) instead of the Emacs ones.
+  It's unlikely that Emacsen folk will be using the command palette too much
+  and are likely to know the vhdl-mode keybinds by touch.
+* Fixed generic map snippet having a trailing semicolon.
+* Added file declaration to the block declarative items in the syntax file
+  as file declarations were not being picked up in syntax there.  (They were
+  in subprogram parameters though which was a weird oversight.)
+* Improved signal and constant scoping and syntax identification by looking
+  for the default value operator explicitly.
+* A signal that contained the word 'configuration' was getting incorrectly
+  indented due to needing a word boundary check in the regexp rule matching
+  configurations.
+* Added a much needed snippet for while loops.
+* Added a requested snippet for configurations.  Fair warning, configurations
+  can be wildly diverse and this is a single example for specifying a
+  particular architecture for an instance in the targeted architecture of the
+  targeted entity.  Edit to taste, I guess.
+* Beautification frequently shifted the viewport to the right especially when
+  working with split windows and now the viewport should not move during this
+  operation.  Many thanks to FicheFoil, OdatNurd, and Mitranim on the Discord
+  for working through this rather tricky problem.
+* Fixed an issue with entity copying that would fail if the closing `);` of a
+  `port ();` structure was immediately next to the last character.  It'd chop
+  off the final character.  Issue was in the parenthetical extraction method.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please submit pull requests to branch
+`develop`.

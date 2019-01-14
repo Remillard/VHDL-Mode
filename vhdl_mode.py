@@ -11,18 +11,21 @@ import textwrap
 import sublime
 import sublime_plugin
 
+#from threading import Thread
 from . import vhdl_lang as vhdl
 from . import vhdl_util as util
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     """
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.7.16")
+        print("vhdl-mode: VHDL Mode Version 1.8.0")
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
     """
     This command is used to insert a predefined header into the
@@ -112,7 +115,8 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
             })
         print('vhdl-mode: Inserted header template.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeToggleCommentRegionCommand(sublime_plugin.TextCommand):
     """
     The command analyzes the block delivered to the command
@@ -175,7 +179,8 @@ class vhdlModeToggleCommentRegionCommand(sublime_plugin.TextCommand):
         # Replace the current region with the new region
         self.view.replace(edit, region, block)
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
     """
     This is a Sublime Text variation of the standalone beautify
@@ -183,82 +188,82 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
     the lines, then processes them and writes them back.
     """
     def run(self, edit):
-        # Save original point, and convert to row col.  Beautify
-        # will change the number of characters in the file, so
-        # need coordinates to know where to go back to.
-        original_region = self.view.sel()[0]
-        original_point = original_region.begin()
-        orig_x, orig_y = self.view.rowcol(original_point)
+        # Finding the current view and location of the point.
+        x, y = self.view.viewport_position()
+        row, col = self.view.rowcol(self.view.sel()[0].begin())
+        #print('vhdl-mode: x={}, y={}, row={}, col={}'.format(x, y, row, col))
 
         # Create points for a region that define beginning and end.
         begin = 0
         end = self.view.size()-1
 
-        # Slurp up entire buffer
+        # Slurp up entire buffer and create CodeBlock object
         whole_region = sublime.Region(begin, end)
         buffer_str = self.view.substr(whole_region)
-        lines = buffer_str.split('\n')
+        cb = vhdl.CodeBlock.from_block(buffer_str)
 
-        # Get the scope for column 0 of each line.
+        # Get the scope for each line.  There's commented out code here for
+        # which scope to get first column of the line, and first character of
+        # the line.  The first column seems to give the best results, though
+        # there are anomalies (like a when <choice> => followed by a line that
+        # uses => as a discrete member group assignment).
         point = 0
         scope_list = []
         while not util.is_end_line(self, point):
+            #point = util.move_to_1st_char(self, point)
             scope_list.append(self.view.scope_name(point))
+            #point = util.move_to_bol(self, point)
             point = util.move_down(self, point)
         scope_list.append(self.view.scope_name(point))
 
-        # Process each line
-        # Left justify
-        vhdl.left_justify(lines)
+        # Process the block of code.  Prep pads symbols and removes extra
+        # spaces.
+        cb.prep()
+        cb.left_justify()
 
-        # Because there are some really terrible typists out there
-        # I end up having to MAKE SURE that symbols like : := <= and =>
-        # have spaces to either side of them.  I'm just going to wholesale
-        # replace them all with padded versions and then I remove extra space
-        # later, which seems wasteful, but easier than trying to come up with
-        # a ton of complicated patterns.
-        vhdl.pad_vhdl_symbols(lines)
-
-        # Remove extra blank space and convert tabs to spaces
-        vhdl.remove_extra_space(lines)
-
-        # Align
-        print('vhdl-mode: Aligning symbols.')
-        vhdl.align_block_on_re(lines=lines, regexp=r':(?!=)', scope_data=scope_list)
-        vhdl.align_block_on_re(
-            lines=lines,
-            regexp=r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*',
-            padside='post',
-            scope_data=scope_list)
-        vhdl.align_block_on_re(lines=lines, regexp=r'<|:(?==)', scope_data=scope_list)
-        vhdl.align_block_on_re(lines=lines, regexp=r'=>', scope_data=scope_list)
+        # Do the initial alignment after justification.
+        print('vhdl-mode: Pre-indent symbol alignment.')
+        cb.align_symbol(r':(?!=)', 'pre', scope_list)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', scope_list)
+        cb.align_symbol(r'<(?==)|:(?==)', 'pre', scope_list)
+        cb.align_symbol(r'=>', 'pre', scope_list)
 
         # Indent!  Get some settings first.
         use_spaces = util.get_vhdl_setting(self, 'translate_tabs_to_spaces')
         tab_size = util.get_vhdl_setting(self, 'tab_size')
         print('vhdl-mode: Indenting.')
-        vhdl.indent_vhdl(lines=lines, initial=0, tab_size=tab_size,
-                         use_spaces=use_spaces)
+        cb.indent_vhdl(0, tab_size, use_spaces)
 
         # Post indent alignment
-        vhdl.align_block_on_re(lines=lines, regexp=r'\bwhen\b', scope_data=scope_list)
-        # TBD -- There's a hook for more sophisticated handling of comment
-        # lines which would be required for perfect alignment of inline comment
-        # blocks, however it's not working, so leave that parameter as True for
-        # now.
-        vhdl.align_block_on_re(lines=lines, regexp=r'--', ignore_comment_lines=True, scope_data=scope_list)
+        print('vhdl-mode: Post-indent symbol alignment.')
+        cb.align_symbol(r'\bwhen\b', 'pre', scope_list)
+        print('vhdl-mode: Aligning comments.')
+        cb.align_comments(tab_size, use_spaces)
 
         # Recombine into one big blobbed string.
-        buffer_str = '\n'.join(lines)
+        buffer_str = cb.to_block()
 
         # Annnd if all went well, write it back into the buffer
         self.view.replace(edit, whole_region, buffer_str)
+        # New replacement routine that does not trigger Sublime's
+        # repainting mechanism that seems to be triggered by using
+        # self.view.replace()
+        #self.view.run_command("select_all")
+        #self.view.run_command("left_delete")
+        #self.view.run_command("append", {"characters": buffer_str})
 
-        # Put cursor back to original point (roughly)
-        original_point = self.view.text_point(orig_x, orig_y)
+        # Restore the view.
+        original_point = self.view.text_point(row, col)
         util.set_cursor(self, original_point)
+        # Trying out another method for handling the viewport.  You can have
+        # a zero value for set_timeout() delay so this executes after the
+        # command exits.
+        restore = lambda: self.view.set_viewport_position((x, y), False)
+        sublime.set_timeout(restore, 0)
+        #self.view.set_viewport_position((x, y), False)
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):
     """
     Finds the last updated field in the header and updates the time
@@ -283,7 +288,8 @@ class vhdlModeUpdateLastUpdatedCommand(sublime_plugin.TextCommand):
         else:
             print('vhdl-mode: No last modified time field found.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeUpdateModifiedTimeOnSave(sublime_plugin.EventListener):
     """
     Watches for a save event and updates the Last update
@@ -300,7 +306,8 @@ class vhdlModeUpdateModifiedTimeOnSave(sublime_plugin.EventListener):
         if util.is_vhdl_file(view.scope_name(0)):
             view.run_command("vhdl_mode_update_last_updated")
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):
     """
     My own scope sniffing command that prints to
@@ -312,7 +319,8 @@ class vhdlModeScopeSnifferCommand(sublime_plugin.TextCommand):
         sniff_point = region.begin()
         print('vhdl-mode: {}'.format(self.view.scope_name(sniff_point)))
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
     """
     This should insert a line out to the margin (80 characters)
@@ -341,7 +349,8 @@ class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
         num_chars = self.view.insert(edit, original_point, line)
         print('vhdl-mode: Inserted comment line.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
     """
     This should insert a box out to the margin (80 characters)
@@ -377,7 +386,8 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
             })
         print('vhdl-mode: Inserted comment box.')
 
-#----------------------------------------------------------------
+
+#-------------------------------------------------------------------------------
 class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
     '''
     Creating a command to check settings in various
@@ -410,5 +420,12 @@ class vhdlModeSettingSniffer(sublime_plugin.TextCommand):
         for key in keys:
             print('vhdl-mode: {}: {}'.format(key, util.get_vhdl_setting(self, key)))
 
+
+#-------------------------------------------------------------------------------
+class vhdlModeViewportSniffer(sublime_plugin.TextCommand):
+    def run(self, edit):
+        x, y = self.view.viewport_position()
+        print('vhdl-mode: Viewport X: {} Y: {}'.format(x,y))
+        #self.view.set_viewport_position((0, y), False)
 
 

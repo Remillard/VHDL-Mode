@@ -183,6 +183,7 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 This is a new section and I wanted to acknowledge and thank folks who have helped out with fixes and testing.  If anyone else has fixes or contributions, please feel free to open an issue at the Github repository and we can discuss it.  If submitting a pull-request, please target the develop branch, as I keep the master branch for releases only.
 
 * Sven Goossens (Github: @Sv3n)
+* Stefan Lippuner (Github: @stefanlippuner)
 
 # Conclusion
 

@@ -659,6 +659,7 @@ contexts:
     - include: constant-decl
     - include: subtype-decl
     - include: type-decl
+    - include: file-decl
     - include: variable-decl
     - include: attribute-decl
     - include: attribute-spec
@@ -747,6 +748,9 @@ contexts:
         - match: (:)
           scope: punctuation.separator.vhdl
           set:
+            - meta_scope: meta.statement.signal.vhdl
+            - match: (:=)
+              scope: punctuation.assignment.vhdl
             - match: (;)
               scope: punctuation.terminator.vhdl
               pop: true
@@ -766,6 +770,9 @@ contexts:
         - match: (:)
           scope: punctuation.separator.vhdl
           set:
+            - meta_scope: meta.statement.constant.vhdl
+            - match: (:=)
+              scope: punctuation.assignment.vhdl
             - match: (;)
               scope: punctuation.terminator.vhdl
               pop: true
@@ -795,6 +802,20 @@ contexts:
             - include: enumeration-type
             - include: array-type
             - include: range-type
+
+  file-decl:
+    - match: (?i)(file)\s+({{identifier}}(\s*,\s*{{identifier}})*)\s*(\:)
+      captures:
+        1: storage.type.variable.vhdl
+        2: variable.parameter.variable.vhdl
+        4: punctuation.separator.vhdl
+      push:
+        - meta_scope: meta.statement.interface.file.vhdl
+        - include: basic-paren-group
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
 
   subtype-decl:
     - match: (?i)(subtype)\s+({{identifier}})\s+(is)
@@ -1866,7 +1887,7 @@ contexts:
       captures:
         1: punctuation.group.parens.begin.vhdl
       push:
-        - meta_scope: meta.group.vhdl
+        - meta_scope: meta.group.parens.vhdl
         - match: ','
           scope: punctuation.separator.vhdl
         - match: '(\))'

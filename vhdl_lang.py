@@ -1,11 +1,12 @@
+# pylint: disable=C0103, C0111
 """
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
  VHDL Language Module.
 
  Defines class structures and methods for identifying and
  manipulating text structures, and extracting and replicating
  lexical elements.
-----------------------------------------------------------------
+--------------------------------------------------------------------------------
 """
 import re
 import collections
@@ -16,7 +17,7 @@ import ruamel.yaml
 _debug = False
 
 
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def debug(string):
     """
     Some of these functions ended up with a lot of debug output for analyzing
@@ -26,16 +27,7 @@ def debug(string):
         print(string)
 
 
-# ---------------------------------------------------------------------------
-def left_justify(lines):
-    """
-    Method removes all whitespace at the beginning of a line.
-    """
-    for i in range(len(lines)):
-        lines[i] = re.sub(r"^\s*", '', lines[i])
-
-
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def check_for_comment(line):
     """
     Simple method that will return False if a line does not
@@ -48,75 +40,7 @@ def check_for_comment(line):
     return bool(s)
 
 
-# ---------------------------------------------------------------
-def strip_comments(line):
-    """
-    Removes any inline comment from the line, accounting for
-    comment symbols inside of a text string.  Does not account
-    for multiline commenting.
-    """
-    str_p = r'".*?"'
-    comment_p = r'--.*$'
-    # First check for an inline string.  Will only handle one.
-    str_s = re.search(str_p, line)
-    # If a string exists, then we break up into searching the
-    # beginning and end separately.  Otherwise, just a basic
-    # whole line search is fine.
-    if str_s:
-        comment_s = re.search(comment_p, line[:str_s.start()])
-        if comment_s:
-            return line[:comment_s.start()]
-        else:
-            comment_s = re.search(comment_p, line[str_s.end():])
-            if comment_s:
-                return line[:str_s.end()+comment_s.start()]
-            else:
-                return line
-    else:
-        comment_s = re.search(comment_p, line)
-        if comment_s:
-            return line[:comment_s.start()]
-        else:
-            return line
-
-# ---------------------------------------------------------------------------
-def pad_vhdl_symbols(lines):
-    """
-    Ensuring that special symbols that later we'll align on have a minimum
-    leading and trailing space.  Aids correct alignment.  Leaving it at
-    assignment and languaage delimeters for now.
-    """
-    for i in range(len(lines)):
-        if not check_for_comment(lines[i]):
-            lines[i] = re.sub(':(?!=)', ' : ',  lines[i])
-            lines[i] = re.sub(':=',     ' := ', lines[i])
-            lines[i] = re.sub('<=',     ' <= ', lines[i])
-            lines[i] = re.sub('=>',     ' => ', lines[i])
-
-
-# ---------------------------------------------------------------------------
-def remove_extra_space(lines):
-    """
-    Method that takes out extra whitespace in a line.  Avoids
-    full line comments and attempts to avoid in-line comments.
-    """
-    for i in range(len(lines)):
-        if not check_for_comment(lines[i]):
-            # Check and save off inline comments.
-            cs = re.search(r'--.*$', lines[i])
-            if cs:
-                comment = lines[i][cs.start():]
-                code = lines[i][0:cs.start()]
-            else:
-                comment = ''
-                code = lines[i]
-            # Compress space in code portion of the line.
-            code = re.sub(r'\s+', ' ', code)
-            code = re.sub(r'\t', ' ', code)
-            lines[i] = code + comment
-
-
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Parentheses():
     '''
     An object whose purpose is to keep track of parenthesis counts
@@ -195,7 +119,7 @@ class Parentheses():
             if line[i] == ')' and pcount > 1:
                 pcount -= 1
             elif line[i] == ')' and pcount == 1:
-                end = i - 1
+                end = i
                 pcount -= 1
                 break
         if start >= end:
@@ -203,285 +127,498 @@ class Parentheses():
         else:
             return line[start:end]
 
-# ---------------------------------------------------------------
-def align_block_on_re(lines, regexp, padside='pre', ignore_comment_lines=True, scope_data=None):
+
+# ------------------------------------------------------------------------------
+class CodeLine():
     """
-    Receives a list of individual lines.  Scans each line looking
-    for the provided lexical pattern that should align on
-    adjoining lines. Once a pattern is found, record the line index
-    and pattern location.  For each subsequent line that also
-    identifies the pattern, add the line index and pattern location.
-    When a line is identified that does not have the pattern, find
-    the line in the list with the most leftmost symbol, and then
-    iterate through the list of affected lines and pad on the side
-    declared (anything that is not 'post' is prepend because that's
-    most common.)
+    The CodeLine object encapsulates a number of methods used to manipulate a
+    string of code.
+    * Masking methods block off portions of the string in order not to trigger
+      any regular expression hits in strings or comments.
+    * Left Justify removes space at the beginning of the line, prelude to
+      indentation efforts.
+    * Padding symbols is done to ensure spaces around symbols which aids
+      pattern matching.  Only done for symbols we intend to align vertically.
+    * Removing extra space (except in strings and comments) is done to prep
+      the line for alignment.
 
-    Alignment should happen when the strings are left justified
-    so that it doesn't need to know about the spacing.
-
-    This is intended to be run in several passes on several patterns
-    which is why it takes the regexp as a parameter.
-
-    Added some blacklist words, otherwise you can get some matching
-    between conditionals and assignments and other nonsense.
-
-    TODO: Add scope checking for alignment instead of ban list
-    when provided.
+    WARNING: When using CodeLine masking, should always mask strings before
+    comments simply because the regexp for comments gets triggerred when the
+    pattern is in a string.
     """
-    ban_raw = [
-        r':\s+process\b',
-        r'\bif\b',
-        r'\bthen\b',
-        r'\bwhen\b(?=.*?=>)'
-    ]
-    ban_list = []
-    for pattern in ban_raw:
-        ban_list.append(re.compile(pattern, re.IGNORECASE))
+    def __init__(self, line):
+        self.line = line
+        self.matches = []
+        self.index = 0
 
-    prior_scope = ""
-    match_data = []
-    for i in range(len(lines)):
+    def mask_strings(self):
+        matches = re.finditer(r'(\".*?\")', self.line)
+        for m in matches:
+            x, y = m.start(), m.end()
+            pattern = '$%02d' % self.index + 'x'*(y-x-3)
+            self.line = self.line.replace(m.group(0), pattern)
+            self.matches.append([pattern, m.group(0)])
+            self.index = self.index + 1
 
-        # Check for banned lines we don't even want to think about.
-        banned = False
-        for pattern in ban_list:
-            ban_search = re.search(pattern, lines[i])
-            if ban_search:
-                banned = True
-                break
+    def mask_comments(self):
+        matches = re.finditer(r'(--.*)', self.line)
+        for m in matches:
+            x, y = m.start(), m.end()
+            pattern = '$%02d' % self.index + 'x'*(y-x-3)
+            self.line = self.line.replace(m.group(0), pattern)
+            self.matches.append([pattern, m.group(0)])
+            self.index = self.index + 1
 
-        # Adding a hook here for better comment handling.  Check to see if this
-        # is a commented line and if we should pay attention to it.
-        # ignore_comment_lines is True by default and until this routine is
-        # more sophisticated should probably remain true.
-        comment_check = False
-        if ignore_comment_lines:
-            comment_check = check_for_comment(lines[i])
+    def restore(self):
+        # Reversing the order of matches for the case of nested masks
+        for pattern, original in reversed(self.matches):
+            self.line = self.line.replace(pattern, original)
+        self.matches = []
+        self.index = 0
 
-        # Scan for the aligning pattern
-        s = re.search(regexp, lines[i])
+    def left_justify(self):
+        self.line = re.sub(r'^\s*', '', self.line)
 
-        # First decide if based on lack of pattern, scope change, or
-        # a banned line or end of file whether we should process any
-        # currently existing match list.
-        scope_switch = False
-        if scope_data is not None:
-            if scope_data[i] != prior_scope:
-                scope_switch = True
-            else:
-                scope_switch = False
+    def pad_vhdl_symbols(self):
+        self.line = re.sub(':(?!=)', ' : ', self.line)
+        self.line = re.sub(':=', ' := ', self.line)
+        self.line = re.sub('<=', ' <= ', self.line)
+        self.line = re.sub('=>', ' => ', self.line)
+        self.line = re.sub(';', '; ', self.line)
 
-        # A special check for the last line to add to the group, otherwise
-        # we process before we can evaluate that line.
-        if s and (i == len(lines)-1) and not comment_check and not banned:
-            if padside == 'post':
-                match_data.append((i, s.end()))
-            else:
-                match_data.append((i, s.start()))
+    def remove_spaces(self):
+        self.line = re.sub(r'\s+', ' ', self.line)
+        self.line = re.sub(r'\t', ' ', self.line)
 
-        # This is where the actual lines are adjusted.  If this line breaks the
-        # sequence of lines that had the pattern, or if it's the last line, or
-        # if it was a line that was skipped due to banning, or if the whole
-        # line scope changed (e.g. comment line broke the block) then process
-        # the block for alignment.
-        if not s or scope_switch or (i == len(lines)-1) or banned:
-            if len(match_data) > 1:
-                # Scan for max value and check to see if extra space needed
-                # due to lack of preceding space.
-                maxpos = 0
-                for pair in match_data:
-                    if pair[1] > maxpos:
-                        maxpos = pair[1]
-                        if lines[pair[0]][pair[1]-1] != ' ':
-                            maxpos = maxpos + 1
-                # Now insert spaces on each line (max-current+1)
-                # to make up the space.
-                for pair in match_data:
-                    lines[pair[0]] = lines[pair[0]][0:pair[1]] + \
-                                     ' '*(maxpos-pair[1]) + \
-                                     lines[pair[0]][pair[1]:]
-            # No match for more than one line so erase match
-            # data
-            match_data = []
+    @property
+    def is_full_comment(self):
+        return bool(re.search(r'^\s*(--.*)', self.line, re.I))
 
-        # Finally, if this line has an alignment symbol in it (and not banned)
-        # start adding data again.
-        if s and not comment_check and not banned:
-            # If we find a match, record the line and
-            # location but do nothing else.
-            #print("Match on Line: {} Start:'{}' Stop:'{}'".\
-            #       format(line_num, lines[line_num][0:s.start()],\
-            #              lines[line_num][s.start():]))
-            if padside == 'post':
-                match_data.append((i, s.end()))
-            else:
-                match_data.append((i, s.start()))
-
-        # Make sure we save the current scope off before looping
-        if scope_data is not None:
-            prior_scope = scope_data[i]
+    @property
+    def has_inline_comment(self):
+        # Masking strings so we don't get a false positive for the pattern
+        # inside a string literal.
+        self.mask_strings()
+        s = re.search(r'^\s*(?!--)\S+.*(--.*)', self.line, re.I)
+        self.restore()
+        return bool(s)
 
 
-# ---------------------------------------------------------------
-def indent_vhdl(lines, initial=0, tab_size=4, use_spaces=True):
+# ------------------------------------------------------------------------------
+class CodeBlock():
     """
-    This method takes a list of lines of source code, that have
-    been left justified, and attempts impose indentation rules
-    upon it for beautification.
+    The CodeBlock is a way of encapsulating the CodeLine functions and contains
+    whole region or block manipulations for the code.  ]
+
+    CodeBlock receives a list of lines nominally and turns them into a list of
+    CodeLines. Another factory constructor permits receiving a block of text
+    with embedded newlines from which it will then extract the lines and
+    construct the list of CodeLines.  There is also an append method for
+    incrementally generating this block.
+
+    CodeBlock similarly provides methods for returning the CodeLines via a list
+    of lines or a block of text.
+
+    CodeBlock provides methods for manipulating the lines of code in various
+    ways (justifying, aligning, indenting, etc.)
     """
-    # 4th iteration of the ruleset.  Frankly I was getting tired of
-    # scrolling past it every time I worked on this file.  I abstracted the
-    # structures out into a YAML formatted file.  All the rules are there.
-    yaml = ruamel.yaml.YAML()
-    yaml.version = (1, 2)
+    def __init__(self, lines=None):
+        """ Fundamental constructor from a list of lines. """
+        self.code_lines = []
+        if lines is not None:
+            for line in lines:
+                self.code_lines.append(CodeLine(line))
 
-    rules_str = sublime.load_resource('Packages/VHDL Mode/Syntax/beautify_rules.yaml')
-    rules_blob = yaml.load(rules_str)
+    @classmethod
+    def from_block(cls, block):
+        """ Constructor from a block of text. """
+        lines = block.split('\n')
+        return cls(lines)
 
-    key_list = rules_blob['key_list']
-    open_rules = rules_blob['open_rules']
-    close_rules = rules_blob['close_rules']
+    def to_list(self):
+        """ Returns a list of lines. """
+        lines = []
+        for cl in self.code_lines:
+            lines.append(cl.line)
+        return lines
 
-    # Initialize the indent indexes.
-    # closing_stack is using deque() and each element is:
-    # 0. The key name matched.
-    # 1. The current indent level.
-    # Since it's a stack, we're always referencing element 0 (top).
-    current_indent = next_indent = initial
-    parens = Parentheses()
-    closing_stack = collections.deque()
-    unbalance_flag = False
-    # Set the indent to tabs or spaces here
-    if use_spaces:
-        indent_char = ' '*tab_size
-    else:
-        indent_char = '\t'
+    def to_block(self):
+        """ Returns the code in a block of text. """
+        lines = []
+        for cl in self.code_lines:
+            lines.append(cl.line)
+        return '\n'.join(lines)
 
-    # Scan the lines.
-    for i in range(len(lines)):
-        # Strip any comment from the line before analysis.
-        line = strip_comments(lines[i])
-        debug('{}: ci={} ni={} : {}'.format(i, current_indent, next_indent, lines[i]))
+    def append(self, line):
+        """ Adds a single line to the list of CodeLines. """
+        self.code_lines.append(CodeLine(line))
 
-        ############################################################
-        # Modification Rules
-        # Priority 1: Keywords
-        for key in key_list:
-            rule = open_rules[key]
-            key_search = re.search(rule['pattern'], line, re.IGNORECASE)
-            if key_search:
-                debug('{}: Evaluation line: {}'.format(i, line))
-                debug('{}: Evaluation pattern: {}'.format(i, rule['pattern']))
-                debug('{}: Type: {}'.format(i, key))
-                # If an ending type is noted, push the key onto the
-                # stack.  Save the current indent, and the current parenthetical
-                # state as well.
-                if rule['close_rule'] is not None:
-                    closing_stack.appendleft([key, current_indent, copy.copy(parens)])
-                # Apply the current and next indent values to
-                # the current values.
-                current_indent += rule['indent_rule'][0]
-                next_indent += rule['indent_rule'][1]
-                break
+    def prep(self):
+        """ This method automates a lot of the initial preparatory work with
+        spacing and padding. """
+        for cl in self.code_lines:
+            cl.mask_comments()
+            cl.mask_strings()
+            cl.pad_vhdl_symbols()
+            cl.remove_spaces()
+            cl.restore()
 
-        # Priority 2: Unbalanced Parenthesis
-        # Unbalanced parenthesis rules.  The line where an unbalanced paren
-        # begins is not modified, however for every line after that while we are
-        # unbalanced, indent one additional level to the current line (but not the
-        # next because we don't want to keep incrementing outwards.)  When balance
-        # is restored, reset the flag.
-        parens.scan(line)
-        debug('{}: {}'.format(i, parens.stats()))
-        if unbalance_flag:
-            debug('{}: Unbalanced parenthesis indenting.'.format(i))
-            current_indent += 1
-        unbalance_flag = not parens.balanced
+    def left_justify(self):
+        """ This method left justifies an entire block. """
+        for cl in self.code_lines:
+            cl.left_justify()
 
-        # Special: Closing Item Reset
-        # Scan the line for ending key if one exists. If
-        # parentheses are balanced and then ending key has been found
-        # then reset the current and next indent level to this state.
-        # The evaluate flag is used because a branching lexical
-        # structure was discovered and the line needs to be rescanned.
-        if len(closing_stack):
-            eval_line = True
-            while eval_line:
-                debug('{}: Closing stack depth={} top={} indent={} parens={}'.format(i, len(closing_stack), closing_stack[0][0], closing_stack[0][1], closing_stack[0][2].stats()))
-                # Assume that we will traverse only once, and set the flag
-                # to false.  If we need to rescan, the flag will be set
-                # true.
-                eval_line = False
+    def status(self):
+        for cl in self.code_lines:
+            debug('{}'.format(cl.line))
 
-                # Since the closing rule pattern could be multiple patterns, we have to scan
-                # through that item, referencing into the close_rules dictionary for the
-                # pattern.  Assigning the rule list to another name to stop the madness
-                # of indirection.
-                stack_key, stack_indent, stack_parens = closing_stack[0]
-                rules = open_rules[stack_key]['close_rule']
+    def align_symbol(self, expr, side='pre', scope_data=None):
+        """
+        This is a in-class rework of the original align block on regular
+        expression function.  The same parameters exist except it doesn't need
+        to pass the entire block of lines because that's integral to the class
+        members.  Additionally the method no longer takes the ignore comment
+        lines parameter because there will be a specialized method for aligning
+        comments later.
 
-                # Step through and search for the end pattern.
-                for close_key, result in rules:
-                    debug('{}: Evaluation line: {}'.format(i, line))
-                    debug('{}: Evaluation pattern: {}'.format(i, close_rules[close_key]))
-                    close_search = re.search(close_rules[close_key], line, re.IGNORECASE)
-                    if close_search and parens.delta == stack_parens.delta:
-                        # We've found a match and are in a balanced state.
-                        debug('{}: Found closing match to {}'.format(i, stack_key))
-                        if result is not None:
-                            # We have found a continuation of the structure.
-                            # Pop off the top of the stack, then append the new
-                            # key to the top of the stack and re-evaluate.
-                            debug('{}: Continuation found.  Re-evaluating for {}'.format(i, result))
-                            closing_stack.popleft()
-                            closing_stack.appendleft([result, stack_indent, stack_parens])
-                            # Need to do a solo line check, mainly for those is clauses.
-                            if open_rules[result]['solo_flag']:
-                                solo_search = re.search(r'^\)?\s?'+close_rules[close_key], line, re.IGNORECASE)
-                                if solo_search:
-                                    # Unindent this line most likely
-                                    debug('{}: Solo intermediate found.'.format(i))
-                                    current_indent += open_rules[result]['start_offset']
-                            eval_line = True
-                        else:
-                            # This is the endpoint of the structure.
-                            # Behavior changes based on the solo flag
-                            if open_rules[stack_key]['solo_flag']:
-                                # Solo flag rules means we only apply the closing
-                                # rule to the current line if the symbol is alone
-                                # on a line, otherwise we apply the closing rule
-                                # to the following line.
-                                # Scan the line again to check for the beginning
-                                # of the line variation.  (Small alteration to
-                                # check for an paren in the case of endclauses
-                                # that might not have the built-in paren)
-                                debug('{}: Using solo line rule.'.format(i))
-                                solo_search = re.search(r'^\)?\s?'+close_rules[close_key], line, re.IGNORECASE)
-                                if solo_search:
-                                    # Revert on this line
-                                    debug('{}: Solo closing found here.'.format(i))
-                                    current_indent = stack_indent + open_rules[stack_key]['close_offset']
-                                    next_indent = stack_indent
-                                else:
-                                    debug('{}: Close is not alone on this line.'.format(i))
-                                    # Revert on the next line
-                                    next_indent = stack_indent
+        Prepares each line by masking out comments and quotes first.
+        Scans each line for the provided regular expression pattern that should
+        align with subsequent lines.
+        Once the pattern is found, pushes the location onto a stack and
+        continues to the next line.
+        When a line is identified that breaks the chain, go back through the
+        stack and identify the rightmost position, and then pad.
+        There exists a parameter to pad afterwards as there is one case where
+        we want to look for port modes and pad afterwards to align the type.
+        There exist some lines we don't even want to monkey with because the
+        symbols tend to conflict (conditional signals in if/thens, case choice
+        lines, etc.)
+        """
+        ignored_expr = [
+            r':\s+process\b',     # don't remember why I ignore this one
+            r'\bif\b',            # ignore if statement conditional symbols
+            r'\bthen\b',          # ignore if statement conditional symbols
+            r'\belsif\b',         # ignore if statement conditional symbols
+            r'\bwhen\b(?=.*?=>)'  # ignore case choice
+        ]
+
+        # Initializing variables
+        prior_scope = ""
+        match_data = []
+
+        # Iterating over lines of code now.  Using enumerate to aid detection
+        # of the last item in the list.
+        for idx, cl in enumerate(self.code_lines):
+            # Prep work
+            cl.mask_strings()
+            cl.mask_comments()
+
+            # Check for a number of items that will trigger
+            # Checking for the last line in the list.
+            last_line = False
+            if idx == len(self.code_lines)-1:
+                last_line = True
+
+            # Checking for lines we want to ignore
+            ignored = False
+            for pattern in ignored_expr:
+                ignore_search = re.search(pattern, cl.line, re.I)
+                if ignore_search:
+                    ignored = True
+
+            # Checking for a change of scope on a line which will alter the
+            # context of the symbol being searched for and should not be
+            # aligned.  This is for a particular special case that I don't
+            # recall.
+            scope_switch = False
+            if scope_data is not None:
+                if scope_data[idx] != prior_scope:
+                    scope_switch = True
+                prior_scope = scope_data[idx]
+
+            # Search for the alignment pattern and then restore the masked
+            # strings.
+            match = re.search(expr, cl.line, re.I)
+            cl.restore()
+
+            # If this line has a expression match and isn't an ignored line and
+            # is in the same scope context, add it to the list.
+            if match and not ignored and not scope_switch:
+                # If we find a match, record the line and position
+                if side == 'post':
+                    match_data.append((cl, match.end()))
+                else:
+                    match_data.append((cl, match.start()))
+
+            # Trigger the adjustment on past stored lines.
+            if not match or scope_switch or last_line or ignored:
+                if len(match_data) > 1:
+                    # Scan for the rightmost (maximum) position value and check
+                    # to see if extra space needed due to lack of preceding
+                    # space.
+                    maxpos = 0
+                    for mcl, pos in match_data:
+                        if pos > maxpos:
+                            maxpos = pos
+                            if mcl.line[pos-1] != ' ':
+                                maxpos = maxpos + 1
+                    # Adjust the spacial padding in the line.
+                    for mcl, pos in match_data:
+                        mcl.line = mcl.line[0:pos] + ' '*(maxpos-pos) + mcl.line[pos:]
+                match_data = []
+
+            # Case that there was a match in a new scope context must be
+            # added to the list after the previous batch was processed.
+            if match and scope_switch:
+                if side == 'post':
+                    match_data.append((cl, match.end()))
+                else:
+                    match_data.append((cl, match.start()))
+
+    def indent_vhdl(self, initial=0, tab_size=4, use_spaces=False):
+        """
+        This method scans the list of code lines and processes them according
+        to the rules laid out in the beautification rules (YAML format).
+        This iteration of the method is based around being a member of the
+        CodeBlock class and uses CodeBlock and CodeLine methods where
+        appropriate.
+        """
+        # Import beautification rules from YAML file
+        yaml = ruamel.yaml.YAML()
+        yaml.version = (1, 2)
+
+        rules_str = sublime.load_resource('Packages/VHDL Mode/Syntax/beautify_rules.yaml')
+        rules_blob = yaml.load(rules_str)
+
+        key_list = rules_blob['key_list']
+        open_rules = rules_blob['open_rules']
+        close_rules = rules_blob['close_rules']
+
+        # Setup initial state with indentation and the running parenthesis
+        # count.
+        # closing_stack is using deque() and the elements are:
+        # 0: The key name matched
+        # 1: The current indent level.
+        # Since it's used as a stack, we're always referencing element 0 (top)
+        current_indent = next_indent = initial
+        parens = Parentheses()
+        closing_stack = collections.deque()
+        unbalance_flag = False
+        # Set the indent to tabs or spaces here according to parameter passed
+        if use_spaces:
+            indent_char = ' '*tab_size
+        else:
+            indent_char = '\t'
+
+        # Scan lines
+        for idx, cl in enumerate(self.code_lines):
+            # Prep line for scanning and avoiding matches in comments and
+            # strings.
+            debug('{}: ci={} ni={} : {}'.format(idx, current_indent, next_indent, cl.line))
+            cl.mask_strings()
+            cl.mask_comments()
+
+            ############################################################
+            # Modification Rules
+            # Priority 1: Keywords
+            for key in key_list:
+                rule = open_rules[key]
+                key_search = re.search(rule['pattern'], cl.line, re.I)
+                if key_search:
+                    debug('{}: Evaluation line: {}'.format(idx, cl.line))
+                    debug('{}: Evaluation pattern: {}'.format(idx, rule['pattern']))
+                    debug('{}: Type: {}'.format(idx, key))
+                    # If an ending type is noted, push the key onto the
+                    # stack.  Save the current indent, and the current parenthetical
+                    # state as well.
+                    if rule['close_rule'] is not None:
+                        closing_stack.appendleft([key, current_indent, copy.copy(parens)])
+                    # Apply the current and next indent values to
+                    # the current values.
+                    current_indent += rule['indent_rule'][0]
+                    next_indent += rule['indent_rule'][1]
+                    break
+
+            # Priority 2: Unbalanced Parenthesis
+            # Unbalanced parenthesis rules.  The line where an unbalanced paren
+            # begins is not modified, however for every line after that while
+            # we are unbalanced, indent one additional level to the current
+            # line (but not the next because we don't want to keep incrementing
+            # outwards.)  When balance is restored, reset fthe flag.
+            parens.scan(cl.line)
+            debug('{}: {}'.format(idx, parens.stats()))
+            if unbalance_flag:
+                debug('{}: Unbalanced parenthesis indenting.'.format(idx))
+                current_indent += 1
+            unbalance_flag = not parens.balanced
+
+            # Special: Closing Item Reset
+            # Scan the line for ending key if one exists. If parentheses are
+            # balanced and then ending key has been found then reset the
+            # current and next indent level to this state.  The evaluate flag
+            # is used because a branching lexical structure was discovered and
+            # the line needs to be rescanned.
+            if len(closing_stack):
+                eval_line = True
+                while eval_line:
+                    debug('{}: Closing stack depth={} top={} indent={} parens={}'.format(idx, len(closing_stack), closing_stack[0][0], closing_stack[0][1], closing_stack[0][2].stats()))
+                    # Assume that we will traverse only once, and set the flag
+                    # to false.  If we need to rescan, the flag will be set
+                    # true.
+                    eval_line = False
+
+                    # Since the closing rule pattern could be multiple patterns,
+                    # we have to scan through that item, referencing into the
+                    # close_rules dictionary for the pattern.  Assigning the
+                    # rule list to another name to stop the madness of
+                    # indirection.
+                    stack_key, stack_indent, stack_parens = closing_stack[0]
+                    rules = open_rules[stack_key]['close_rule']
+
+                    # Step through and search for the end pattern.
+                    for close_key, result in rules:
+                        debug('{}: Evaluation line: {}'.format(idx, cl.line))
+                        debug('{}: Evaluation pattern: {}'.format(idx, close_rules[close_key]))
+                        close_search = re.search(close_rules[close_key], cl.line, re.I)
+                        if close_search and parens.delta == stack_parens.delta:
+                            # We've found a match and are in a balanced state.
+                            debug('{}: Found closing match to {}'.format(idx, stack_key))
+                            if result is not None:
+                                # We have found a continuation of the structure.
+                                # Pop off the top of the stack, then append the new
+                                # key to the top of the stack and re-evaluate.
+                                debug('{}: Continuation found.  Re-evaluating for {}'.format(idx, result))
+                                closing_stack.popleft()
+                                closing_stack.appendleft([result, stack_indent, stack_parens])
+                                # Need to do a solo line check, mainly for those is clauses.
+                                if open_rules[result]['solo_flag']:
+                                    solo_search = re.search(r'^\)?\s?'+close_rules[close_key], cl.line, re.I)
+                                    if solo_search:
+                                        # Unindent this line most likely
+                                        debug('{}: Solo intermediate found.'.format(idx))
+                                        current_indent += open_rules[result]['start_offset']
+                                eval_line = True
                             else:
-                                debug('{}: Regular ending rule.'.format(i))
-                                # No special rule handling.  Revert on this line.
-                                current_indent = next_indent = stack_indent
-                            # Pop the top of the stack and we're done with evaluating
-                            # closing strings.
-                            closing_stack.popleft()
+                                # This is the endpoint of the structure.
+                                # Behavior changes based on the solo flag
+                                if open_rules[stack_key]['solo_flag']:
+                                    # Solo flag rules means we only apply the closing
+                                    # rule to the current line if the symbol is alone
+                                    # on a line, otherwise we apply the closing rule
+                                    # to the following line.
+                                    # Scan the line again to check for the beginning
+                                    # of the line variation.  (Small alteration to
+                                    # check for an paren in the case of endclauses
+                                    # that might not have the built-in paren)
+                                    debug('{}: Using solo line rule.'.format(idx))
+                                    solo_search = re.search(r'^\)?\s?'+close_rules[close_key], cl.line, re.I)
+                                    if solo_search:
+                                        # Revert on this line
+                                        debug('{}: Solo closing found here.'.format(idx))
+                                        current_indent = stack_indent + open_rules[stack_key]['close_offset']
+                                        next_indent = stack_indent
+                                    else:
+                                        debug('{}: Close is not alone on this line.'.format(idx))
+                                        # Revert on the next line
+                                        next_indent = stack_indent
+                                else:
+                                    debug('{}: Regular ending rule.'.format(idx))
+                                    # No special rule handling.  Revert on this line.
+                                    current_indent = next_indent = stack_indent
+                                # Pop the top of the stack and we're done with evaluating
+                                # closing strings.
+                                closing_stack.popleft()
 
-        # Modify the line here.
-        lines[i] = indent_char*current_indent+lines[i]
-        debug('{}: ci={} ni={} : {} \n'.format(i, current_indent, next_indent, lines[i]))
-        # Set current for next line.
-        current_indent = next_indent
+            # Modify the line here.
+            cl.line = indent_char*current_indent + cl.line
+            cl.restore()
+            debug('{}: ci={} ni={} : {} \n'.format(idx, current_indent, next_indent, cl.line))
+            # Set current for next line.
+            current_indent = next_indent
+
+    def align_comments(self, tab_size=4, use_spaces=False):
+        """
+        Comments are a little different from normal alignment and
+        identation.
+
+        1. Full comment lines should be aligned, however they should be
+           indented to the level of the next code line, not the previous
+           which is what happens with the indent_vhdl routine.  This is most
+           notable with case/when code regions where a comment preceding a
+           'when' will be indented at the level of the previous when block.
+           Thus full comment lines should be aligned after regular indentation
+           is complete.  The method assumes that the calling code has already
+           completed indent_vhdl.
+
+           The indentation will be accomplished by copying the text between the
+           aligning line back into the comment lines, so space/tab alignment
+           is preserved.  Also this way I don't need to know what the indent
+           level actually is, just using what's there already.
+
+        2. Inline comment lines cannot be aligned with symbol alignment because
+           I mask off comments.  So in addition to aligning these, we'd like
+           continuation comment lines (which might be full comment lines) to
+           maintain the same position as the previous until non full comment
+           line occurs.
+
+           The indentation will be accomplished with spaces.  There's no way to
+           do this otherwise.  However for the inline comments, I attempt to
+           take tabs into account for spacing.
+
+        To accomplish both of these, instituting a couple of properties on the
+        CodeLine class that determine if a line is a full comment line or if
+        a line has an inline comment.  Between these, we should be able to
+        scan a CodeBlock and adjust the indentation of comment lines.
+        """
+        # Pass one, full line comments
+        match_data = []
+        for idx, cl in enumerate(self.code_lines):
+            if cl.is_full_comment:
+                match_data.append(cl)
+            else:
+                # Look for the first non blank line to align comments with.
+                bls = re.search(r'^\s*$', cl.line, re.I)
+                nbls = re.search(r'^(\s*)\S', cl.line, re.I)
+                if bls:
+                    # Do nothing and keep text at current indent level.
+                    match_data = []
+                elif nbls:
+                    # If we've got a set of lines to align, process the match.
+                    if match_data:
+                        for mcl in match_data:
+                            mcl.left_justify()
+                            mcl.line = nbls.group(1) + mcl.line
+                        match_data = []
+
+        # Pass two, inline comments.  This is actually closer to the original
+        # alignment method since I record position as well.
+        match_data = []
+        for idx, cl in enumerate(self.code_lines):
+            if cl.has_inline_comment or cl.is_full_comment:
+                s = re.search(r'^.*?(--.*)', cl.line, re.I)
+                if match_data:
+                    match_data.append((cl, s.start(1)))
+                elif cl.has_inline_comment:
+                    match_data.append((cl, s.start(1)))
+            else:
+                # Process matches if there's more than one.
+                if len(match_data) > 1:
+                    maxpos = 0
+                    for mcl, pos in match_data:
+                        tab_count = mcl.line.count('\t')
+                        adj_pos = pos + tab_count*(tab_size-1)
+                        if adj_pos > maxpos:
+                            maxpos = adj_pos
+                            if mcl.line[pos-1] != ' ':
+                                maxpos = maxpos + 1
+                    for mcl, pos in match_data:
+                        tab_count = mcl.line.count('\t')
+                        adj_pos = pos + tab_count*(tab_size-1)
+                        mcl.line = mcl.line[0:pos] + ' '*(maxpos-adj_pos) + mcl.line[pos:]
+                match_data = []
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Port():
     """
     This is the class of ports and ways to manipulate ports.
@@ -514,7 +651,6 @@ class Port():
         """Returns a string with the port formatted for a signal."""
         # Trailing semicolon provided by calling routine.
         line = 'signal {} : {}'.format(self.name, self.type)
-        #print(line)
         return line
 
     def print_as_portmap(self):
@@ -536,11 +672,10 @@ class Port():
         """Returns a string with the port formatted as a port."""
         # Trailing semicolon provided by calling routine.
         line = '{} : {} {}'.format(self.name, self.mode, self.type)
-        #print(line)
         return line
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Generic():
     """
     This is the class of generics and ways to manipulate them.
@@ -594,7 +729,8 @@ class Generic():
             line = 'constant {} : {} := <value>'.format(self.name, self.type)
         return line
 
-# ---------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Parameter():
     """
     This is the class of subprogram parameters.  Might ultimately
@@ -613,10 +749,8 @@ class Parameter():
     def parse_str(self, param_str):
         """Better regexp should be able to extract everything!"""
         regex = r"^\s*((?P<storage>constant|signal|variable|file)\s*)?((?P<name>.*?)\s*)(?::\s*)((?P<mode>inout\b|in\b|out\b|buffer\b)\s*)?((?P<type>.*?)\s*)((?:\:\=)\s*(?P<expression>.*?)\s*)?$"
-        #print('Input: "{}"'.format(param_str))
         s = re.search(regex, param_str)
         if s:
-            #print('Storage: "{}", Name: "{}", Mode: "{}", Type: "{}", Expression: "{}"'.format(s.group('storage'), s.group('name'), s.group('mode'), s.group('type'), s.group('expression')))
             if s.group('storage'):
                 self.storage = s.group('storage')
             self.identifier = s.group('name')
@@ -641,7 +775,6 @@ class Parameter():
         string = string + '{}'.format(self.type)
         if self.expression:
             string = string + ' := {}'.format(self.expression)
-        #print(string)
         return string
 
     def print_call(self):
@@ -650,7 +783,7 @@ class Parameter():
         return string
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Interface():
     """
     The Interface class contains the essential elements to a
@@ -716,7 +849,6 @@ class Interface():
         # which might conflict with type names.
         p = re.compile(r"\s+")
         self.if_string = re.sub(p, " ", self.if_string)
-
 
     def parse_generic_port(self):
         """Attempts to break the interface into known generic and
@@ -787,9 +919,11 @@ class Interface():
         if self.if_ports:
             for port in self.if_ports:
                 lines.append(port.print_as_signal() + ';')
-            align_block_on_re(lines, r':')
-            indent_vhdl(lines, 1)
-            return '\n'.join(lines)
+            cb = CodeBlock(lines)
+            cb.align_symbol(r':(?!=)', 'pre', None)
+            cb.align_symbol(r'<|:(?==)', 'pre', None)
+            cb.indent_vhdl(1)
+            return cb.to_block()
         else:
             return None
 
@@ -802,10 +936,11 @@ class Interface():
         if self.if_generics:
             for generic in self.if_generics:
                 lines.append(generic.print_as_constant() + ';')
-            align_block_on_re(lines, r':')
-            align_block_on_re(lines, r':=')
-            indent_vhdl(lines, 1)
-            return '\n'.join(lines)
+            cb = CodeBlock(lines)
+            cb.align_symbol(r':', 'pre', None)
+            cb.align_symbol(r':=', 'pre', None)
+            cb.indent_vhdl(1)
+            return cb.to_block()
         else:
             return None
 
@@ -854,10 +989,10 @@ class Interface():
                 lines.append(port_str)
             lines.append(");")
 
-        align_block_on_re(lines, '=>')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r'\=\>', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def component(self):
         """
@@ -892,12 +1027,12 @@ class Interface():
             lines.append(");")
         lines.append("end component {};".format(self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def entity(self):
         """
@@ -932,12 +1067,12 @@ class Interface():
             lines.append(");")
         lines.append("end entity {};".format(self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 0)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(0)
+        return cb.to_block()
 
     def flatten(self):
         '''
@@ -985,7 +1120,7 @@ class Interface():
                     port.mode = 'in'
 
 
-# ---------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Subprogram():
     """
     Class that contains information about a VHDL subprogram
@@ -1052,9 +1187,9 @@ class Subprogram():
         # If we are unbalanced, then there's nothing to do and return.  Otherwise
         # use the last paren location to trim the line and perform the search.
         if parens.balanced:
-            if close_pos:
+            if parens.close_pos:
                 new_line = line[parens.close_pos[-1]:]
-                offset = close_pos[-1]
+                offset = parens.close_pos[-1]
             else:
                 new_line = line
                 offset = 0
@@ -1099,13 +1234,11 @@ class Subprogram():
                 break
         if start and stop:
             self.if_string = self.if_string[start:stop]
-            #print(self.if_string)
             param_list = self.if_string.split(';')
             for param_str in param_list:
                 param = Parameter(param_str)
                 if param.success:
                     self.if_params.append(param)
-                    #param.print()
         else:
             print('vhdl-mode: No subprogram parameters found.')
 
@@ -1155,12 +1288,12 @@ class Subprogram():
             else:
                 lines.append('{} {};'.format(self.type, self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def body(self):
         """Constructs a subprogram body from the currently
@@ -1202,12 +1335,12 @@ class Subprogram():
         lines.append(' ')
         lines.append('end {} {};'.format(self.type, self.name))
 
-        align_block_on_re(lines, ':')
-        align_block_on_re(lines, r':\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post')
-        align_block_on_re(lines, ':=')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r':(?!=)', 'pre', None)
+        cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', None)
+        cb.align_symbol(r'<|:(?==)', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def call(self):
         """Constructs a subprogram call.  Much simpler than the
@@ -1225,10 +1358,10 @@ class Subprogram():
         else:
             lines.append('{};'.format(self.name))
 
-        align_block_on_re(lines, '=>')
-        indent_vhdl(lines, 1)
-
-        return '\n'.join(lines)
+        cb = CodeBlock(lines)
+        cb.align_symbol(r'\=\>', 'pre', None)
+        cb.indent_vhdl(1)
+        return cb.to_block()
 
     def flatten(self):
         new_params = []
