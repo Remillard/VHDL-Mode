@@ -422,22 +422,30 @@ class CodeBlock():
             # Modification Rules
             # Priority 1: Keywords
             for key in key_list:
+                skip_match = False
                 rule = open_rules[key]
                 key_search = re.search(rule['pattern'], cl.line, re.I)
                 if key_search:
                     debug('{}: Evaluation line: {}'.format(idx, cl.line))
                     debug('{}: Evaluation pattern: {}'.format(idx, rule['pattern']))
                     debug('{}: Type: {}'.format(idx, key))
-                    # If an ending type is noted, push the key onto the
-                    # stack.  Save the current indent, and the current parenthetical
-                    # state as well.
-                    if rule['close_rule'] is not None:
-                        closing_stack.appendleft([key, current_indent, copy.copy(parens)])
-                    # Apply the current and next indent values to
-                    # the current values.
-                    current_indent += rule['indent_rule'][0]
-                    next_indent += rule['indent_rule'][1]
-                    break
+                    debug('{}: Ignore Rules: {}'.format(idx, rule['ignore_rules']))
+                    if rule['ignore_rules'] is not None:
+                        for ignore_rule in rule['ignore_rules']:
+                            if closing_stack is not None and ignore_rule == closing_stack[0][0]:
+                                skip_match = True
+
+                    if not skip_match:
+                        # If an ending type is noted, push the key onto the
+                        # stack.  Save the current indent, and the current parenthetical
+                        # state as well.
+                        if rule['close_rule'] is not None:
+                            closing_stack.appendleft([key, current_indent, copy.copy(parens)])
+                        # Apply the current and next indent values to
+                        # the current values.
+                        current_indent += rule['indent_rule'][0]
+                        next_indent += rule['indent_rule'][1]
+                        break
 
             # Priority 2: Unbalanced Parenthesis
             # Unbalanced parenthesis rules.  The line where an unbalanced paren
