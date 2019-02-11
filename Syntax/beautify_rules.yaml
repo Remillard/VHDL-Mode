@@ -198,14 +198,6 @@ open_rules:
     pattern: \bgeneric map\b
     solo_flag: true
     ignore_rules: null
-  ifthen:
-    close_offset: 0
-    close_rule:
-    - [endclause, null]
-    indent_rule:  [0, 1]
-    pattern: (?<!end )\bif\b
-    solo_flag: false
-    ignore_rules: null
   if:
     close_offset: 0
     close_rule:
