@@ -38,8 +38,32 @@
 "build_systems":
 [
 	{
+		// Riviera PRO evocation
+		"name": "Riviera PRO VHDL-2008",
+		"working_dir": "${folder}/sim",
+		// Sample parameters for evocation.  Customize for project.
+		"shell_cmd": "vcom -dbg -2008 -work work $file",
+		// File expression pulls out the file.
+		"file_regex": "^COMP96 File: (.*)",
+		// Line expression pulls out the message, column, and row and skips the file.
+		"line_regex": "^COMP96 ERROR (?=\\\\w*: \\\\\".*\\\\\\" (\\\\d*) (\\\\d*))(\\\\w*: \\\\\\".*?\\\\.\\\\\\")",
+		"selector": "source.vhdl"
+	},
+	{
 		// Modelsim evocation and pattern matching.
-		"name": "Modelsim/Questasim",
+		"name": "Modelsim/Questasim VHDL-2008",
+		"working_dir": "${folder}/sim",
+		// Sample parameters for evocation.  Customize for project.
+		"shell_cmd": "vcom -2008 -time -check_synthesis -pedanticerrors -work work \$file",
+		// Capture group MUST be in order: filename / line / column / message
+		// Column is a dummy capture.
+		"file_regex": "^\\\\*\\\\* .*?: (.*?)\\\\(([0-9]+)\\\\)(): (.*)",
+		"selector": "source.vhdl"
+	},
+	{
+		// Modelsim evocation and pattern matching.
+		"name": "Modelsim/Questasim VHDL-1993",
+		"working_dir": "${folder}/sim",
 		// Sample parameters for evocation.  Customize for project.
 		"shell_cmd": "vcom -93 -time -check_synthesis -pedanticerrors -work work \$file",
 		// Capture group MUST be in order: filename / line / column / message

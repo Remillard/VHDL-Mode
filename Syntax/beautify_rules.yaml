@@ -19,7 +19,7 @@ key_list:
   - procedure
   - function
   - process
-  - ifthen
+  - if
   - solothen
   - elseclause
   - elsifclause
@@ -45,9 +45,12 @@ key_list:
 #                  may end (a semicolon in the case of the prototype,
 #                  and 'is' in the case of the body.).  The first
 #                  value is the close_rule key to look for.  The
-#                  second value is the 'dummy' continuation rule.
-#   solo_flag    - A boolean value indicating whether we apply the
-#                  ending/solo rule or just de-indent immediately.
+#                  second value is a continuation rule (if any).  The
+#                  continuation rule is what to look for next in certain
+#                  cases.
+#   solo_flag    - A boolena flag indicating if we apply the closing indent
+#                  rule to the current line if the symbol is alone on a line,
+#                  or apply the closing indent rule to the following line.
 #   close_offset - An integer value that applies an offset to the
 #                  closing current line, mainly used for the 'map'
 #                  elements.
@@ -59,6 +62,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^architecture\b
     solo_flag: false
+    ignore_rules: null
   assertion:
     close_offset: 0
     close_rule:
@@ -66,19 +70,25 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^assert\b
     solo_flag: true
+    ignore_rules: null
   assignment:
     close_offset: 0
     close_rule:
     - [semicolon, null]
     indent_rule:  [0, 1]
-    pattern: ' <= '
+    pattern: ' <= | := '
     solo_flag: true
+    ignore_rules:
+    - if
+    - port
+    - generic
   begin:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: \bbegin\b
     solo_flag: false
+    ignore_rules: null
   case:
     close_offset: 0
     close_rule:
@@ -86,12 +96,14 @@ open_rules:
     indent_rule:  [0, 2]
     pattern: (?<!end )\bcase\b
     solo_flag: false
+    ignore_rules: null
   casewhen:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: ^when\b
     solo_flag: false
+    ignore_rules: null
   component:
     close_offset: 0
     close_rule:
@@ -99,6 +111,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^\s*(?<!end )\bcomponent\b
     solo_flag: false
+    ignore_rules: null
   config:
     close_offset: 0
     close_rule:
@@ -106,6 +119,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bconfiguration\b
     solo_flag: false
+    ignore_rules: null
   constant:
     close_offset: 1
     close_rule:
@@ -113,24 +127,28 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^\bconstant\b
     solo_flag: true
+    ignore_rules: null
   default:
     close_offset: 0
     close_rule: null
     indent_rule:  [0, 0]
     pattern: .*
     solo_flag: false
+    ignore_rules: null
   elseclause:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: ^else\b
     solo_flag: false
+    ignore_rules: null
   elsifclause:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: ^elsif\b
     solo_flag: false
+    ignore_rules: null
   entity:
     close_offset: 0
     close_rule:
@@ -138,6 +156,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^entity\b
     solo_flag: false
+    ignore_rules: null
   for:
     close_offset: 0
     close_rule:
@@ -145,6 +164,7 @@ open_rules:
     indent_rule: [0, 1]
     pattern: ^\s*\bfor\b
     solo_flag: false
+    ignore_rules: null
   function:
     close_offset: 1
     close_rule:
@@ -153,6 +173,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^(?<!end )(?:(pure|impure) )?function\b
     solo_flag: true
+    ignore_rules: null
   generate:
     close_offset: 0
     close_rule:
@@ -160,6 +181,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bgenerate\b
     solo_flag: false
+    ignore_rules: null
   generic:
     close_offset: 0
     close_rule:
@@ -167,6 +189,7 @@ open_rules:
     indent_rule:  [0, 0]
     pattern: \bgeneric\b
     solo_flag: true
+    ignore_rules: null
   genmap:
     close_offset: 1
     close_rule:
@@ -174,13 +197,15 @@ open_rules:
     indent_rule:  [1, 1]
     pattern: \bgeneric map\b
     solo_flag: true
-  ifthen:
+    ignore_rules: null
+  if:
     close_offset: 0
     close_rule:
-    - [endclause, null]
+    - [then, then]
     indent_rule:  [0, 1]
     pattern: (?<!end )\bif\b
     solo_flag: false
+    ignore_rules: null
   loop:
     close_offset: 0
     close_rule:
@@ -188,6 +213,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bloop\b
     solo_flag: false
+    ignore_rules: null
   # VHDL-2008 Construct.  Ends on a semicolon and can contain a
   # generic map.  Generic map takes care of itself, so package instance
   # doesn't need to indent.  We'll just look for a semicolon.
@@ -198,6 +224,7 @@ open_rules:
       - [close_semi, null]
     solo_flag: false
     close_offset: 0
+    ignore_rules: null
   package:
     close_offset: 0
     close_rule:
@@ -205,6 +232,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bpackage\b
     solo_flag: false
+    ignore_rules: null
   port:
     close_offset: 0
     close_rule:
@@ -212,6 +240,7 @@ open_rules:
     indent_rule:  [0, 0]
     pattern: \bport\b
     solo_flag: true
+    ignore_rules: null
   portmap:
     close_offset: 1
     close_rule:
@@ -219,6 +248,7 @@ open_rules:
     indent_rule:  [1, 1]
     pattern: \bport map\b
     solo_flag: true
+    ignore_rules: null
   procedure:
     close_offset: 1
     close_rule:
@@ -227,6 +257,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^(?<!end )\bprocedure\b
     solo_flag: true
+    ignore_rules: null
   process:
     close_offset: 0
     close_rule:
@@ -234,6 +265,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )(?<!end postponed )\bprocess\b
     solo_flag: false
+    ignore_rules: null
   # This is for a weird code style that uses the 'then' as the
   # starting element of its own line.  Thanks for that, Leo, you
   # butthead.
@@ -243,6 +275,7 @@ open_rules:
     indent_rule:  [-1, 0]
     pattern: ^then\b
     solo_flag: false
+    ignore_rules: null
   type:
     close_offset: 1
     close_rule:
@@ -252,6 +285,7 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^\btype\b
     solo_flag: true
+    ignore_rules: null
   # Keys past here are only dummies for continuing
   # a statement whose lexical possibilities branch.
   # They will not be scanned as a primary opener
@@ -275,24 +309,36 @@ open_rules:
     - [endclause, null]
     solo_flag: true
     start_offset: -1
+    ignore_rules: null
   function_is:
     close_offset: 0
     close_rule:
     - [endclause, null]
     solo_flag: true
     start_offset: -1
+    ignore_rules: null
   record:
     close_offset: 0
     close_rule:
     - [endclause, null]
     solo_flag: false
     start_offset: 0
+    ignore_rules: null
   units:
     close_offset: 0
     close_rule:
     - [endclause, null]
     solo_flag: false
     start_offset: 0
+    ignore_rules: null
+  then:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: \bthen\b
+    solo_flag: false
+    ignore_rules: null
 
 close_rules:
   close_paren: \)
@@ -304,4 +350,5 @@ close_rules:
   record: \brecord\b
   semicolon: ;
   units: \bunits\b
+  then: \bthen\b
 

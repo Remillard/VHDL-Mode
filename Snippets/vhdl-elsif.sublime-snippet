@@ -1,0 +1,7 @@
+<snippet>
+	<content><![CDATA[
+elsif (${1:<condition>}) then
+]]></content>
+	<tabTrigger>elsif</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>

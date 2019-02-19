@@ -1,0 +1,15 @@
+Version 1.8.1
+
+* Added a build system for Aldec Riviera PRO simulator in the project snippet.
+  I am really digging Riviera Pro for simulation.  Let me know if there's any
+  strangeness there.  There are a lot of escape slashes in the snippet to get
+  correct.
+* Improved beautification in a couple of areas, mainly around assignment
+  operators.  Created a method by which a rule match may be ignored when
+  inside declared contexts which resolves ambiguity around <= as less than or
+  equal and <= as assignment.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
