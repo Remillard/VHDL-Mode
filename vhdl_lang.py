@@ -189,6 +189,7 @@ class CodeLine():
     def remove_spaces(self):
         self.line = re.sub(r'\s+', ' ', self.line)
         self.line = re.sub(r'\t', ' ', self.line)
+        self.line = re.sub(r'\s*$', '', self.line)
 
     @property
     def is_full_comment(self):
@@ -539,6 +540,7 @@ class CodeBlock():
 
             # Modify the line here.
             cl.line = indent_char*current_indent + cl.line
+            cl.line = re.sub(r'\s*$', '', cl.line)
             cl.restore()
             debug('{}: ci={} ni={} : {} \n'.format(idx, current_indent, next_indent, cl.line))
             # Set current for next line.
