@@ -11,6 +11,12 @@ Version 1.8.3
 * Fixed a problem with the regex of when to ignore a `when` statement for case
   statements, but also properly accept `when` in assignments.  (Issue #126)
 * Tweaked a few snippets for better usability.
+* Fine tuned subprogram beautification particularly around the closing paren
+  of the interface declaration (Issue #89).
+* Fixed function syntax for operator overloading.  (Issue #128)
+* Fixed range keyword syntax not being scoped in an interface declaration
+  (Issue #127)
+* Fixed scope error for `assert` for sequential statements.  (Issue #124)
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
