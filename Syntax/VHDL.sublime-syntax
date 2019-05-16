@@ -542,6 +542,7 @@ contexts:
         - include: basic-paren-group
         - include: assignment-operators
         - include: arithmetic-operators
+        - include: range-type
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
@@ -562,6 +563,7 @@ contexts:
         - include: basic-paren-group
         - include: assignment-operators
         - include: arithmetic-operators
+        - include: range-type
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
@@ -582,6 +584,7 @@ contexts:
         - include: basic-paren-group
         - include: assignment-operators
         - include: arithmetic-operators
+        - include: range-type
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
@@ -617,6 +620,7 @@ contexts:
         - include: basic-paren-group
         - include: assignment-operators
         - include: arithmetic-operators
+        - include: range-type
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
