@@ -959,6 +959,28 @@ contexts:
             1: keyword.declaration.vhdl
           set: function-body
         - include: reserved-words
+    # Special case for operator overloading
+    - match: (?i)((pure|impure)\s+)?(function)\s+(\")(\+|\-|\*|\/|\*\*|\&|\=|\/\=|\<|\<\=|\>|\>\=|\?\=|\?\/\=|\?\<|\?\<\=|\?\>|\?\>\=|\?\?)(\")
+      captures:
+        2: keyword.other.vhdl
+        3: storage.type.function.vhdl
+        4: punctuation.definition.string.begin.vhdl
+        5: keyword.operator.arithmetic.vhdl
+        6: punctuation.definition.string.end.vhdl
+      push:
+        - meta_scope: meta.block.function.specification.vhdl
+        - include: interface-list
+        - match: (?i)\b(return)\b
+          scope: keyword.declaration.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - match: (?i)\b(is)\b
+          captures:
+            1: keyword.declaration.vhdl
+          set: function-body
+        - include: reserved-words
 
   function-body:
     - meta_scope: meta.block.function.declaration.vhdl
