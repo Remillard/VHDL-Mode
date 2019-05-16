@@ -82,6 +82,8 @@ open_rules:
     - if
     - port
     - generic
+    - procedure
+    - function
   begin:
     close_offset: 0
     close_rule: null
