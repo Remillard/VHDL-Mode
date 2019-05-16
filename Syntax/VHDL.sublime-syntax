@@ -1552,6 +1552,7 @@ contexts:
   sequential-statements:
     - include: seq-if
     - include: seq-case
+    - include: assertion-statement
     - include: seq-loops
     - include: seq-shorties
     - include: seq-variable-assignment
