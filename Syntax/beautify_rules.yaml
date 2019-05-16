@@ -315,7 +315,7 @@ open_rules:
     close_rule:
     - [endclause, null]
     solo_flag: true
-    start_offset: -1
+    start_offset: 0
     ignore_rules: null
   record:
     close_offset: 0
