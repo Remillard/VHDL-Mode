@@ -76,7 +76,7 @@ open_rules:
     close_rule:
     - [semicolon, null]
     indent_rule:  [0, 1]
-    pattern: ' <= | := '
+    pattern: ' <=| :='
     solo_flag: true
     ignore_rules:
     - if
