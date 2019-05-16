@@ -300,7 +300,7 @@ class CodeBlock():
             r'\bif\b',            # ignore if statement conditional symbols
             r'\bthen\b',          # ignore if statement conditional symbols
             r'\belsif\b',         # ignore if statement conditional symbols
-            r'\bwhen\b(?=.*?=>)'  # ignore case choice
+            r'\bwhen\b(?=.*?=>\s*$)'  # ignore case choice
         ]
 
         # Initializing variables
