@@ -1,0 +1,18 @@
+Version 1.8.3
+
+* Fixed another bug in the messages.json file which shows the changes that were
+  altered in the version.  I don't know if it'll display anything for prior
+  revisions so please feel free to visit
+             https://github.com/Remillard/VHDL-Mode/releases
+  for the change notes for the past few releases.  They mirror what I put into
+  this file.
+* Fixed a problem with the regex for the assignment operator when working with
+  multiline statements. (Issue #125).
+* Fixed a problem with the regex of when to ignore a `when` statement for case
+  statements, but also properly accept `when` in assignments.  (Issue #126)
+* Tweaked a few snippets for better usability.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
