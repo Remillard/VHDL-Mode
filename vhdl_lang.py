@@ -127,6 +127,14 @@ class Parentheses():
         else:
             return line[start:end]
 
+    def first_close(self, line):
+        """Given a string, returns a boolean if the first character
+        is a closing paren which is useful for identifying end of
+        group conditions."""
+        m = re.match(r'\s*\)', line)
+        if m:
+            return True
+        return False
 
 # ------------------------------------------------------------------------------
 class CodeLine():
@@ -453,12 +461,19 @@ class CodeBlock():
             # begins is not modified, however for every line after that while
             # we are unbalanced, indent one additional level to the current
             # line (but not the next because we don't want to keep incrementing
-            # outwards.)  When balance is restored, reset fthe flag.
+            # outwards.)  When balance is restored, reset the flag.
+            # Adding a special check if the paren is the first non-whitespace
+            # character on the line.  In that case, we don't usually want to
+            # preserve the indent (this is the whole reason around the 'solo
+            # flag')
             parens.scan(cl.line)
-            debug('{}: {}'.format(idx, parens.stats()))
+            debug('{}: Parens After Scan {}'.format(idx, parens.stats()))
             if unbalance_flag:
-                debug('{}: Unbalanced parenthesis indenting.'.format(idx))
-                current_indent += 1
+                if not parens.first_close(cl.line):
+                    debug('{}: Unbalanced parenthesis indenting.'.format(idx))
+                    current_indent += 1
+                else:
+                    debug('{}: Solo ) Back indent.'.format(idx))
             unbalance_flag = not parens.balanced
 
             # Special: Closing Item Reset
