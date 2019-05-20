@@ -964,13 +964,21 @@ contexts:
           set: function-body
         - include: reserved-words
     # Special case for operator overloading
-    - match: (?i)((pure|impure)\s+)?(function)\s+(\")(\+|\-|\*|\/|\*\*|\&|\=|\/\=|\<|\<\=|\>|\>\=|\?\=|\?\/\=|\?\<|\?\<\=|\?\>|\?\>\=|\?\?)(\")
+    - match: |-
+        (?xi)
+          ((pure|impure)\s+)?
+          (function)\s+
+          (\")
+          (\+|\-|\*|\/|\*\*|\&|\=|\/\=|\<|\<\=|\>|\>\=|\?\=|\?\/\=|
+           \?\<|\?\<\=|\?\>|\?\>\=|\?\?|abs|not|and|or|nand|nor|nor|
+           xor|xnor|mod|rem|sll|srl|rol|ror|sla|sra)
+          (\")
       captures:
         2: keyword.other.vhdl
         3: storage.type.function.vhdl
-        4: punctuation.definition.string.begin.vhdl
-        5: keyword.operator.arithmetic.vhdl
-        6: punctuation.definition.string.end.vhdl
+        4: string.quoted.double.vhdl punctuation.definition.string.begin.vhdl
+        5: entity.name.function.operator.vhdl
+        6: string.quoted.double.vhdl punctuation.definition.string.end.vhdl
       push:
         - meta_scope: meta.block.function.specification.vhdl
         - include: interface-list
@@ -1000,6 +1008,24 @@ contexts:
             2: storage.type.procedure.vhdl
             3: entity.name.function.function.vhdl
             5: punctuation.terminator.vhdl
+          pop: true
+        - match: |-
+            (?xi)
+              \b(end\s*)
+              (function\s*)?
+              (\")
+              (\+|\-|\*|\/|\*\*|\&|\=|\/\=|\<|\<\=|\>|\>\=|\?\=|\?\/\=|
+               \?\<|\?\<\=|\?\>|\?\>\=|\?\?|abs|not|and|or|nand|nor|nor|
+               xor|xnor|mod|rem|sll|srl|rol|ror|sla|sra)
+              (\")
+              (;)
+          captures:
+            1: keyword.declaration.end.vhdl
+            2: storage.type.procedure.vhdl
+            3: string.quoted.double.vhdl punctuation.definition.string.begin.vhdl
+            4: entity.name.function.operator.vhdl
+            5: string.quoted.double.vhdl punctuation.definition.string.begin.vhdl
+            6: punctuation.terminator.vhdl
           pop: true
         - include: sequential-statements
 
