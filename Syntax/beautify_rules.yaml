@@ -76,12 +76,14 @@ open_rules:
     close_rule:
     - [semicolon, null]
     indent_rule:  [0, 1]
-    pattern: ' <= | := '
+    pattern: ' <=| :='
     solo_flag: true
     ignore_rules:
     - if
     - port
     - generic
+    - procedure
+    - function
   begin:
     close_offset: 0
     close_rule: null
@@ -127,7 +129,9 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^\bconstant\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - procedure
+    - function
   default:
     close_offset: 0
     close_rule: null
@@ -253,7 +257,7 @@ open_rules:
     close_offset: 1
     close_rule:
     - [semicolon, null]
-    - [isclause, isclause]
+    - [isclause, function_is]
     indent_rule:  [0, 1]
     pattern: ^(?<!end )\bprocedure\b
     solo_flag: true
@@ -315,7 +319,7 @@ open_rules:
     close_rule:
     - [endclause, null]
     solo_flag: true
-    start_offset: -1
+    start_offset: 0
     ignore_rules: null
   record:
     close_offset: 0

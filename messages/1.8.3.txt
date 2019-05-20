@@ -1,0 +1,31 @@
+Version 1.8.3
+
+* Fixed another bug in the messages.json file which shows the changes that were
+  altered in the version.  I don't know if it'll display anything for prior
+  revisions so please feel free to visit
+             https://github.com/Remillard/VHDL-Mode/releases
+  for the change notes for the past few releases.  They mirror what I put into
+  this file.
+* Fixed a problem with the regex for the assignment operator when working with
+  multiline statements. (Issue #125).
+* Fixed a problem with the regex of when to ignore a `when` statement for case
+  statements, but also properly accept `when` in assignments.  (Issue #126)
+* Tweaked a few snippets for better usability.
+* Fine tuned subprogram beautification particularly around the closing paren
+  of the interface declaration (Issue #89).
+* Fixed function syntax for operator overloading.  (Issue #128)
+* Fixed range keyword syntax not being scoped in an interface declaration
+  (Issue #127)
+* Fixed scope error for `assert` for sequential statements.  (Issue #124)
+* Fixed issue with subprogram copying.  My apologies to all who may have needed
+  that feature as the bug had stuck around for a long time.  I believe it's
+  fixed now though.  (Issue #90)
+* Fixed a little problem that re-emerged with the recent release of Sublime
+  where my post-beautification viewport shift fix was no longer working.  Had
+  to add a little more delay in the shift to get past the screen repaint that
+  happens when the buffer is replaced.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.

@@ -22,7 +22,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     Prints the version to the console.
     """
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.8.2")
+        print("vhdl-mode: VHDL Mode Version 1.8.3")
 
 
 #-------------------------------------------------------------------------------
@@ -259,7 +259,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         # a zero value for set_timeout() delay so this executes after the
         # command exits.
         restore = lambda: self.view.set_viewport_position((x, y), False)
-        sublime.set_timeout(restore, 0)
+        sublime.set_timeout(restore, 1)
         #self.view.set_viewport_position((x, y), False)
 
 

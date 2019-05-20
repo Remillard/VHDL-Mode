@@ -42,7 +42,7 @@
 		"name": "Riviera PRO VHDL-2008",
 		"working_dir": "${folder}/sim",
 		// Sample parameters for evocation.  Customize for project.
-		"shell_cmd": "vcom -dbg -2008 -work work $file",
+		"shell_cmd": "vcom -dbg -2008 -work work \\\"$file\\\",
 		// File expression pulls out the file.
 		"file_regex": "^COMP96 File: (.*)",
 		// Line expression pulls out the message, column, and row and skips the file.
