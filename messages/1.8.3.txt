@@ -17,6 +17,9 @@ Version 1.8.3
 * Fixed range keyword syntax not being scoped in an interface declaration
   (Issue #127)
 * Fixed scope error for `assert` for sequential statements.  (Issue #124)
+* Fixed issue with subprogram copying.  My apologies to all who may have needed
+  that feature as the bug had stuck around for a long time.  I believe it's
+  fixed now though.  (Issue #90)
 
 As always, if bugs are discovered, or features desired, please visit
 https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
