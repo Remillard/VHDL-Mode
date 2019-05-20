@@ -1173,13 +1173,12 @@ class Subprogram():
         self.if_params = []
         self.if_generics = []
         self.if_return = ""
-        self.paren_count = [0, 0]
+        self.parens = Parentheses()
 
     def subprogram_start(self, line):
         """Attempts to identify the start of a subprogram specification."""
         # Resetting the paren count here in case we end up calling this
         # entire command multiple times.  Finding the end depends on it.
-        self.paren_count = [0, 0]
         head_pattern = r"((?P<purity>impure|pure)\s+)?(?P<type>procedure|function)\s+(?P<name>\w*)"
         s = re.search(head_pattern, line, re.I)
         if s:
@@ -1187,6 +1186,7 @@ class Subprogram():
                 self.purity = s.group('purity')
             self.type = s.group('type')
             self.name = s.group('name')
+            self.parens.reset()
             return s.start()
         else:
             return None
@@ -1206,15 +1206,14 @@ class Subprogram():
         func_tail_pattern = r"return\s+(?P<rtype>.*?)\s*(;|is)"
 
         # Find our parenthesis state.
-        parens = Parentheses()
-        parens.scan(line)
+        self.parens.scan(line)
 
         # If we are unbalanced, then there's nothing to do and return.  Otherwise
         # use the last paren location to trim the line and perform the search.
-        if parens.balanced:
-            if parens.close_pos:
-                new_line = line[parens.close_pos[-1]:]
-                offset = parens.close_pos[-1]
+        if self.parens.balanced:
+            if self.parens.close_pos:
+                new_line = line[self.parens.close_pos[-1]:]
+                offset = self.parens.close_pos[-1]
             else:
                 new_line = line
                 offset = 0
