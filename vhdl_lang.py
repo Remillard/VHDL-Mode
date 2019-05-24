@@ -441,7 +441,7 @@ class CodeBlock():
                     debug('{}: Ignore Rules: {}'.format(idx, rule['ignore_rules']))
                     if rule['ignore_rules'] is not None:
                         for ignore_rule in rule['ignore_rules']:
-                            if closing_stack is not None and ignore_rule == closing_stack[0][0]:
+                            if len(closing_stack) > 0 and ignore_rule == closing_stack[0][0]:
                                 skip_match = True
 
                     if not skip_match:

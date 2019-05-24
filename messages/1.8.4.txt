@@ -1,0 +1,11 @@
+Version 1.8.4
+
+* Fixed an urgent bug reported by dkalex on the Sublime Text forums where
+  paste as testbench would fail if the entity had generics inside.  (Issue #130)
+  I'd used a deque object "is not None" to check for objects and it turns out
+  deque objects are never None, even if empty.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
