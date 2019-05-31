@@ -96,7 +96,7 @@ class vhdlModePasteAsDeclarationCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
 
     def is_visible(self):
-        return self.view.match_selector(0, "source.vhdl")
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
     def run(self, edit):
         """Fundamental ST Command method."""
@@ -119,7 +119,7 @@ class vhdlModePasteAsBodyCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
 
     def is_visible(self):
-        return self.view.match_selector(0, "source.vhdl")
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
     def run(self, edit):
         """Fundamental ST Command method."""
@@ -142,7 +142,7 @@ class vhdlModePasteAsCallCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
 
     def is_visible(self):
-        return self.view.match_selector(0, "source.vhdl")
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
     def run(self, edit):
         """Fundamental ST Command method."""
@@ -170,7 +170,7 @@ class vhdlModeFlattenParamsCommand(sublime_plugin.TextCommand):
     into their own lines, one name per line.
     '''
     def is_visible(self):
-        return self.view.match_selector(0, "source.vhdl")
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
     def run(self, edit):
         global _subprogram
