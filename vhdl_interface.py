@@ -202,7 +202,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
     has slightly different parameters.
     """
     def is_visible(self):
-        return self.view.match_selector(0, "source.vhdl")
+        return bool(_interface.name)
 
     def run(self):
         """Sublime TextCommand run method"""
