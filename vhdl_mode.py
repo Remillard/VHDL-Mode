@@ -21,8 +21,11 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
     """
     Prints the version to the console.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.8.4")
+        print("vhdl-mode: VHDL Mode Version 1.8.5")
 
 
 #-------------------------------------------------------------------------------
@@ -31,6 +34,9 @@ class vhdlModeInsertHeaderCommand(sublime_plugin.TextCommand):
     This command is used to insert a predefined header into the
     current text file.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         # Assigning this to a string to keep command shorter later.
         template = "Packages/VHDL Mode/Snippets/vhdl-header.sublime-snippet"
@@ -128,6 +134,9 @@ class vhdlModeToggleCommentRegionCommand(sublime_plugin.TextCommand):
     the command attempts to remove the comment from that and
     each subsequent line.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         # This could theoretically run on multiple regions but
         # it's not a likely application and I'm just going to
@@ -187,6 +196,9 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
     code program.  Sets the region to the entire buffer, obtains
     the lines, then processes them and writes them back.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         # Finding the current view and location of the point.
         x, y = self.view.viewport_position()
@@ -327,6 +339,9 @@ class vhdlModeInsertCommentLine(sublime_plugin.TextCommand):
     starting where the point is.  This is intended to run after
     the user types '---' (see keybindings)
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         """Standard TextCommand Run method"""
         # Get the current point.
@@ -358,6 +373,9 @@ class vhdlModeInsertCommentBox(sublime_plugin.TextCommand):
     This is intended to run after the user types '----' (see
     keybindings)
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         """Standard TextCommand Run method"""
         # Get the current point.

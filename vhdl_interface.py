@@ -56,6 +56,9 @@ class vhdlModeCopyPortsCommand(sublime_plugin.TextCommand):
                 print('vhdl-mode: Interface end found.')
                 return self.view.text_point(self.view.rowcol(next_point)[0], check)
 
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         global _interface
 
@@ -96,6 +99,9 @@ class vhdlModePasteAsSignalCommand(sublime_plugin.TextCommand):
     Once we've copied an interface, we can paste the data back as
     signals (ports only, not generics.)
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         global _interface
         # Get the current point location.
@@ -122,6 +128,9 @@ class vhdlModePasteAsComponentCommand(sublime_plugin.TextCommand):
     """
     Pasting the current written interface as a component
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         # Get the current point location.
         region = self.view.sel()[0]
@@ -142,6 +151,9 @@ class vhdlModePasteAsEntityCommand(sublime_plugin.TextCommand):
     """
     Pasting the currently copied interface as an entity.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         # Get the current point location.
         region = self.view.sel()[0]
@@ -164,6 +176,9 @@ class vhdlModePasteAsInstanceCommand(sublime_plugin.TextCommand):
     an instantiation.  Currently does not keep track of other
     instances of the same interface in the source.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         # Get the current point location.
         region = self.view.sel()[0]
@@ -186,6 +201,9 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
     TextCommand, but rather a WindowCommand so the run method
     has slightly different parameters.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self):
         """Sublime TextCommand run method"""
         # Assigning this to a string to keep command shorter later.
@@ -220,6 +238,9 @@ class vhdlModeFlattenPortsCommand(sublime_plugin.TextCommand):
     that has multiple items on the same line, it'll separate them
     onto their own lines.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         global _interface
         _interface.flatten()
@@ -232,6 +253,9 @@ class vhdlModeReversePortsCommand(sublime_plugin.TextCommand):
     for the interface and flips in and out/buffer modes on
     the ports.
     """
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         global _interface
         _interface.reverse()
