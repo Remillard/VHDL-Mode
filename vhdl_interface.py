@@ -99,6 +99,9 @@ class vhdlModePasteAsSignalCommand(sublime_plugin.TextCommand):
     Once we've copied an interface, we can paste the data back as
     signals (ports only, not generics.)
     """
+    def description(self):
+        return "Paste {} as Signals".format(_interface.name)
+
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_interface.name)
 
@@ -128,6 +131,9 @@ class vhdlModePasteAsComponentCommand(sublime_plugin.TextCommand):
     """
     Pasting the current written interface as a component
     """
+    def description(self):
+        return "Paste {} as Component".format(_interface.name)
+
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_interface.name)
 
@@ -151,6 +157,9 @@ class vhdlModePasteAsEntityCommand(sublime_plugin.TextCommand):
     """
     Pasting the currently copied interface as an entity.
     """
+    def description(self):
+        return "Paste {} as Entity".format(_interface.name)
+
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_interface.name)
 
@@ -176,6 +185,9 @@ class vhdlModePasteAsInstanceCommand(sublime_plugin.TextCommand):
     an instantiation.  Currently does not keep track of other
     instances of the same interface in the source.
     """
+    def description(self):
+        return "Paste {} as Instance".format(_interface.name)
+
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_interface.name)
 
@@ -201,6 +213,9 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
     TextCommand, but rather a WindowCommand so the run method
     has slightly different parameters.
     """
+    def description(self):
+        return "Paste {} as Testbench".format(_interface.name)
+
     def is_visible(self):
         # I can't do the usual source file check because this is a
         # WindowCommand and not a TextCommand which has an associated view.

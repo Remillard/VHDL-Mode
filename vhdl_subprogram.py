@@ -94,6 +94,8 @@ class vhdlModeCopySubprogram(sublime_plugin.TextCommand):
 #----------------------------------------------------------------
 class vhdlModePasteAsDeclarationCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
+    def description(self):
+        return "Paste {} as Declaration".format(_subprogram.name)
 
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
@@ -118,6 +120,9 @@ class vhdlModePasteAsDeclarationCommand(sublime_plugin.TextCommand):
 class vhdlModePasteAsBodyCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
 
+    def description(self):
+        return "Paste {} as Body".format(_subprogram.name)
+
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
@@ -140,6 +145,9 @@ class vhdlModePasteAsBodyCommand(sublime_plugin.TextCommand):
 #----------------------------------------------------------------
 class vhdlModePasteAsCallCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
+
+    def description(self):
+        return "Paste {} as Call".format(_subprogram.name)
 
     def is_visible(self):
         return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
