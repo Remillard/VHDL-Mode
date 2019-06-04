@@ -22,9 +22,11 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 	* May be pasted as entity, component, signals, direct entity instantiations, or testbench.
 	* Ports may be flattened or reversed.
 	* Instantiation insertion is 'smart' in that it will not duplicate an already existing instantiation name.
+	* Accessible via keybind or right click context menu.
 * Subprogram coping from a declaration or specification.
 	* May be pasted as a declaration, body, or call.
 	* Parameters may be flattened.
+	* Accessible via keybind or right click context menu.
 * Stutter typing shortcuts for the assignment operators and commenting structures.
 * Templates in the form of snippets for commonly used structures.
 	* Header template is further customizable through settings and will update a time field on save.
@@ -43,8 +45,7 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 
 ## Future Design Goals
 
-* Complete VHDL-2008 compliance.
-* Leverage good scoping for better behaviors in all features.
+* Improved scoping and any feature that seems reasonable.
 
 # Usage
 
@@ -169,7 +170,6 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 ## Known Issues and Design Commentary
 
 * This is a work in progress however I've been eating my own dog food and it works fairly satisfactorily for me currently.  I've thrown several code styles and files from other authors at it and tried to iron out the stranger bugs.  However there are a lot of coding styles and I do not promise that the beautifier will work with every one of them.  If there is an issue with a particular structure, I'm happy to get a sample and see if I can make it work.
-* VHDL-2008 support is patchy currently.  All the reserved words are handled, however some lexical constructs will either beautify oddly or be scoped oddly.  Again, I'm happy to get some code samples to see it used in real life (largely not used at my place of work) and see if I can handle it.
 * The TextMate VHDL syntax supported non-matching identifiers in several locations.  In order to get greater scope granularity, I had to sacrifice that feature in a few constructs because match captures do not persist through syntax scope set commands.  More work can be done in identifying illegal identifiers in various locations however.
 * The syntax file was written with reference to the language definition in _Designer's Guide to VHDL, 3rd Edition_ by Peter Ashenden.  The language definition reference is in Appendix B, and library reference taken from Appendix A.  Knowing how the language is structured may help understanding the syntax file and why it's done the way it is.
 * Designed to work with Sublime Text 3.  It is unlikely to work with Sublime Text 2 (that is to say, I would be delighted if it did, however I have never used ST2 nor tested against it so your mileage may vary.)
