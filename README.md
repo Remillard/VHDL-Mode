@@ -82,7 +82,7 @@ For the long-time Emacs vhdl-mode user, there is now a preference for activating
 
 **Port Interface Copy/Paste Functions**
 
-It may help to remember `p` for port, then `w` for write (to buffer).  The other mnemonics are fairly straightforward.
+It may help to remember `p` for port, then `w` for write (to buffer).  The other mnemonics are fairly straightforward.  These commands are also available with the right-click context menu under the `VHDL Mode` heading.
 
 * Copy Ports : `M-k p w`
 * Paste as Signals : `M-k p s`
@@ -99,7 +99,7 @@ The following animated GIF demonstrates a portion of the port copying feature.
 
 **Subprogram Interface Copy/Paste Functions**
 
-It may help to remember `s` for subprogram, then `w` for write (to buffer).  Much like the port version of this feature, the mnemonics are straightforward.
+It may help to remember `s` for subprogram, then `w` for write (to buffer).  Much like the port version of this feature, the mnemonics are straightforward.  These commands are also available with the right-click context menu under the `VHDL Mode` heading.
 
 * Copy Subprogram : `M-k s w`
 * Paste as Declaration : `M-k s d`
@@ -109,14 +109,14 @@ It may help to remember `s` for subprogram, then `w` for write (to buffer).  Muc
 
 **Commenting**
 
-It may help to remember 'c' for code, then 'c' for comment, 'b' for beautify, etc.
+It may help to remember 'c' for code, then 'c' for comment, 'b' for beautify, etc.  These commands are also available with the right-click context menu under the `VHDL Mode` heading.
 
 * Toggle Comment Region : `M-k c c`
 * Beautify Entire Buffer : `M-k c b`
 
 **Template**
 
-Largely templating is handled by the snippet system, however the header is a special feature as it inserts various fields automatically.  Remember 't' for template and 'h' for header.
+Largely templating is handled by the snippet system, however the header is a special feature as it inserts various fields automatically.  Remember 't' for template and 'h' for header.  These commands are also available with the right-click context menu under the `VHDL Mode` heading.
 
 * Insert Header : `M-k t h`
 
