@@ -60,6 +60,9 @@ class vhdlModeCopySubprogram(sublime_plugin.TextCommand):
                 return self.view.text_point(self.view.rowcol(next_point)[0], check)
 
 
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl")
+
     def run(self, edit):
         """Fundamental ST Command method."""
         global _subprogram
@@ -91,6 +94,11 @@ class vhdlModeCopySubprogram(sublime_plugin.TextCommand):
 #----------------------------------------------------------------
 class vhdlModePasteAsDeclarationCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
+    def description(self):
+        return "Paste {} as Declaration".format(_subprogram.name)
+
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
     def run(self, edit):
         """Fundamental ST Command method."""
@@ -112,6 +120,12 @@ class vhdlModePasteAsDeclarationCommand(sublime_plugin.TextCommand):
 class vhdlModePasteAsBodyCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
 
+    def description(self):
+        return "Paste {} as Body".format(_subprogram.name)
+
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
+
     def run(self, edit):
         """Fundamental ST Command method."""
         region = self.view.sel()[0]
@@ -131,6 +145,12 @@ class vhdlModePasteAsBodyCommand(sublime_plugin.TextCommand):
 #----------------------------------------------------------------
 class vhdlModePasteAsCallCommand(sublime_plugin.TextCommand):
     """Pastes the currently copied subprogram as a declaration."""
+
+    def description(self):
+        return "Paste {} as Call".format(_subprogram.name)
+
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
 
     def run(self, edit):
         """Fundamental ST Command method."""
@@ -157,6 +177,9 @@ class vhdlModeFlattenParamsCommand(sublime_plugin.TextCommand):
     has multiple names on the same line, it'll separate these
     into their own lines, one name per line.
     '''
+    def is_visible(self):
+        return self.view.match_selector(0, "source.vhdl") and bool(_subprogram.name)
+
     def run(self, edit):
         global _subprogram
         _subprogram.flatten()

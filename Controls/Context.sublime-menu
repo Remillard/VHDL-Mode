@@ -1,0 +1,31 @@
+[
+	    { "caption": "-", "id": "end" },
+	    {
+	    	"caption": "VHDL Mode",
+	    	"children":
+	    	[
+	    		{ "caption": "Beautify Buffer", "command": "vhdl_mode_beautify_buffer"},
+	    		{ "caption": "-", "id": "vhdl_mode_inserts"},
+	    		{ "caption": "Insert Comment Line", "command": "vhdl_mode_insert_comment_line"},
+	    		{ "caption": "Insert Comment Box", "command": "vhdl_mode_insert_comment_box"},
+	    		{ "caption": "Insert Header", "command": "vhdl_mode_insert_header"},
+	    		{ "caption": "-", "id": "vhdl_mode_interfaces"},
+	    		{ "caption": "Copy Interface Ports", "command": "vhdl_mode_copy_ports"},
+	    		{ "command": "vhdl_mode_paste_as_signal"},
+	    		{ "command": "vhdl_mode_paste_as_entity"},
+	    		{ "command": "vhdl_mode_paste_as_component"},
+	    		{ "command": "vhdl_mode_paste_as_instance"},
+	    		{ "command": "vhdl_mode_paste_as_testbench"},
+	    		{ "caption": "Flatten Ports", "command": "vhdl_mode_flatten_ports"},
+	    		{ "caption": "Reverse Ports", "command": "vhdl_mode_reverse_ports"},
+	    		{ "caption": "-", "id": "vhdl_mode_subprograms"},
+	    		{ "caption": "Copy Subprogram", "command": "vhdl_mode_copy_subprogram"},
+	    		{ "command": "vhdl_mode_paste_as_declaration"},
+	    		{ "command": "vhdl_mode_paste_as_body"},
+	    		{ "command": "vhdl_mode_paste_as_call"},
+	    		{ "caption": "Flatten Parameters", "command": "vhdl_mode_flatten_params"},
+	    		{ "caption": "-", "id": "vhdl_mode_end"},
+			    { "caption": "Version", "command": "vhdl_mode_version"}
+	    	]
+	    }
+]

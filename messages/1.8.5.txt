@@ -1,0 +1,13 @@
+Version 1.8.5
+
+* Probably should have done this a long time ago, however I've added a number
+  of commands to the right-click context menu under the "VHDL Mode" subheading.
+  Unfortunately the subheading will remain visible no matter what, however
+  the commands will not show if you aren't editing a VHDL source file.
+* The "paste" commands will show the name of the object last copied in the
+  menu.  If there has been no copy performed, the menu items will not show.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
