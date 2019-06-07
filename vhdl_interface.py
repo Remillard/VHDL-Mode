@@ -221,7 +221,7 @@ class vhdlModePasteAsTestbenchCommand(sublime_plugin.WindowCommand):
         # WindowCommand and not a TextCommand which has an associated view.
         # At the moment, simply checking to see if there is a valid interface
         # that's been copied.
-        return bool(_interface.name)
+        return self.window.active_view().match_selector(0, 'source.vhdl') and bool(_interface.name)
 
     def run(self):
         """Sublime TextCommand run method"""
