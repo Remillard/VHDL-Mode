@@ -1604,8 +1604,8 @@ contexts:
   block-statement-begin:
     - match: |-
         (?xi)
-          (({{identifier}})\s*(:)\s*)?
-          ((block)\s*)
+          (({{identifier}})\s*(:)\s*)
+          ((block)\b\s*)
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl

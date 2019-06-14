@@ -1,0 +1,18 @@
+Version 1.8.6
+
+* Per request, added the `block` construct to both syntax and beautification.
+  Apologies for not catching this sooner as I do try for complete coverage of
+  the language.  One caveat, while the LRM defines the keyword `is` as optional,
+  I cannot support that variation in syntax.  I need to separate valid
+  constructs in the guard expression region and the declarative region and the
+  keyword `is` is my separator between the two.
+* Also tweaked the snippet for `block` to make it of better use by putting
+  the entire guard expression portion into a tab (so that the user may
+  simply hit delete if no guard expression is desired -- probably most of the
+  time) and adding a space for declarative region.
+
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.

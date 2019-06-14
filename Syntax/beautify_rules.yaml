@@ -17,6 +17,7 @@ key_list:
   - type
   - constant
   - procedure
+  - block
   - function
   - process
   - if
@@ -89,6 +90,14 @@ open_rules:
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: \bbegin\b
+    solo_flag: false
+    ignore_rules: null
+  block:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )\bblock\b
     solo_flag: false
     ignore_rules: null
   case:
@@ -201,7 +210,8 @@ open_rules:
     indent_rule:  [1, 1]
     pattern: \bgeneric map\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block
   if:
     close_offset: 0
     close_rule:
@@ -252,7 +262,8 @@ open_rules:
     indent_rule:  [1, 1]
     pattern: \bport map\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block
   procedure:
     close_offset: 1
     close_rule:

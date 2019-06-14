@@ -1,8 +1,9 @@
 <snippet>
 	<content><![CDATA[
-${1:<BLOCK_LABEL>} : block (${2:<guard_expression>}) is
-begin
+${1:<LABEL>} : block ${2:(<guard_expression>) }is
 	$0
+begin
+
 end block $1;
 ]]></content>
 	<tabTrigger>block</tabTrigger>
