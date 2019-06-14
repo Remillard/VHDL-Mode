@@ -1121,6 +1121,7 @@ contexts:
     - include: assertion-statement
     - include: process-begin
     - include: generate-statements
+    - include: block-statement-begin
     # This one should also be close to last since it tends to match to
     # lines with less than or equal to symbols in expressions.
     - include: conc-signal-assignment
@@ -1251,7 +1252,7 @@ contexts:
           ((postponed)\s*)?
           (process)
       captures:
-        2: entity.name.function.process.vhdl
+        2: entity.name.label.process.vhdl
         3: punctuation.separator.vhdl
         5: keyword.other.vhdl
         6: keyword.other.vhdl
@@ -1285,7 +1286,7 @@ contexts:
         2: keyword.declaration.vhdl
         4: keyword.other.vhdl
         6: keyword.other.vhdl
-        8: entity.name.function.process.vhdl
+        8: entity.name.label.process.vhdl
         9: punctuation.terminator.vhdl
       pop: true
     - include: sequential-statements
@@ -1597,6 +1598,71 @@ contexts:
         - match: (?xi)\b(report|severity)\b
           captures:
             1: keyword.other.vhdl
+
+  # Well this little concurrent statement could be the most complicated
+  # one that exists.  It has pretty much the kitchen sink of capability.
+  block-statement-begin:
+    - match: |-
+        (?xi)
+          (({{identifier}})\s*(:)\s*)
+          ((block)\b\s*)
+      captures:
+        2: entity.name.label.vhdl
+        3: punctuation.separator.vhdl
+        5: keyword.other.vhdl
+      push:
+        - match: (?i)\b(is)\b
+          captures:
+            1: keyword.declaration.vhdl
+          set: block-statement-declarations
+        - include: basic-paren-group
+        - include: stray-parens
+        - include: expression-operators
+
+  block-statement-declarations:
+    - meta_scope: meta.block.block.declarations.vhdl
+    - match: (?i)\b(begin)\b
+      captures:
+        1: keyword.declaration.vhdl
+      set: block-statement-body
+    - include: block-mappings
+    - include: generic-interface
+    - include: port-interface
+    - include: block-declarative-items
+
+  block-statement-body:
+    - meta_scope: meta.block.block.body.vhdl
+    - match: (?i)(end)\s+(block)(\s+({{identifier}}))\s*(;)
+      captures:
+        1: keyword.declaration.vhdl
+        2: keyword.other.vhdl
+        4: entity.name.label.vhdl
+        5: punctuation.terminator.vhdl
+      pop: true
+    - include: concurrent-statements
+
+  # This is a special version of "mappings" because inconsistency is
+  # key.  These map constructs require a semicolon terminator unlike
+  # instantiation generic and port mappings.
+  block-mappings:
+    - match: '(?i)(generic|port)\s+(map)'
+      captures:
+        1: keyword.other.vhdl
+        2: keyword.other.vhdl
+      push:
+        - meta_scope: meta.block.association-list.vhdl
+        - match: '(\()'
+          captures:
+            1: punctuation.group.parens.begin.vhdl
+        - match: '(\))\s*(;)'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+            2: punctuation.terminator.vhdl
+          pop: true
+        - match: '(,)'
+          captures:
+            1: punctuation.separator.vhdl
+        - include: associations
 
   ###########################################################################
   # Sequential statements

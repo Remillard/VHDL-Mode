@@ -4,6 +4,7 @@
 # that entries from the open rules section will be evaluated.  This
 # works better than trying to use OrderedDict in some fashion.
 key_list:
+  - block-comment
   - entity
   - component
   - package-instance
@@ -17,6 +18,7 @@ key_list:
   - type
   - constant
   - procedure
+  - block
   - function
   - process
   - if
@@ -55,6 +57,14 @@ key_list:
 #                  closing current line, mainly used for the 'map'
 #                  elements.
 open_rules:
+  block-comment:
+    close_offset: 0
+    close_rule:
+    - [close-comment, null]
+    indent_rule:  [0, 0]
+    pattern: \/\*
+    solo_flag: false
+    ignore_rules: null
   architecture:
     close_offset: 0
     close_rule:
@@ -62,7 +72,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^architecture\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   assertion:
     close_offset: 0
     close_rule:
@@ -70,7 +81,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^assert\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   assignment:
     close_offset: 0
     close_rule:
@@ -79,6 +91,7 @@ open_rules:
     pattern: ' <=| :='
     solo_flag: true
     ignore_rules:
+    - block-comment
     - if
     - port
     - generic
@@ -90,7 +103,17 @@ open_rules:
     indent_rule:  [-1, 0]
     pattern: \bbegin\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
+  block:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: (?<!end )\bblock\b
+    solo_flag: false
+    ignore_rules:
+    - block-comment
   case:
     close_offset: 0
     close_rule:
@@ -98,14 +121,16 @@ open_rules:
     indent_rule:  [0, 2]
     pattern: (?<!end )\bcase\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   casewhen:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: ^when\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   component:
     close_offset: 0
     close_rule:
@@ -113,7 +138,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^\s*(?<!end )\bcomponent\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   config:
     close_offset: 0
     close_rule:
@@ -121,7 +147,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bconfiguration\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   constant:
     close_offset: 1
     close_rule:
@@ -130,6 +157,7 @@ open_rules:
     pattern: ^\bconstant\b
     solo_flag: true
     ignore_rules:
+    - block-comment
     - procedure
     - function
   default:
@@ -138,21 +166,24 @@ open_rules:
     indent_rule:  [0, 0]
     pattern: .*
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   elseclause:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: ^else\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   elsifclause:
     close_offset: 0
     close_rule: null
     indent_rule:  [-1, 0]
     pattern: ^elsif\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   entity:
     close_offset: 0
     close_rule:
@@ -160,7 +191,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^entity\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   for:
     close_offset: 0
     close_rule:
@@ -168,7 +200,8 @@ open_rules:
     indent_rule: [0, 1]
     pattern: ^\s*\bfor\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   function:
     close_offset: 1
     close_rule:
@@ -177,7 +210,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^(?<!end )(?:(pure|impure) )?function\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   generate:
     close_offset: 0
     close_rule:
@@ -185,7 +219,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bgenerate\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   generic:
     close_offset: 0
     close_rule:
@@ -193,7 +228,8 @@ open_rules:
     indent_rule:  [0, 0]
     pattern: \bgeneric\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   genmap:
     close_offset: 1
     close_rule:
@@ -201,15 +237,19 @@ open_rules:
     indent_rule:  [1, 1]
     pattern: \bgeneric map\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
+    - block
   if:
     close_offset: 0
     close_rule:
     - [then, then]
+    - [generate, generate]
     indent_rule:  [0, 1]
     pattern: (?<!end )\bif\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   loop:
     close_offset: 0
     close_rule:
@@ -217,7 +257,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bloop\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   # VHDL-2008 Construct.  Ends on a semicolon and can contain a
   # generic map.  Generic map takes care of itself, so package instance
   # doesn't need to indent.  We'll just look for a semicolon.
@@ -228,7 +269,8 @@ open_rules:
       - [close_semi, null]
     solo_flag: false
     close_offset: 0
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   package:
     close_offset: 0
     close_rule:
@@ -236,7 +278,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )\bpackage\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   port:
     close_offset: 0
     close_rule:
@@ -244,7 +287,8 @@ open_rules:
     indent_rule:  [0, 0]
     pattern: \bport\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   portmap:
     close_offset: 1
     close_rule:
@@ -252,7 +296,9 @@ open_rules:
     indent_rule:  [1, 1]
     pattern: \bport map\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
+    - block
   procedure:
     close_offset: 1
     close_rule:
@@ -261,7 +307,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^(?<!end )\bprocedure\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   process:
     close_offset: 0
     close_rule:
@@ -269,7 +316,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: (?<!end )(?<!end postponed )\bprocess\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   # This is for a weird code style that uses the 'then' as the
   # starting element of its own line.  Thanks for that, Leo, you
   # butthead.
@@ -279,7 +327,8 @@ open_rules:
     indent_rule:  [-1, 0]
     pattern: ^then\b
     solo_flag: false
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   type:
     close_offset: 1
     close_rule:
@@ -289,7 +338,8 @@ open_rules:
     indent_rule:  [0, 1]
     pattern: ^\btype\b
     solo_flag: true
-    ignore_rules: null
+    ignore_rules:
+    - block-comment
   # Keys past here are only dummies for continuing
   # a statement whose lexical possibilities branch.
   # They will not be scanned as a primary opener
@@ -355,4 +405,6 @@ close_rules:
   semicolon: ;
   units: \bunits\b
   then: \bthen\b
+  generate: \bgenerate\b
+  close-comment: \*\/
 
