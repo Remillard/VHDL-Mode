@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
--- Last update : Wed Jan  9 14:35:42 2019
+-- Last update : Fri Jun 14 13:31:50 2019
 -- Project     : VHDL Mode for Sublime Text
 -------------------------------------------------------------------------------
 -- Description: This VHDL file is intended as a test of scope and beautifier
@@ -473,9 +473,9 @@ begin
 		-- The fix for the alignment of => breaks alignment here, but it's
 		-- probably okay.  Compact is already readable.
 		case my_test is
-			when a => a <= b;
-			when c => c <= d;
-			when others => e <= f;
+			 when a      => a      <= b;
+			 when c      => c      <= d;
+			 when others => e <= f;
 		end case;
 
 		-- Case test for alignment of => in a case statement.
@@ -934,7 +934,7 @@ package body my_package is
 
 	-- Padding function
 	function make_miso_word (d_in : std_logic_vector)
-	return std_logic_vector is
+		return std_logic_vector is
 		variable d_out : std_logic_vector(C_SPI_DATA_LEN-1 downto 0);
 	begin
 	end function make_miso_word;
