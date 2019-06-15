@@ -1,0 +1,25 @@
+Version 1.8.6
+
+* Per request, added the `block` construct to both syntax and beautification.
+  Apologies for not catching this sooner as I do try for complete coverage of
+  the language.  One caveat, while the LRM defines the keyword `is` as optional,
+  I cannot support that variation in syntax.  I need to separate valid
+  constructs in the guard expression region and the declarative region and the
+  keyword `is` is my separator between the two.  Issue #133.  Thanks to
+  @rolpks for finding this.
+* Also tweaked the snippet for `block` to make it of better use by putting
+  the entire guard expression portion into a tab (so that the user may
+  simply hit delete if no guard expression is desired -- probably most of the
+  time) and adding a space for declarative region.
+* Block commenting did not beautify well as my comment ignoring method is
+  centered around line comments.  Added some basic block comment support to
+  beautification but be aware it's pretty basic currently until I can come up
+  with a different model for handling it (or rather for everything else to
+  ignore this text.) Issue #134
+* Fixed a problem I noticed with if-generate beautification.  It wouldn't
+  de-indent correctly and now it does.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
