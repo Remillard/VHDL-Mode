@@ -10,7 +10,8 @@ class CodeRule():
     for VHDL keywords.
 
     Attributes:
-    - name: (string) Used for debug printing identifying the rule
+    - name_id: (string) Used for identifying the rule.  This is utilized by
+        the ignore function as well as debug information.  Must be unique
     - start_pattern: (string) Regular expression that defines the keyword
     - current_indent: (integer) The number of indentation steps to apply to
         the current line.
@@ -20,6 +21,9 @@ class CodeRule():
         rules.  When non-zero, the number of indentation steps to apply
         to the closing structure when the closing structure is alone at the
         start of a line.
+    - ignore_list: (list of strings) List of strings for structures that cause
+        the rule to be ignored.  Will be the name field of other rule
+        instantiations.
 
     SCRATCH PAD IDEAS:
     I need:
@@ -27,7 +31,10 @@ class CodeRule():
       records and functions and such)
     * Must have the branched matches be able to do things to the
       current line (see then and isclauses) along with their own rules
-    * a way to define times to ignore rules
+      * Maybe if I'm careful about the order of creating instances, the
+        I can continue to create continuation instances as distinct rules?
+    * a way to define times to ignore rules -- Think my list idea is
+      about as good a way as any I've thought of.
 
     Generically a pattern really only knows what to do with itself on its own
     line and then the next indent is always plus 1.. well except all the times
@@ -36,11 +43,20 @@ class CodeRule():
     is there a way to encapsulate this idea into a smaller atomic structure?
     """
     def __init__(self):
-        self.name = ""
-        self.start_pattern = ""
+        self.name_id = ""
+        self.pattern = ""
         self.current_indent = 0
         self.next_indent = 0
         self.indent_end = 0
+        self.ignore_list = []
+
+    def found(self, line, closing_stack_top=""):
+        """ Returns True if pattern matches and no ignore rule override. """
+        if closing_stack_top is not None:
+            for name in self.ignore_list:
+                if name == closing_stack_top.name_id:
+                    return False
+        return bool(re.search(self.pattern, cl.line, re.I))
 
 
 
