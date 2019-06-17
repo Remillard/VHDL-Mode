@@ -33,6 +33,10 @@ class CodeRule():
       current line (see then and isclauses) along with their own rules
       * Maybe if I'm careful about the order of creating instances, the
         I can continue to create continuation instances as distinct rules?
+      * Maybe I could internally have a list of pattenrs and then have a list
+        of indicies of currently valid patterns...and then a way of setting and
+        resetting this?  I like that idea better since it makes each structure
+        monolithic, but makes the internal guts a little strange.
     * a way to define times to ignore rules -- Think my list idea is
       about as good a way as any I've thought of.
 
