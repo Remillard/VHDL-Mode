@@ -2081,7 +2081,7 @@ contexts:
     # Any of the printable characters in the standard character set can be
     # used.  Used the non-word character element to protect against
     # single quote used for attributes (e.g. a'range)
-    - match: '[^a-zA-Z0-9]('')'
+    - match: '('')(?=.'')'
       captures:
         1: punctuation.definition.string.begin.vhdl
       push:
