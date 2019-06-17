@@ -1,0 +1,17 @@
+Version 1.8.7
+
+* Fixed a long-time bug (Issue #104) finally.  This issue involved a subtle
+  issue with how single quote character literals were captured in the syntax
+  file.  I'd been using a "not a character" construct to distinguish a single
+  quoted character literal from a singleton single quote used for attributes
+  or typecasting.  However this would consume the "not a character" which
+  caused some problems with scoping the character consumed especially if it
+  was a parenthesis.  The actual solution was to use a look-forward and make
+  sure this was a character literal before capturing a character literal.
+  In any event, this bug has been around for awhile any my apologies to
+  @lenigoor, @Sv3n and anyone else impacted by it.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
