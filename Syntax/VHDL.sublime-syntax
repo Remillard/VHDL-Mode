@@ -1849,7 +1849,7 @@ contexts:
               (({{identifier}})\s*)?
               (;)
           captures:
-            2: keyword.other.block.end.vhdl
+            2: keyword.control.flow.end.vhdl
             4: keyword.control.flow.loop.vhdl
             6: entity.name.label.vhdl
             7: punctuation.terminator.vhdl
@@ -1881,7 +1881,7 @@ contexts:
                   (({{identifier}})\s*)?
                   (;)
               captures:
-                2: keyword.other.block.end.vhdl
+                2: keyword.control.flow.end.vhdl
                 4: keyword.control.flow.loop.vhdl
                 6: entity.name.label.vhdl
                 7: punctuation.terminator.vhdl
@@ -1913,7 +1913,7 @@ contexts:
                   (({{identifier}})\s*)?
                   (;)
               captures:
-                2: keyword.other.block.end.vhdl
+                2: keyword.control.flow.end.vhdl
                 4: keyword.control.flow.loop.vhdl
                 6: entity.name.label.vhdl
                 7: punctuation.terminator.vhdl
