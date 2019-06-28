@@ -1871,7 +1871,7 @@ contexts:
         - include: expression-operators
         - match: (?xi)\b(loop)\b
           captures:
-            1: keyword.other.vhdl
+            1: keyword.control.flow.loop.vhdl
           set:
             - meta_scope: meta.block.loop.body.vhdl
             - match: |-
