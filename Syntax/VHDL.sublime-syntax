@@ -796,7 +796,7 @@ contexts:
           scope: punctuation.terminator.vhdl
           pop: true
         - match: (?i)\b(is)\b
-          scope: keyword.other.block.is.vhdl
+          scope: keyword.other.is.vhdl
           set:
             - meta_scope: meta.statement.type.vhdl
             - match: (;)
@@ -1774,7 +1774,7 @@ contexts:
     - meta_scope: meta.block.if.body.vhdl
     - match: (?i)\b(end)\s+(if)\s*;
       captures:
-        1: keyword.other.block.end.vhdl
+        1: keyword.control.conditional.end.vhdl
         2: keyword.control.conditional.if.vhdl
         3: punctuation.terminator.vhdl
       pop: true
@@ -1811,7 +1811,7 @@ contexts:
             - meta_scope: meta.block.case.body.vhdl
             - match: (?i)(end)\s+(case)\s*({{identifier}}\s*)?(;)
               captures:
-                1: keyword.other.block.end.vhdl
+                1: keyword.control.flow.end.vhdl
                 2: keyword.control.flow.case.vhdl
                 3: entity.name.label.vhdl
                 4: punctuation.terminator.vhdl
