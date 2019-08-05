@@ -493,7 +493,7 @@ contexts:
   # TODO: Add interface mapping which is similar
   ###########################################################################
   # These are declarations of constants, signals, variables, etc as an *interface*
-  # which is a little different from the same as a regular declaraction.
+  # which is a little different from the same as a regular declaration.
   generic-interface:
     - match: (?i)(generic)
       captures:
@@ -602,6 +602,21 @@ contexts:
         4: punctuation.separator.vhdl
       push:
         - meta_scope: meta.statement.interface.file.vhdl
+        - include: basic-paren-group
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        # Also need to match on a lookahead for an unconsumed closing paren
+        - match: (?=\))
+          pop: true
+    # Type declaration
+    - match: (?i)((type)\s+)({{identifier}})
+      captures:
+        2: storage.type.type.vhdl
+        3: entity.name.type.vhdl
+      push:
+        - meta_scope: meta.statement.interface.type.vhdl
         - include: basic-paren-group
         - match: (;)
           captures:
