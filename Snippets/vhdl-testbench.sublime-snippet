@@ -24,10 +24,10 @@ end entity ${ENAME};
 
 architecture testbench of ${ENAME} is
 
-	-- Testbench DUT generics as constants
+	-- Testbench DUT generics
 ${CONSTANTS}
 
-	-- Testbench DUT ports as signals
+	-- Testbench DUT ports
 ${SIGNALS}
 
 	-- Other constants
