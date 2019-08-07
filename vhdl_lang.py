@@ -708,6 +708,7 @@ class Generic():
     and a default value (string).
     """
     def __init__(self, gen_str):
+        self.gentype = False
         self.name = ""
         self.type = ""
         self.success = False
@@ -719,21 +720,38 @@ class Generic():
         # on these that it's difficult to write a RE for it.  Also
         # there are few ways to have to rewrite it.  We will extract
         # a name, and then a type string (which may include defaults)
-        gen_pattern = r'\s?(?P<name>.*?)\s?(?::)\s?(?P<type>.*)'
-        gp = re.compile(gen_pattern, re.IGNORECASE)
-        s = re.search(gp, gen_str)
+        #
+        # VHDL 2008 defines the capability to declare a generic type.  To
+        # support this, I created the gentype attribute.  I'll use the name
+        # attribute to carry the type's name, however since this isn't a
+        # declaration WITH a type, that attribute will not be used.
+        gentype_pattern = r'\s*type\s+(?P<name>\w+)'
+        gps = re.search(gentype_pattern, gen_str, re.I)
+        if gps:
+            self.gentype = True
+            self.name = gps.group('name')
+            self.success = True
+            return True
+
+        constant_pattern = r'\s?(?P<name>.*?)\s?(?::)\s?(?P<type>.*)'
+        s = re.search(constant_pattern, gen_str, re.I)
         if s:
             self.name = s.group('name')
             # Sometimes the type has a trailing space.  Eliminating it.
             self.type = re.sub(r'\s*$', '', s.group('type'))
             self.success = True
+            return True
         else:
             print('vhdl-mode: Could not parse generic string.')
             self.success = False
+            return False
 
     def print_as_generic(self):
         """Returns a string with the generic interface as a generic."""
-        line = '{} : {}'.format(self.name, self.type)
+        if self.gentype:
+            line = 'type {}'.format(self.name)
+        else:
+            line = '{} : {}'.format(self.name, self.type)
         return line
 
     def print_as_genmap(self):
@@ -747,11 +765,18 @@ class Generic():
         # even though it should.  So this requires a little detective work
         # to know whether to include the whole line or add in the necessary
         # constant definition.
-        s = re.search(r':=', self.type, re.I)
-        if s:
-            line = 'constant {} : {}'.format(self.name, self.type)
+        #
+        # Technically using VHDL-2008 generic type isn't a constant, but for
+        # the moment, I'm going to include it here and just adjust the
+        # testbench template.
+        if self.gentype:
+            line = 'type {}'.format(self.name)
         else:
-            line = 'constant {} : {} := <value>'.format(self.name, self.type)
+            s = re.search(r':=', self.type, re.I)
+            if s:
+                line = 'constant {} : {}'.format(self.name, self.type)
+            else:
+                line = 'constant {} : {} := <value>'.format(self.name, self.type)
         return line
 
 

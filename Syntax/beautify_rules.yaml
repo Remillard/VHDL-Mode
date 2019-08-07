@@ -339,6 +339,7 @@ open_rules:
     pattern: ^\btype\b
     solo_flag: true
     ignore_rules:
+    - generic
     - block-comment
   # Keys past here are only dummies for continuing
   # a statement whose lexical possibilities branch.
