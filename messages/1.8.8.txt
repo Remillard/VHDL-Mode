@@ -1,0 +1,17 @@
+Version 1.8.8
+
+* Gently adjusted some scope names primarily surrounding words that often
+  define the beginning and ending of code blocks.  Some color schemes might
+  now show these better (and many won't if they don't utilize that scope.)
+  In other places some constructs were better specified (such as `loop`
+  becoming `keyword.control.flow.loop` instead of a more generic
+  `keyword.other`).
+* Added support for entity generic type.  It should scope, beautify, and
+  properly copy with instance copying and testbench creation.  Thanks to
+  @dkalex on the Sublime Forum for providing a really nice bug report with
+  sample code and screenshots and everything.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
