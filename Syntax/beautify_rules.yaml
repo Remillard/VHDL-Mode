@@ -21,6 +21,8 @@ key_list:
   - block
   - function
   - process
+  - case
+  - casewhen
   - if
   - solothen
   - elseclause
@@ -28,8 +30,6 @@ key_list:
   - loop
   - for
   - generate
-  - case
-  - casewhen
   - begin
   - assertion
   - assignment
@@ -117,7 +117,7 @@ open_rules:
   case:
     close_offset: 0
     close_rule:
-    - [endclause, null]
+    - [endcase, null]
     indent_rule:  [0, 2]
     pattern: (?<!end )\bcase\b
     solo_flag: false
@@ -389,7 +389,7 @@ open_rules:
   then:
     close_offset: 0
     close_rule:
-    - [endclause, null]
+    - [endif, null]
     indent_rule:  [0, 1]
     pattern: \bthen\b
     solo_flag: false
@@ -399,6 +399,8 @@ close_rules:
   close_paren: \)
   close_semi: \)\s*;
   endclause: '\bend\b\s?(\w+)?\s?(\w+)?\s?(\w+)?\s?'
+  endif: '\bend\s+(if|generate)\b'
+  endcase: '\bend\s+case\b'
   function_is: \breturn\s+\w+\s+is
   function_semi: \breturn\s+\w+s*;
   isclause: \bis\b
