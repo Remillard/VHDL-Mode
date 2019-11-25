@@ -2269,28 +2269,38 @@ contexts:
           real|time|delay_length|string|boolean_vector|bit_vector|
           integer_vector|real_vector|time_vector|file_open_kind|
           file_open_status
-        )\b
-      scope: support.type.std.vhdl
+        )\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
     - match: |-
         (?xi)\b(
           line|text|side
-        )\b
-      scope: support.type.textio.vhdl
-    - match: (?i)\b(complex|positive_real|principal_value|complex_polar)\b
-      scope: support.type.math-complex.vhdl
+        )\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
+    - match: (?i)\b(complex|positive_real|principal_value|complex_polar)\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
     - match: |-
         (?xi)\b(
           std_ulogic|std_ulogic_vector|std_logic|std_logic_vector|
           X01|X01Z|UX01|UX01Z
-        )\b
-      scope: support.type.std-logic-1164.vhdl
+        )\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
     # Overlaps numeric_bit but numeric_std is more common.
     - match: |-
         (?xi)\b(
           unresolved_unsigned|unresolved_signed|u_unsigned|u_signed|
           unsigned|signed
-        )\b
-      scope: support.type.numeric-std.vhdl
+        )\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
 
   # Some of these are functions, and some are procedures.  They differ in how
   # they close.  Note for color schemes, the comment term is 'support.function'

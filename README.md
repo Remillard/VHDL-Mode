@@ -6,7 +6,7 @@ This package attempts to recreate the functionality found in the well-loved lang
 
 This package may stand alone, however it was created to co-exist peacefully along with the Emacs Pro Essential package.  In that same vein, the keyboard shortcuts were designed around the vhdl-mode shortcuts in Emacs.  Additionally, there is now a Preferences setting that activates the Emacs vhdl-mode keybinds if desired.
 
-Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax definition did not conform well to current scoping best practices (noticable with color schemes) and had some issues with certain syntactical structures.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.  VHDL-2008 is a work in progress.
+Initially, the package relied upon the TextMate syntax file by Brian Padalino (after conversion to the ST3 YAML format).  However after working with this syntax definition, it became apparent that this syntax definition did not conform well to current scoping best practices (noticable with color schemes) and had some issues with certain syntactical structures.  An effort was undertaken to rewrite the syntax file from the language reference and incorporate meaningful and fine grained lexical scopes.
 
 If any bugs are found or feature requests are desired, please visit either:
 
@@ -17,7 +17,7 @@ I will state up front that I cannot duplicate Emacs vhdl-mode perfectly (e.g. se
 
 ## Feature Set
 
-* Syntax file supporting highly granular scoping of lexical structures.  VHDL-2008 compliance in progress.
+* Syntax file supporting highly granular scoping of lexical structures.  VHDL-2008 is supported pretty well.  VHDL-2019 is not yet supported.
 * Port copying from entity or component declarations.
 	* May be pasted as entity, component, signals, direct entity instantiations, or testbench.
 	* Ports may be flattened or reversed.
