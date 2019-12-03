@@ -281,7 +281,7 @@ class CodeBlock():
         for cl in self.code_lines:
             debug('{}'.format(cl.line))
 
-    def align_symbol(self, expr, side='pre', scope_data=None):
+    def align_symbol(self, expr, side='pre', scope_data=None, casewhen=False):
         """
         This is a in-class rework of the original align block on regular
         expression function.  The same parameters exist except it doesn't need
@@ -302,14 +302,20 @@ class CodeBlock():
         There exist some lines we don't even want to monkey with because the
         symbols tend to conflict (conditional signals in if/thens, case choice
         lines, etc.)
+
+        Note, the casewhen option is because the reuse of the assignment
+        operator means the usual pattern of aligning symbols left to right
+        doesn't work very well.  So When casewhen is False, it'll ignore lines
+        that we believe are case when clauses.  Then casewhen is True, it'll
+        ignore everything that ISN'T a case when clause.
         """
         ignored_expr = [
             r':\s+process\b',     # don't remember why I ignore this one
             r'\bif\b',            # ignore if statement conditional symbols
             r'\bthen\b',          # ignore if statement conditional symbols
-            r'\belsif\b',         # ignore if statement conditional symbols
-            r'\bwhen\b(?=.*?=>\s*$)'  # ignore case choice
+            r'\belsif\b'         # ignore if statement conditional symbols
         ]
+        casewhen_expr = r'^\s*when\b(?=.*?=>)'
 
         # Initializing variables
         prior_scope = ""
@@ -330,6 +336,9 @@ class CodeBlock():
 
             # Checking for lines we want to ignore
             ignored = False
+            casewhen_search = re.search(casewhen_expr, cl.line, re.I)
+            if (casewhen_search and not casewhen) or (not casewhen_search and casewhen) :
+                ignored = True
             for pattern in ignored_expr:
                 ignore_search = re.search(pattern, cl.line, re.I)
                 if ignore_search:

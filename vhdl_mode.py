@@ -25,7 +25,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
         return self.view.match_selector(0, "source.vhdl")
 
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.8.9")
+        print("vhdl-mode: VHDL Mode Version 1.8.10")
 
 
 #-------------------------------------------------------------------------------
@@ -237,7 +237,7 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
         print('vhdl-mode: Pre-indent symbol alignment.')
         cb.align_symbol(r':(?!=)', 'pre', scope_list)
         cb.align_symbol(r':(?!=)\s?(?:in\b|out\b|inout\b|buffer\b)?\s*', 'post', scope_list)
-        #cb.align_symbol(r'<(?==)|:(?==)', 'pre', scope_list)
+        cb.align_symbol(r'<(?==)|:(?==)', 'pre', scope_list)
         cb.align_symbol(r'=>', 'pre', scope_list)
 
         # Indent!  Get some settings first.
@@ -248,7 +248,10 @@ class vhdlModeBeautifyBufferCommand(sublime_plugin.TextCommand):
 
         # Post indent alignment
         print('vhdl-mode: Post-indent symbol alignment.')
-        cb.align_symbol(r'<(?==)|:(?==)', 'pre', scope_list)
+        # This is mostly for the case when stuff, also for the concurrent
+        # conditional assignment.
+        cb.align_symbol(r'=>', 'pre', scope_list, True)
+        cb.align_symbol(r'<(?==)|:(?==)', 'pre', scope_list, True)
         cb.align_symbol(r'\bwhen\b', 'pre', scope_list)
         print('vhdl-mode: Aligning comments.')
         cb.align_comments(tab_size, use_spaces)

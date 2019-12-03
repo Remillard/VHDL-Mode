@@ -1,0 +1,32 @@
+Version 1.8.10
+
+* I think I've got case/when alignment structures more or less sorted out and
+  no one had to die or anything this time around.  Assignments followed by
+  positional arguments should align correctly in that order most of the time,
+  and then `when choice =>` should align correctly followed by assignments on
+  those lines.  Hopefully that settles the matter once and for all, but I'll
+  take another crack at it if something goes pear shaped.
+
+  Just a note, all you folks who are putting a ton of things on the same
+  `when choice =>` line for compactness, there is a limit to this and I think
+  I've reached it.  If you are getting beautification results you don't like
+  because you've put entire paragraphs on the same line after a `when choice =>`
+  just put it on the next few lines please.  Your code maintainer will thank
+  you someday (or at least won't curse your name overmuch.)
+
+* Added basic support for aggregate assignment.  The location of this paren
+  group is in a tricky spot (due to the way the syntax file is setup looking
+  for lexical contexts) so it really is just basic support.  I don't think
+  symbols or identifiers inside the paren group will scope as finely grained
+  as in other places in the code, but at least it won't flag as an invalid
+  closing paren anymore.  I might be able to get something more sophisticated
+  in place with more experimentation since this might be the only VHDL construct
+  that starts with opening parenthesis.
+
+The IEEE VHDL standard 1076-2019 was approved on 2019-09-05.  Fair warning that
+it may be some time until this package supports it properly.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
