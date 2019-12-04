@@ -1667,7 +1667,7 @@ contexts:
 
   block-statement-body:
     - meta_scope: meta.block.block.body.vhdl
-    - match: (?i)(end)\s+(block)(\s+({{identifier}}))\s*(;)
+    - match: (?i)(end)\s+(block)(\s+({{identifier}}))?\s*(;)
       captures:
         1: keyword.other.block.end.vhdl
         2: keyword.other.block.block.vhdl

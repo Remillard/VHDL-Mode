@@ -108,7 +108,7 @@ open_rules:
   block:
     close_offset: 0
     close_rule:
-    - [endclause, null]
+    - [begin, block-concurrent]
     indent_rule:  [0, 1]
     pattern: (?<!end )\bblock\b
     solo_flag: false
@@ -394,6 +394,14 @@ open_rules:
     pattern: \bthen\b
     solo_flag: false
     ignore_rules: null
+  block-concurrent:
+    close_offset: 0
+    close_rule:
+    - [endclause, null]
+    indent_rule:  [0, 1]
+    pattern: \bbegin\b
+    solo_flag: false
+    ignore_rules: null
 
 close_rules:
   close_paren: \)
@@ -410,4 +418,5 @@ close_rules:
   then: \bthen\b
   generate: \bgenerate\b
   close-comment: \*\/
+  begin: \bbegin\b
 
