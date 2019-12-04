@@ -1,0 +1,32 @@
+Version 1.8.11
+
+* A user reported that beautification was strange inside of a `block`
+  construct, specifically with an instantiation.  As it turns out there were
+  multiple issues.  First, in syntax, the block construct required the ending
+  label and this is technically optional, so I made the syntax close correctly
+  when a `block` does not end with its label.  The opening label for a block
+  IS mandatory per the LRM however.
+
+  Secondly, the instantiation beautification error was due to the fact that in a
+  `block` the `generic map` construct ends differently than anywhere else.  I'd
+  done a trick with the beautification engine where it ignored `generic map` in
+  lieu of `generic` because of that difference in ending structure.  The
+  example provided by the user had a `generic map` in the instantiation so
+  it was ignored and strange things happened with beautification.  I created
+  a branching structure in the beautification engine for block (as I've done
+  for other lexical structures) so `generic map` no longer gets ignored in the
+  concurrent section.
+
+  A reminder about `block` usage and syntax.  The LRM does indicate the `is`
+  is an optional word however for my purposes it is not optional.  `block`
+  may have a guard expression and I need a delimeter to mark the place between
+  the guard expression and the declarative region.  I believe I put in a
+  snippet for this for a prior issue and put the `is` in there.
+
+The IEEE VHDL standard 1076-2019 was approved on 2019-09-05.  Fair warning that
+it may be some time until this package supports it properly.
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.
