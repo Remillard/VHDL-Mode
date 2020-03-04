@@ -1,0 +1,402 @@
+%YAML 1.2
+---
+# VHDL Syntax developed by Mark Norton for Sublime Text 3
+# VHDL IEEE 1076-2019 Grammar
+# Using Sigasi grammar document at
+# https://insights.sigasi.com/tech/vhdl2017.ebnf/ as the basis (since I am
+# not in a position to buy the LRM standard from IEEE).
+file_extensions:
+  - vhd
+  - vhdl
+  - vho
+  - vht
+scope: source.newhdl
+
+variables:
+  # While there are shortcuts in Oniguruma for many of these (like digit) there
+  # are cases where the shortcuts are not sufficient, so I'm being explicit
+  # with these basic qualifiers.  Note the "object or _object" is done because
+  # a identifier (or integer) may not END with the underscore character.
+  letter: '[a-zA-Z]'
+  digit: '\d'
+  extended_digit: '\h'
+  letter_or_digit: '{{letter}}|{{digit}}'
+  base_specifier: '(?i:B|O|X|UB|UO|UX|SB|SO|SX|D)'
+  integer: '{{digit}}(?:{{digit}}|_{{digit}})*'
+  exponent: '[eE](?:\+)?{{integer}}|[eE]\-{{integer}}'
+  based_integer: '{{extended_digit}}(?:{{extended_digit}}|_{{extended_digit}})*'
+
+  decimal_literal: '{{integer}}(?:\.{{integer}})?(?:{{exponent}})?'
+  based_literal: '{{integer}}\#{{based_integer}}(?:\.{{based_integer}})?\#(?:{{exponent}})?'
+  bit_string_literal: '(?:{{integer}})?{{base_specifier}}\"{{based_integer}}*\"'
+
+  mode: '(?i:inout|in|out|buffer|linkage)'
+  relational_operator: '\=|\/\=|\<|\<\=|\>|\>\=|\?\=|\?\/\=|\?\<|\?\<\=|\?\>|\?\>\='
+  adding_operator: '\+|\-|\&'
+  logical_operator: '(?i:and|or|nand|nor|xor|xnor)'
+  multiplying_operator: '(?i:\*|\/|mod|rem)'
+  misc_operator: '(?i:\*\*|abs|not)'
+  shift_operator: '(?i:sll|srl|sla|sra|rol|ror)'
+  sign: '\+|\-'
+  signal_kind: '(?i:register|bus)'
+  subprogram_kind: '(?i:procedure|function)'
+  unary_misc_operator: (?i:abs|not)
+  basic_identifier: '{{letter}}(?:{{letter_or_digit}}|_{{letter_or_digit}})*'
+
+
+contexts:
+  prototype:
+    - include: comments
+    - include: numbers
+    - include: known_types
+    - include: strings
+    - include: constants
+
+  main:
+    - include: reserved_words
+  ###########################################################################
+  ###########################################################################
+  # Utility
+  ###########################################################################
+  ###########################################################################
+  basic_paren_group:
+    # This is just something to keep track of matching parenthesis in
+    # section where there is no other context.
+    - match: '(\()'
+      captures:
+        1: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.group.parens.vhdl
+        - match: ','
+          scope: punctuation.separator.vhdl
+        - match: '(\))'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+          pop: true
+
+  stray_parens:
+    # Should always be included after the basic paren consumer
+    # and only when there are no other contexts that use parens
+    # for grouping (because they might be looking for the stray)
+    - match: '(\))'
+      captures:
+        1: invalid.illegal.unmatched-parenthesis.vhdl
+
+  ###########################################################################
+  ###########################################################################
+  # Comment Definitions
+  ###########################################################################
+  ###########################################################################
+  line_comment:
+    # Line comment begin with double dash and continue to the end of the line.
+    - match: '--'
+      scope: punctuation.definition.comment.line.vhdl
+      push:
+        - meta_scope: comment.line.vhdl
+        - match: \n
+          pop: true
+
+  block_comment:
+    # Block comment (new in VHDL-2008) begins with C-style /* and ends with
+    # another */
+    - match: '/\*'
+      scope: punctuation.definition.comment.block.vhdl
+      push:
+        - meta_scope: comment.block.vhdl
+        - match: '\*/'
+          pop: true
+    - match: \*/(?!\*)
+      scope: invalid.illegal.stray-comment-end.vhdl
+
+  comments:
+    - include: line_comment
+    - include: block_comment
+
+  ###########################################################################
+  ###########################################################################
+  # Literal definitions
+  # Note: The funny little ending for based literal is due to the fact that
+  # word boundary does not work because the literal must end in # and that
+  # is considered a non-word character in Oniguruma.  Thus, a non-consuming
+  # lookahead for space or EOL is a workaround.
+  ###########################################################################
+  ###########################################################################
+  numbers:
+    - match: '\b{{based_literal}}(?=\s|$)'
+      scope: constant.numeric.based.vhdl
+    - match: '\b{{decimal_literal}}\b'
+      scope: constant.numeric.vhdl
+    - match: '\b{{bit_string_literal}}(?=\s|$)'
+      scope: constant.numeric.bitstring.vhdl
+
+  escaped_character:
+    - match: '(\\[\\"''abfnrtv])'
+      captures:
+        1: constant.character.escape.vhdl
+
+  character_literal:
+    - match: '('')(?=.'')'
+      captures:
+        1: punctuation.definition.string.begin.vhdl
+      push:
+        - meta_scope: string.quoted.single.vhdl
+        - match: '(.)('')'
+          captures:
+            1: constant.character.vhdl
+            2: punctuation.definition.string.end.vhdl
+          pop: true
+        - match: '(.*)'
+          captures:
+            1: invalid.illegal.unclosed-string.vhdl
+          pop: true
+
+  string_literal:
+    - match: '(")'
+      captures:
+        1: punctuation.definition.string.begin.vhdl
+      push:
+        - meta_include_prototype: false
+        - meta_scope: meta.string.vhdl
+        - match: '(")'
+          scope: punctuation.definition.string.end.vhdl
+          pop: true
+        - match: \n
+          scope: invalid.illegal.unclosed-string.vhdl
+          pop: true
+        - include: escaped_character
+        - match: '.'
+          scope: string.quoted.double
+
+  strings:
+    - include: character_literal
+    - include: string_literal
+
+  ###########################################################################
+  ###########################################################################
+  # Built-in and Library Language Support
+  ###########################################################################
+  ###########################################################################
+  constants:
+    - match: (?i)\b(true|false)\b
+      scope: constant.language.vhdl
+    - match: (?i)\b(note|warning|error|failure)\b
+      scope: support.constant.std.vhdl
+    - match: |-
+        (?xi)\b(
+          math_e|math_1_over_e|math_pi|math_2_pi|math_1_over_pi|
+          math_pi_over_2|math_pi_over_3|math_pi_over_4|
+          math_3_pi_over_2|math_log_of_2|math_log_of_10|
+          math_log2_of_e|math_log10_of_e|math_sqrt_2|
+          math_1_over_sqrt_2|math_sqrt_pi|math_deg_to_rad|
+          math_rad_to_deg
+        )\b
+      scope: support.constant.math-real.vhdl
+    - match: (?i)\b(math_cbase_1|math_cbase_j|math_czero)\b
+      scope: support.constant.math-complex.vhdl
+
+  known_types:
+    - match: |-
+        (?xi)\b(
+          boolean|bit|character|severity_level|integer|natural|positive|
+          real|time|delay_length|string|boolean_vector|bit_vector|
+          integer_vector|real_vector|time_vector|file_open_kind|
+          file_open_status
+        )\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
+    - match: |-
+        (?xi)\b(
+          line|text|side
+        )\b(')?
+      captures:
+        1: support.type.std.vhdl
+        2: punctuation.definition.typecast.vhdl
+    - match: (?i)\b(complex|positive_real|principal_value|complex_polar)\b(')?
+      captures:
+        1: support.type.ieee.vhdl
+        2: punctuation.definition.typecast.vhdl
+    - match: |-
+        (?xi)\b(
+          std_ulogic|std_ulogic_vector|std_logic|std_logic_vector|
+          X01|X01Z|UX01|UX01Z
+        )\b(')?
+      captures:
+        1: support.type.ieee.vhdl
+        2: punctuation.definition.typecast.vhdl
+    # Overlaps numeric_bit but numeric_std is more common.
+    - match: |-
+        (?xi)\b(
+          unresolved_unsigned|unresolved_signed|u_unsigned|u_signed|
+          unsigned|signed
+        )\b(')?
+      captures:
+        1: support.type.ieee.vhdl
+        2: punctuation.definition.typecast.vhdl
+
+  # Some of these are functions, and some are procedures.  They differ in how
+  # they close.  Note for color schemes, the comment term is 'support.function'
+  # regardless of how they actually behave in the language.
+  library_subprograms:
+    # Actually built-in function, not just predefined.
+    - match: |-
+        (?xi)\b(
+          to_string
+        )\b\s*(\()
+      captures:
+        1: support.function.builtin.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+    # Predefined Package env
+    - match: |-
+        (?xi)((std\.env\.)?\b(
+          resolution_limit
+        ))\b\s*(\()
+      captures:
+        1: support.function.std.env.vhdl
+        4: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+    - match: |-
+        (?xi)((std\.env\.)?\b(
+          stop|finish
+        ))\b\s*(\()
+      captures:
+        1: support.function.std.env.vhdl
+        4: punctuation.group.parens.begin.vhdl
+      push: library_procedure_parameters
+    # Predefined Package textio
+    - match: |-
+        (?xi)\b(
+          readline|read|sread|string_read|bread|binary_read|oread|
+          octal_read|hread|hex_read|writeline|tee|write|
+          swrite|string_write|bwrite|binary_write|owrite|octal_write|
+          hwrite|hex_write
+        )\b\s*(\()
+      captures:
+        1: support.function.std.textio.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_procedure_parameters
+    - match: |-
+        (?xi)\b(
+          justify
+        )\b\s*(\()
+      captures:
+        1: support.function.std.textio.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+    # Predefined Package math_real
+    - match: |-
+        (?xi)\b(
+          sign|ceil|floor|round|trunc|realmax|realmin|"mod"|
+          uniform|sqrt|cbrt|exp|log2|log10|log|sin|cos|tan|
+          arcsin|arccos|arctan|sinh|cosh|tanh|arcsinh|arccosh|
+          arctanh
+        )\b\s*(\()
+      captures:
+        1: support.function.ieee.math_real.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+    - match: |-
+        (?xi)\b(
+          uniform
+        )\b\s*(\()
+      captures:
+        1: support.function.ieee.math_real.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library-procedure-parameters
+    # Predefined Package math_complex
+    - match: |-
+        (?xi)\b(
+          cmplx|get_principal_value|complex_to_polar|polar_to_complex|
+          arg|conj
+        )\b\s*(\()
+      captures:
+        1: support.function.ieee.math_complex.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+    # The std_logic_1164 Package
+    - match: |-
+        (?xi)\b(
+          resolved|to_bit|to_bitvector|to_stdulogic|to_stdlogicvector|
+          to_stdulogicvector|to_bit_vector|to_bv|to_std_logic_vector|
+          to_slv|to_std_ulogic_vector|to_01|to_x01|to_x01z|to_ux01|
+          rising_edge|falling_edge|is_x|to_bstring|to_binary_string|
+          to_ostring|to_octal_string|to_hstring|to_hex_string
+        )\b\s*(\()
+      captures:
+        1: support.function.ieee.std_logic_1164.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+    # The numeric_std Package
+    - match: |-
+        (?xi)\b(
+          std_match|resize|minimum|maximum|shift_left|shift_right|
+          rotate_left|rotate_right|to_unsigned|to_signed|to_integer
+        )\b\s*(\()
+      captures:
+        1: support.function.ieee.numeric_std.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push: library_function_parameters
+
+  library_function_parameters:
+    - meta_scope: meta.function-call.function.vhdl
+    - include: basic_paren_group
+    - include: prototype
+    - include: reserved_words
+    - match: ','
+      scope: punctuation.separator.vhdl
+    - match: (\))
+      captures:
+        1: punctuation.group.parens.end.vhdl
+      pop: true
+    - include: stray_parens
+
+  library_procedure_parameters:
+    - meta_scope: meta.function-call.procedure.vhdl
+    - include: basic_paren_group
+    - include: prototype
+    - include: reserved_words
+    - match: (\))\s*(;)
+      captures:
+        1: punctuation.group.parens.end.vhdl
+        2: punctuation.terminator.vhdl
+      pop: true
+    - include: stray_parens
+
+  reserved_words:
+    - match: |-
+        (?xi)\b(
+          abs|access|after|alias-decl|all|and|architecture|array|assert|assume|
+          assume_guarantee|attribute|begin|block|body|buffer|bus|case|
+          component|configuration|constant|context|cover|default|disconnect|
+          downto|else|elsif|end|entity|exit|fairness|file|for|force|function|
+          generate|generic|group|guarded|if|impure|in|inertial|inout|is|
+          label|library|linkage|literal|loop|map|mod|nand|new|next|nor|not|
+          null|of|on|open|or|others|out|package|parameter|port|postponed|
+          procedure|process|property|protected|pure|range|record|register|
+          reject|release|rem|report|restrict|restrict_guarantee|return|rol|
+          ror|select|sequence|severity|shared|signal|sla|sll|sra|srl|strong|
+          subtype|then|to|transport|type|unaffected|units|until|use|variable|
+          vmode|vprop|vunit|wait|when|while|with|xnor|xor
+        )\b
+      scope: keyword.other.reserved.vhdl
+    - match: |-
+        (?xi)\b(
+          left|right|low|high|range|reverse_range|length|ascending|
+          element
+        )\b
+      scope: keyword.other.attribute.vhdl
+
+  library_names:
+    - match: |-
+        (?xi)\b(
+          std_logic_1164|numeric_bit|numeric_std|numeric_bit_unsigned|
+          numeric_std_unsigned|fixed_float_types|fixed_generic_pkg|fixed_pkg|
+          float_generic_pkg|float_pkg|std_logic_textio|std|work|ieee|
+          standard|env|textio|math_real|math_complex
+        )
+      scope: support.name.std-libraries.vhdl
+
+
+
+
