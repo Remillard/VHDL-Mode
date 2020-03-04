@@ -42,6 +42,7 @@ variables:
   unary_misc_operator: (?i:abs|not)
 
   basic_identifier: '{{letter}}(?:{{letter_or_digit}}|_{{letter_or_digit}})*'
+  identifier: '{{basic_identifier}}' # Note, not supporting graphic identifiers just yet.
   mode: '(?i:inout|in|out|buffer|linkage)'
   subprogram_kind: '(?i:procedure|function)'
   signal_kind: '(?i:register|bus)'
@@ -56,7 +57,176 @@ contexts:
     - include: constants
 
   main:
-    - include: reserved_words
+    - include: design_file
+
+  ###########################################################################
+  ###########################################################################
+  # VHDL Design File Hierarchy
+  ###########################################################################
+  ###########################################################################
+  design_file:
+    - include: design_unit
+
+  design_unit:
+    - include: context_clause
+    - include: library_unit
+
+  context_clause:
+    - include: context_item
+
+  library_unit:
+    - include: primary_unit
+    #- include: secondary_unit
+
+  context_item:
+    - include: library_clause
+    - include: use_clause
+    - include: context_reference
+
+  primary_unit:
+    - include: entity_declaration
+    - include: configuration_declaration
+    - include: package_declaration
+    - include: package_instantiation_declaration
+    - include: context_declaration
+
+  ###########################################################################
+  ###########################################################################
+  # VHDL Design File and Library Unit Declarations
+  ###########################################################################
+  ###########################################################################
+  library_clause:
+    - match: |-
+        (?xi)
+          (library)
+      captures:
+        1: keyword.control.library.vhdl
+      push:
+        - meta_scope: meta.statement.library.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - include: library_name_list
+
+  use_clause:
+    - match: |-
+        (?xi)
+          (use)
+      captures:
+        1: keyword.control.use.vhdl
+      push:
+        - meta_scope: meta.statement.use.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - include: selected_name_list
+
+  context_reference:
+    - match: |-
+        (?xi)
+          (context)
+      captures:
+        1: keyword.control.context.vhdl
+      push:
+        - meta_scope: meta.statement.context.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - include: selected_name_list
+
+  entity_declaration:
+    - match: |-
+        (?xi)
+          (entity)\s+
+          ({{identifier}})\s+
+          (is)
+      captures:
+        1: storage.type.entity.vhdl
+        2: entity.name.entity.vhdl
+        3: keyword.other.block.is.vhdl
+      push:
+        - meta_scope: meta.block.entity.declaration.vhdl
+        - match: |-
+            (?xi)
+              (end)
+              (\s+(entity))?
+              (\s+({{identifier}}))?
+              (\s*(;))
+          captures:
+            1: keyword.other.block.end.vhdl
+            3: storage.type.entity.vhdl
+            5: entity.name.entity.vhdl
+            7: punctuation.terminator.vhdl
+          pop: true
+        - include: generic_clause
+        - include: port_clause
+        #- include: entity_declarative_item # Freakin huge list
+        - match: '(?i)\b(begin)\b'
+          captures:
+            1: keyword.other.block.begin.vhdl
+          set: entity_statement_part
+
+  entity_statement_part:
+    - meta_scope: meta.block.entity.statements.vhdl
+    - match: |-
+        (?xi)
+          (end)
+          (\s+(entity))?
+          (\s+({{identifier}}))?
+          (\s*(;))
+      captures:
+        1: keyword.other.block.end.vhdl
+        3: storage.type.entity.vhdl
+        5: entity.name.entity.vhdl
+        7: punctuation.terminator.vhdl
+      pop: true
+
+  generic_clause:
+    - match: '(?i)(generic)\s*(\()'
+      captures:
+        1: keyword.other.generic.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.block.interface.generic.vhdl
+        - match: '(\))\s*(;)'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+            2: punctuation.terminator.vhdl
+          pop: true
+        - include: interface_list
+
+  port_clause:
+    - match: '(?i)(port)\s*(\()'
+      captures:
+        1: keyword.other.port.vhdl
+        2: punctuation.group.parens.begin.vhdl
+      push:
+        - meta_scope: meta.block.interface.port.vhdl
+        - match: '(\))\s*(;)'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+            2: punctuation.terminator.vhdl
+          pop: true
+        - include: interface_list
+
+  interface_list:
+    - include: interface_declaration
+    - match: '(;)'
+      captures:
+        1: punctuation.terminator.vhdl
+
+  interface_declaration:
+    - include: interface_object_declaration
+    - include: interface_type_declaration
+    - include: interface_subprogram_declaration
+    - include: interface_package_declaration
+
+
+
+
   ###########################################################################
   ###########################################################################
   # Utility
@@ -84,6 +254,29 @@ contexts:
     - match: '(\))'
       captures:
         1: invalid.illegal.unmatched-parenthesis.vhdl
+
+  library_name_list:
+    - match: '(,)'
+      captures:
+        1: punctuation.separator.vhdl
+    - include: library_names
+    - match: '({{identifier}})'
+      captures:
+        1: entity.name.library.vhdl
+
+  selected_name_list:
+    - match: (,)
+      scope: punctuation.separator.vhdl
+    - match: '(\.)'
+      scope: punctuation.accessor.vhdl
+    - include: library_names
+    - match: '(?i)(all)'
+      scope: keyword.other.reserved.vhdl
+    - match: '({{identifier}})'
+      scope: entity.name.logical_name.vhdl
+    - include: character_literal
+    - include: string_literal # operator clause
+
 
   ###########################################################################
   ###########################################################################
@@ -132,28 +325,6 @@ contexts:
     - match: '\b{{bit_string_literal}}(?=\s|$)'
       scope: constant.numeric.bitstring.vhdl
 
-  assignment_operators:
-    - match: '{{assignment_operator}}'
-      scope: keyword.operator.assignment.vhdl
-
-  accessor_operators:
-    - match: '{{accessor_operator}}'
-      scope: punctuation.accessor.vhdl
-
-  expression_operators:
-    - match: '{{adding_operator}}'
-      scope: keyword.operator.arithmetic.vhdl
-    - match: '{{multiplying_operator}}'
-      scope: keyword.operator.arithmetic.vhdl
-    - match: '{{logical_operator}}'
-      scope: keyword.operator.word.logical.vhdl
-    - match: '{{shift_operator}}'
-      scope: keyword.operator.word.shift.vhdl
-    - match: '{{relational_operator}}'
-      scope: keyword.operator.relational.vhdl
-    - match: '{{misc_operator}}|{{unary_misc_operator}}'
-      scope: keyword.operator.misc.vhdl
-
   escaped_character:
     - match: '(\\[\\"''abfnrtv])'
       captures:
@@ -201,6 +372,28 @@ contexts:
   # Built-in and Library Language Support
   ###########################################################################
   ###########################################################################
+  assignment_operators:
+    - match: '{{assignment_operator}}'
+      scope: keyword.operator.assignment.vhdl
+
+  accessor_operators:
+    - match: '{{accessor_operator}}'
+      scope: punctuation.accessor.vhdl
+
+  expression_operators:
+    - match: '{{adding_operator}}'
+      scope: keyword.operator.arithmetic.vhdl
+    - match: '{{multiplying_operator}}'
+      scope: keyword.operator.arithmetic.vhdl
+    - match: '{{logical_operator}}'
+      scope: keyword.operator.word.logical.vhdl
+    - match: '{{shift_operator}}'
+      scope: keyword.operator.word.shift.vhdl
+    - match: '{{relational_operator}}'
+      scope: keyword.operator.comparison.vhdl
+    - match: '{{misc_operator}}|{{unary_misc_operator}}'
+      scope: keyword.operator.misc.vhdl
+
   constants:
     - match: (?i)\b(true|false)\b
       scope: constant.language.vhdl
@@ -413,8 +606,13 @@ contexts:
         (?xi)\b(
           std_logic_1164|numeric_bit|numeric_std|numeric_bit_unsigned|
           numeric_std_unsigned|fixed_float_types|fixed_generic_pkg|fixed_pkg|
-          float_generic_pkg|float_pkg|std_logic_textio|std|work|ieee|
+          float_generic_pkg|float_pkg|std_logic_textio|
           standard|env|textio|math_real|math_complex
+        )
+      scope: support.name.std-packages.vhdl
+    - match: |-
+        (?xi)\b(
+          std|work|ieee
         )
       scope: support.name.std-libraries.vhdl
 
