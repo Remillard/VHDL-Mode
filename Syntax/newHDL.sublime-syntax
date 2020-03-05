@@ -46,15 +46,16 @@ variables:
   mode: '(?i:inout|in|out|buffer|linkage)'
   subprogram_kind: '(?i:procedure|function)'
   signal_kind: '(?i:register|bus)'
+  direction: '(?i:downto|to)'
 
 
 contexts:
   prototype:
     - include: comments
     - include: numbers
-    - include: known_types
     - include: strings
     - include: constants
+    - include: known_types
 
   main:
     - include: design_file
@@ -109,6 +110,15 @@ contexts:
           pop: true
         - include: library_name_list
 
+  library_name_list:
+    - match: '(,)'
+      captures:
+        1: punctuation.separator.vhdl
+    - include: library_names
+    - match: '({{identifier}})'
+      captures:
+        1: entity.name.library.vhdl
+
   use_clause:
     - match: |-
         (?xi)
@@ -122,6 +132,19 @@ contexts:
             1: punctuation.terminator.vhdl
           pop: true
         - include: selected_name_list
+
+  selected_name_list:
+    - match: (,)
+      scope: punctuation.separator.vhdl
+    - match: '(\.)'
+      scope: punctuation.accessor.vhdl
+    - include: library_names
+    - match: '(?i)(all)'
+      scope: keyword.other.reserved.vhdl
+    - match: '({{identifier}})'
+      scope: entity.name.logical_name.vhdl
+    - include: character_literal
+    - include: string_literal # operator clause
 
   context_reference:
     - match: |-
@@ -224,6 +247,70 @@ contexts:
     - include: interface_subprogram_declaration
     - include: interface_package_declaration
 
+  interface_object_declaration:
+    - include: interface_file_declaration
+    - include: interface_csv_declaration
+
+  # The interface declaration for constants, signals, and variables (csv) are
+  # nearly identical so I'm rolling them into a single declaration.
+  # Also the amount of optional terms on these is pretty excessive so the
+  # definition is going to be a little loose.  Ending the expression is going
+  # to be on a forward lookahead for a nonconsumed parenthesis or a semicolon.
+  # The match consumptoin is done at the list level.
+  interface_csv_declaration:
+    - match: '(?i)(constant)'
+      captures:
+        1: storage.type.constant.vhdl
+    - match: '(?i)(signal)'
+      captures:
+        1: storage.type.signal.vhdl
+    - match: '(?i)(variable)'
+      captures:
+        1: storage.type.variable.vhdl
+    - match: '({{identifier}})'
+      captures:
+        1: entity.name.interface.vhdl
+    - match: '(,)'
+      captures:
+        1: punctuation.separator.vhdl
+    - match: '(:)'
+      captures:
+        1: punctuation.separator.vhdl
+      push:
+        - meta_scope: meta.statement.interface-declaration.vhdl
+        - match: '({{mode}})'
+          captures:
+            1: keyword.other.mode.vhdl
+        - include: known_types
+        - include: basic_paren_group
+        - match: '(?=;|\))'
+          pop: true
+        - match: '(\:\=)' # For the moment, not making another zone with set
+          captures:
+            1: keyword.operator.assignment.vhdl
+        - include: conditional_expression
+
+  interface_file_declaration:
+    - match: '(?i)(file)'
+      captures:
+        1: storage.type.file.vhdl
+      push:
+        - meta_scope: meta.statement.interface-file-declaration.vhdl
+        - match: '({{identifier}})'
+          captures:
+            1: entity.name.interface.vhdl
+        - match: '(,)'
+          captures:
+            1: punctuation.separator.vhdl
+        - match: '(:)'
+          captures:
+            1: punctuation.separator.vhdl
+          set:
+            - meta_scope: meta.statement.interface-file-declaration.vhdl
+            - match: '(?=;|\))'
+              pop: true
+            - include: known_types
+            - include: constraint
 
 
 
@@ -234,18 +321,20 @@ contexts:
   ###########################################################################
   basic_paren_group:
     # This is just something to keep track of matching parenthesis in
-    # section where there is no other context.
+    # section where there is no other context.  Putting in capture of the
+    # direction words because they're done so frequently inside parentheses.
     - match: '(\()'
       captures:
         1: punctuation.group.parens.begin.vhdl
       push:
         - meta_scope: meta.group.parens.vhdl
-        - match: ','
-          scope: punctuation.separator.vhdl
         - match: '(\))'
           captures:
             1: punctuation.group.parens.end.vhdl
           pop: true
+        - include: expression_operators
+        - match: '({{direction}})'
+          scope: keyword.other.direction.vhdl
 
   stray_parens:
     # Should always be included after the basic paren consumer
@@ -255,28 +344,31 @@ contexts:
       captures:
         1: invalid.illegal.unmatched-parenthesis.vhdl
 
-  library_name_list:
-    - match: '(,)'
-      captures:
-        1: punctuation.separator.vhdl
-    - include: library_names
+  expression:
+    - include: basic_paren_group
+    - include: expression_operators
     - match: '({{identifier}})'
-      captures:
-        1: entity.name.library.vhdl
+      scope: variable.other.vhdl
 
-  selected_name_list:
-    - match: (,)
-      scope: punctuation.separator.vhdl
-    - match: '(\.)'
-      scope: punctuation.accessor.vhdl
-    - include: library_names
-    - match: '(?i)(all)'
-      scope: keyword.other.reserved.vhdl
-    - match: '({{identifier}})'
-      scope: entity.name.logical_name.vhdl
-    - include: character_literal
-    - include: string_literal # operator clause
+  conditional_expression:
+    - match: '(?i)(when|else)'
+      scope: keyword.control.conditional.vhdl
+    - include: expression
 
+  constraint:
+    - include: range_constraint
+    - include: array_constraint
+    - include: record_constraint
+
+  range_constraint:
+    - match: '(?i)(range)'
+      scope: keyword.other.range.vhdl
+    - match: '({{direction}})'
+      scope: keyword.other.direction.vhdl
+    - include: reserved_attributes
+    - match: '('')'
+      scope: punctuation.accessor.type-mark.vhdl
+    - include: expression
 
   ###########################################################################
   ###########################################################################
@@ -422,7 +514,7 @@ contexts:
         )\b(')?
       captures:
         1: support.type.std.vhdl
-        2: punctuation.definition.typecast.vhdl
+        2: punctuation.definition.type-mark.vhdl
     - match: |-
         (?xi)\b(
           line|text|side
@@ -433,7 +525,7 @@ contexts:
     - match: (?i)\b(complex|positive_real|principal_value|complex_polar)\b(')?
       captures:
         1: support.type.ieee.vhdl
-        2: punctuation.definition.typecast.vhdl
+        2: punctuation.definition.type-mark.vhdl
     - match: |-
         (?xi)\b(
           std_ulogic|std_ulogic_vector|std_logic|std_logic_vector|
@@ -441,7 +533,7 @@ contexts:
         )\b(')?
       captures:
         1: support.type.ieee.vhdl
-        2: punctuation.definition.typecast.vhdl
+        2: punctuation.definition.type-mark.vhdl
     # Overlaps numeric_bit but numeric_std is more common.
     - match: |-
         (?xi)\b(
@@ -450,7 +542,7 @@ contexts:
         )\b(')?
       captures:
         1: support.type.ieee.vhdl
-        2: punctuation.definition.typecast.vhdl
+        2: punctuation.definition.type-mark.vhdl
 
   # Some of these are functions, and some are procedures.  They differ in how
   # they close.  Note for color schemes, the comment term is 'support.function'
@@ -594,6 +686,9 @@ contexts:
           vmode|vprop|vunit|wait|when|while|with|xnor|xor
         )\b
       scope: keyword.other.reserved.vhdl
+    - include: reserved_attributes
+
+  reserved_attributes:
     - match: |-
         (?xi)\b(
           left|right|low|high|range|reverse_range|length|ascending|
