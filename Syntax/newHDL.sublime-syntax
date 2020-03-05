@@ -250,8 +250,8 @@ contexts:
   interface_declaration:
     - include: interface_type_declaration
     - include: interface_subprogram_declaration
-    - include: interface_object_declaration
     - include: interface_package_declaration
+    - include: interface_object_declaration # Should probably be last in list
 
   interface_object_declaration:
     - include: interface_file_declaration
