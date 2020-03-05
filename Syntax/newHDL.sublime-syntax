@@ -86,10 +86,10 @@ contexts:
 
   primary_unit:
     - include: entity_declaration
-    - include: configuration_declaration
-    - include: package_declaration
-    - include: package_instantiation_declaration
-    - include: context_declaration
+    #- include: configuration_declaration
+    #- include: package_declaration
+    #- include: package_instantiation_declaration
+    #- include: context_declaration
 
   ###########################################################################
   ###########################################################################
@@ -208,48 +208,58 @@ contexts:
       pop: true
 
   generic_clause:
-    - match: '(?i)(generic)\s*(\()'
+    - match: '(?i)(generic)'
       captures:
         1: keyword.other.generic.vhdl
-        2: punctuation.group.parens.begin.vhdl
       push:
         - meta_scope: meta.block.interface.generic.vhdl
-        - match: '(\))\s*(;)'
+        - match: '(;)'
           captures:
-            1: punctuation.group.parens.end.vhdl
-            2: punctuation.terminator.vhdl
+            1: punctuation.terminator.vhdl
           pop: true
         - include: interface_list
 
   port_clause:
-    - match: '(?i)(port)\s*(\()'
+    - match: '(?i)(port)'
       captures:
         1: keyword.other.port.vhdl
-        2: punctuation.group.parens.begin.vhdl
       push:
         - meta_scope: meta.block.interface.port.vhdl
-        - match: '(\))\s*(;)'
+        - match: '(;)'
           captures:
-            1: punctuation.group.parens.end.vhdl
-            2: punctuation.terminator.vhdl
+            1: punctuation.terminator.vhdl
           pop: true
         - include: interface_list
 
   interface_list:
-    - include: interface_declaration
-    - match: '(;)'
+    - match: '(\()'
       captures:
-        1: punctuation.terminator.vhdl
+        1: punctuation.group.parens.begin.vhdl
+      push:
+
+        - meta_scope: meta.block.interface-list.vhdl
+        - include: interface_declaration
+        - match: '(;)'
+          captures:
+            1: punctuation.terminator.vhdl
+        - match: '(\))'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+          pop: true
 
   interface_declaration:
-    - include: interface_object_declaration
     - include: interface_type_declaration
     - include: interface_subprogram_declaration
+    - include: interface_object_declaration
     - include: interface_package_declaration
 
   interface_object_declaration:
     - include: interface_file_declaration
     - include: interface_csv_declaration
+
+  interface_subprogram_declaration:
+    - include: interface_procedure_specification
+    - include: interface_function_specification
 
   # The interface declaration for constants, signals, and variables (csv) are
   # nearly identical so I'm rolling them into a single declaration.
@@ -312,6 +322,57 @@ contexts:
             - include: known_types
             - include: constraint
 
+  # This is defined as the interface incomplete type declaration
+  interface_type_declaration:
+    - match: '(?i)(type)'
+      captures:
+        1: storage.type.type.vhdl
+      push:
+        - meta_scope: meta.statement.interface-type-declaration.vhdl
+        - match: '({{identifier}})'
+          captures:
+            1: entity.name.type.vhdl
+        - match: '(?=;|\))'
+          pop: true
+
+  # Going to enforce a parameter list because I can't figure out how to make
+  # it branch back neatly without an opening and closing paren to anchor on.
+  interface_procedure_specification:
+    - match: |-
+        (?xi)
+          (procedure)
+          (\s+({{identifier}}))
+          (\s+(parameter))?
+      captures:
+        1: storage.type.procedure.vhdl
+        3: entity.name.function.vhdl    # Note done because of color scheme
+        5: keyword.other.parameter.vhdl
+      push:
+        - meta_scope: meta.statement.interface-procedure-declaration.vhdl
+        - include: interface_list
+        - match: '(?=;|\))'
+          pop: true
+
+  interface_function_specification:
+    - match: |-
+        (?xi)
+          ((impure|pure)\s+)?
+          (function)
+          (\s+({{identifier}}))
+          (\s+(parameter))?
+      captures:
+        2: keyword.other.purity.vhdl
+        3: storage.type.function.vhdl
+        5: entity.name.function.vhdl
+        7: keyword.other.parameter.vhdl
+      push:
+        - meta_scope: meta.statement.interface-function-declaration.vhdl
+        - include: interface_list
+        - match: '(?i)(return)'
+          scope: keyword.other.return.vhdl
+        - include: known_types
+        - match: '(?=;|\))'
+          pop: true
 
 
   ###########################################################################
@@ -357,8 +418,8 @@ contexts:
 
   constraint:
     - include: range_constraint
-    - include: array_constraint
-    - include: record_constraint
+    #- include: array_constraint
+    #- include: record_constraint
 
   range_constraint:
     - match: '(?i)(range)'
