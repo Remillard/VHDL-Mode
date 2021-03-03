@@ -25,7 +25,7 @@ class vhdlModeVersionCommand(sublime_plugin.TextCommand):
         return self.view.match_selector(0, "source.vhdl")
 
     def run(self, edit):
-        print("vhdl-mode: VHDL Mode Version 1.8.11")
+        print("vhdl-mode: VHDL Mode Version 1.8.12")
 
 
 #-------------------------------------------------------------------------------
