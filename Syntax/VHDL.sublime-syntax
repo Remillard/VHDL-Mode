@@ -1017,6 +1017,8 @@ contexts:
         1: keyword.other.block.begin.vhdl
       set:
         - meta_scope: meta.block.function.body.vhdl
+        - match: (?i)\b(return)\b
+          scope: keyword.other.return.vhdl
         - match: (?i)\b(end\s*)(function\s*)?(({{identifier}})\s*)?(;)
           captures:
             1: keyword.other.block.end.vhdl
