@@ -1831,7 +1831,7 @@ contexts:
     - include: sequential-statements
 
   seq-case:
-    - match: (?i)(({{identifier}})\s*(:)\s*)?\b(case)\b
+    - match: (?i)(({{identifier}})\s*(:)\s*)?(case\?|case)
       captures:
         2: entity.name.label.vhdl
         3: punctuation.separator.vhdl
@@ -1844,7 +1844,7 @@ contexts:
             1: keyword.other.block.is.vhdl
           set:
             - meta_scope: meta.block.case.body.vhdl
-            - match: (?i)(end)\s+(case)\s*({{identifier}}\s*)?(;)
+            - match: (?i)(end)\s+(case\?|case)\s*({{identifier}}\s*)?(;)
               captures:
                 1: keyword.control.flow.end.vhdl
                 2: keyword.control.flow.case.vhdl

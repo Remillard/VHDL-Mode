@@ -11,6 +11,7 @@
 	{"keys": ["ctrl+c", "ctrl+b"], "command": "vhdl_mode_beautify_buffer",       "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
 	{"keys": ["ctrl+c", "ctrl+c"], "command": "vhdl_mode_toggle_comment_region", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
 	{"keys": ["ctrl+c", "ctrl+k"], "command": "build",                           "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
+	{"keys": ["ctrl+c", "ctrl+k"], "command": "build",                           "context": [{"key": "selector", "operand": "source.systemverilog"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
 
 	{"keys": ["ctrl+c", "ctrl+t", "ctrl+h"], "command": "vhdl_mode_insert_header", "context": [{"key": "selector", "operand": "source.vhdl"}, {"key": "setting.vhdl-emacs-keybinds", "operand": true}] },
 
