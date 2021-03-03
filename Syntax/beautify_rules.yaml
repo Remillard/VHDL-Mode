@@ -119,7 +119,7 @@ open_rules:
     close_rule:
     - [endcase, null]
     indent_rule:  [0, 2]
-    pattern: (?<!end )\bcase\b
+    pattern: (?<!end )\b(case\?|case)\b
     solo_flag: false
     ignore_rules:
     - block-comment
