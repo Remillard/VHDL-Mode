@@ -1,0 +1,19 @@
+Version 1.8.12
+
+My apologies that these have been a long time coming.  Work life demands have
+been pretty constant for quite awhile now.  The package is still supported and
+active.
+
+* For VHDL-2008 support, added the keyword `case?` to syntax and
+  beautification. (Issue #162)
+* Fixed the syntax for a return inside of a function body. (Issue #161)
+* Fixed the scoping on variable assignment in a particular case where the
+  left hand side contained a slice with internal expressions (it worked for
+  signal assignments.) (Issue #163)
+* Fixed scoping when typecasting is used on the left hand side of a mapping
+  in a port instantiation. (Issue #158)
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.

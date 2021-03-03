@@ -1017,6 +1017,8 @@ contexts:
         1: keyword.other.block.begin.vhdl
       set:
         - meta_scope: meta.block.function.body.vhdl
+        - match: (?i)\b(return)\b
+          scope: keyword.other.return.vhdl
         - match: (?i)\b(end\s*)(function\s*)?(({{identifier}})\s*)?(;)
           captures:
             1: keyword.other.block.end.vhdl
@@ -1400,7 +1402,7 @@ contexts:
         - include: assignment-operators
 
   mappings:
-    - match: '(?i)(generic|port)\s+(map)'
+    - match: '(?i)(generic)\s+(map)'
       captures:
         1: keyword.other.interface-type.vhdl
         2: keyword.other.map.vhdl
@@ -1417,6 +1419,23 @@ contexts:
           captures:
             1: punctuation.separator.vhdl
         - include: associations
+    - match: '(?i)(port)\s+(map)'
+      captures:
+        1: keyword.other.interface-type.vhdl
+        2: keyword.other.map.vhdl
+      push:
+        - meta_scope: meta.block.association-list.vhdl
+        - include: associations
+        - match: '(\()'
+          captures:
+            1: punctuation.group.parens.begin.vhdl
+        - match: '(\))(?=;)'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+          pop: true
+        - match: '(,)'
+          captures:
+            1: punctuation.separator.vhdl
 
   associations:
     # Basic
@@ -1424,6 +1443,21 @@ contexts:
       captures:
         1: variable.parameter.vhdl
         2: keyword.operator.assignment.vhdl
+      push:
+        - meta_scope: meta.statement.association.vhdl
+        - match: (?=,)|(?=\))
+          pop: true
+        - include: basic-paren-group
+        - include: stray-parens
+        - include: reserved-words
+    # This special case is to catch an identifier wrapped in parens as in the
+    # case of a typecase on the left hand side of a mapping.
+    - match: '(\()({{identifier}})(\))\s*(\=>)'
+      captures:
+        1: punctuation.group.parens.begin.vhdl
+        2: variable.parameter.vhdl
+        3: punctuation.group.parens.end.vhdl
+        4: keyword.operator.assignment.vhdl
       push:
         - meta_scope: meta.statement.association.vhdl
         - match: (?=,)|(?=\))
@@ -1783,6 +1817,40 @@ contexts:
         - match: (;)
           captures:
             1: punctuation.terminator.vhdl
+          pop: true
+        - include: expression-operators
+        - include: basic-paren-group
+        - include: stray-parens
+        - include: reserved-words
+    # Aggregate assignment
+    - match: '(?i)(\()(.*?)(\))\s*(:\=)'
+      captures:
+        1: punctuation.group.parens.begin.vhdl
+        2: variable.other.vhdl
+        3: punctuation.group.parens.end.vhdl
+        4: keyword.operator.assignment.vhdl
+      push:
+        - meta_scope: meta.statement.assignment.variable.vhdl
+        - match: (;)
+          captures:
+            1: punctuation.terminator.vhdl
+          pop: true
+        - match: (,)
+          captures:
+            1: punctuation.separator.vhdl
+        - include: expression-operators
+        - include: basic-paren-group
+        - include: stray-parens
+        - include: reserved-words
+    # Experimental variation -- This might replace everything above.
+    - match: (?i)\b({{identifier}})\b(?=.*:=)
+      scope: variable.other.vhdl
+      push:
+        - meta_scope: meta.statement.assignment.variable.vhdl
+        - match: :=
+          scope: keyword.operator.assignment.vhdl
+        - match: ;
+          scope: punctuation.terminator.vhdl
           pop: true
         - include: expression-operators
         - include: basic-paren-group
