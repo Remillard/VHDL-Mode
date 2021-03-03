@@ -1402,7 +1402,7 @@ contexts:
         - include: assignment-operators
 
   mappings:
-    - match: '(?i)(generic|port)\s+(map)'
+    - match: '(?i)(generic)\s+(map)'
       captures:
         1: keyword.other.interface-type.vhdl
         2: keyword.other.map.vhdl
@@ -1419,6 +1419,23 @@ contexts:
           captures:
             1: punctuation.separator.vhdl
         - include: associations
+    - match: '(?i)(port)\s+(map)'
+      captures:
+        1: keyword.other.interface-type.vhdl
+        2: keyword.other.map.vhdl
+      push:
+        - meta_scope: meta.block.association-list.vhdl
+        - include: associations
+        - match: '(\()'
+          captures:
+            1: punctuation.group.parens.begin.vhdl
+        - match: '(\))(?=;)'
+          captures:
+            1: punctuation.group.parens.end.vhdl
+          pop: true
+        - match: '(,)'
+          captures:
+            1: punctuation.separator.vhdl
 
   associations:
     # Basic
@@ -1426,6 +1443,21 @@ contexts:
       captures:
         1: variable.parameter.vhdl
         2: keyword.operator.assignment.vhdl
+      push:
+        - meta_scope: meta.statement.association.vhdl
+        - match: (?=,)|(?=\))
+          pop: true
+        - include: basic-paren-group
+        - include: stray-parens
+        - include: reserved-words
+    # This special case is to catch an identifier wrapped in parens as in the
+    # case of a typecase on the left hand side of a mapping.
+    - match: '(\()({{identifier}})(\))\s*(\=>)'
+      captures:
+        1: punctuation.group.parens.begin.vhdl
+        2: variable.parameter.vhdl
+        3: punctuation.group.parens.end.vhdl
+        4: keyword.operator.assignment.vhdl
       push:
         - meta_scope: meta.statement.association.vhdl
         - match: (?=,)|(?=\))
