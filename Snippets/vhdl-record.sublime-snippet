@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+type ${1:<identifier>} is record
+	$0
+end record $1;
+]]></content>
+	<tabTrigger>record</tabTrigger>
+	<scope>source.vhdl</scope>
+</snippet>
