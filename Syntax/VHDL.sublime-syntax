@@ -1680,7 +1680,7 @@ contexts:
         3: punctuation.separator.vhdl
         5: keyword.other.block.block.vhdl
       push:
-        - match: (?i)\b(is)\b
+        - match: (?i)\b(is)?\b
           captures:
             1: keyword.other.block.is.vhdl
           set: block-statement-declarations
