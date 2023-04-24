@@ -1,12 +1,11 @@
-
 *.sublime-project
-
 *.sublime-workspace
+*~
+~*
+\#*
+\.\#*
+TAGS
 
 README\.html
-
-
-
 CODE_OF_CONDUCT\.html
-
 CONTRIBUTING\.html

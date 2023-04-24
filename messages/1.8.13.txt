@@ -1,0 +1,12 @@
+Version 1.8.13
+
+My apologies that these have been a long time coming.  Work life demands have
+been pretty constant for quite awhile now.  The package is still supported and
+active.
+
+* Added a snippet for `record` (Contribusion by @martinbarez)
+
+As always, if bugs are discovered, or features desired, please visit
+https://github.com/Remillard/VHDL-Mode/issues and open an issue and we can
+discuss it.  If contributing code, please fork from and submit pull requests to
+the `develop` branch.

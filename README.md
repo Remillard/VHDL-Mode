@@ -184,6 +184,7 @@ This is a new section and I wanted to acknowledge and thank folks who have helpe
 
 * Sven Goossens (Github: @Sv3n)
 * Stefan Lippuner (Github: @stefanlippuner)
+* Martin Barez (Github: @martinbarez)
 
 # Conclusion
 
