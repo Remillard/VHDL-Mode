@@ -178,6 +178,15 @@ Most snippets will execute from the keyword associated with them (i.e. 'entity' 
 * I did not create a snippet for everything under the sun.  In vhdl-mode, the templates were one of my least used features.  Generally I like the templates to cover large scale things that save a lot of typing.  That is to say, there's no real need in my mind for every single keyword to have its own snippet.  That being said, other packages have some of those things, and Sublime Text 3's snippet creation capability is simple, easy-to-use, and quite customizable.  If anyone creates one they believe flows naturally from regular coding I'd be happy to evaluate it and include it with attribution.
 * There's no particularly graceful way to handle vhdl-mode's prompting for fields, for example, when creating an entity.  Thus, some of these behaviors were broken up into several snippets.  Typing `entity <Tab>` will form the starting and stopping entity structure, then place the cursor in the middle.  Typing `port <Tab>` at this point will start a port interface list.  In this way the flavor of the templating is retained but within a ST3 model.  If I can find a way to handle a full prompt construction, I will try to implement it, but for now it's limited to snippet support.
 
+# Miscellaneous
+
+The supported method for installing this package is through [Package Control](https://packagecontrol.io).  It is possible
+to install this by cloning the repository directly.  This method is not supported by me.  However here are a few pointers:
+* The package must be installed in Sublime Text's Packages directory.  In Windows, this is `c:/Users/<name>/AppData/Roaming/Sublime Text/Packages`.
+* VHDL Mode depends on the `ruamel-yaml` package that is a generically installed package.  I believe it is obtained when Sublime Text first loads the package and tries to straighten out dependencies, but I don't promise this happens smoothly like it does when installing from Package Control.
+* The Github project is "VHDL-Mode".  The package name is "VHDL Mode" (notice the space in lieu of the dash).  You will need to make sure to clone to a directory name with this substitution made, or rename the directory afterwards.  There are links to files within the package that requires this file being named correctly (and this is unavoidable -- there is no way to generically address the file.)
+Any other problems I cannot really help with.  Good luck!  (You could always install directly from Package Control and then replace the directory with your cloned version if you liked -- that might resolve most of the weirdnesses but no promises.)
+
 # Contributors
 
 This is a new section and I wanted to acknowledge and thank folks who have helped out with fixes and testing.  If anyone else has fixes or contributions, please feel free to open an issue at the Github repository and we can discuss it.  If submitting a pull-request, please target the develop branch, as I keep the master branch for releases only.
